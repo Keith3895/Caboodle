@@ -1,0 +1,76 @@
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/font/flaticon.css"> 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<!--<script src= "/js/admin_home.js" type="text/javascript"></script>-->
+<style>
+    .side-nav{
+        top: 65px;
+        width: 250px;
+        background-color:#2f2f2f;
+            color: white;
+    }
+    .side-nav li>a>i, .side-nav li>a>[class^="mdi-"], .side-nav li>a li>a>[class*="mdi-"], .side-nav li>a>i.material-icons{
+      color: white;
+    }
+    .side-nav li>a{
+        background-color:#2f2f2f;
+            color: white;
+    }
+    
+    .border_bottom{
+      border-bottom:1px solid #eeeeee;
+    }
+    .space {
+      background: none;
+      width: 5%;
+    }
+</style>
+	<ul id="slide-out1" class="side-nav fixed collapsible" data-collapsible="accordion">
+      	<li class="logo">
+      		<a id="logo-container" href="/" class="brand-logo">
+      		Student
+            </a>
+        </li>
+        <li><a href="/placements">
+            <i class="material-icons left" style='margin-left: -4px;margin-right: 10px;'>work</i> 
+        View Placements
+            </a></li>
+        <li><a href="/student/viewProfile">
+            <i class="fa fa-user-o" aria-hidden="true"></i>View Profile
+            </a></li>
+        <li><a href="/student/updateProfile">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+            Update Profile
+            </a></li>
+        <!--<li><a href="/lostNFound/addLostItem">Lost Item?</a></li>-->
+        <!--<li><a href="/lostNFound/addFoundItem">Found Item?</a></li>-->
+        <!--<li><a href="/sell/addItem">Sell/Giveaway Item</a></li>-->
+        <!--<li><a href="/student/applyLeave">Apply for Leave</a></li>-->
+        <li>
+            <div class="collapsible-header waves-effect">
+                <i class="flaticon-c-test-result-interface-symbol-with-text-lines"></i>
+                Placements Traing Test
+            </div>
+              <div class="collapsible-body">
+                <ul>
+                    <li><a href="/test">
+                        <i class="flaticon-exam" style="width:45px;"></i>
+                        Take Test</a></li>
+                    <li><a href="/student/testAnalysis">
+                        <i class="fa fa-bar-chart" aria-hidden="true" style='margin-left:20px'></i>
+                        Test Analysis</a></li>
+                </ul>
+              </div>
+        </li>
+    </ul>
+    <a class="btn-floating btn-large waves-effect waves-light red button-collapse1"  data-activates="slide-out1" ><i class="material-icons">label_outline</i></a>
+
+    <!--<a href="#" data-activates="slide-out1" class="button-collapse1"><i class="material-icons large">label_outline</i></a>-->
+    <script>
+    $('.button-collapse').sideNav({
+        edge: 'right'
+    });
+    $('.button-collapse1').sideNav();
+    if(!window.location.href.split('/')[4]=='')
+		    $("a[href*='/"+window.location.href.split('/')[4]+"']").addClass('active');
+    </script>

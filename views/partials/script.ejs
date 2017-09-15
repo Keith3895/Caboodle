@@ -1,0 +1,41 @@
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+</script>
+
+<script
+  src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+  integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+  crossorigin="anonymous">
+</script>
+<!--<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.full.js"></script>
+<script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+<script src="https://use.fontawesome.com/cdb89381be.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.6.2/jquery.mockjax.min.js"> </script>
+<script type="text/javascript">
+  $(function () {
+    $('#dob').datetimepicker({
+      timepicker: false,
+        format: "d-m-Y"
+    });
+    $('#lostDate').datetimepicker({
+      timepicker: false,
+        format: "d-m-Y"
+    });
+    $('#foundDate').datetimepicker({
+      timepicker: false,
+        format: "d-m-Y"
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('select').material_select();
+  });
+</script>

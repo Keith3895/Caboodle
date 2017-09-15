@@ -1,0 +1,86 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+	<% include ./slide_nav.ejs %>
+    
+    <div class="row col l8 offset-l4">
+    	<div class="col offset-s2 s4 card-users hvr-float-shadow" onclick="window.location='/admin/user_list'">
+    		<div class="text-center">
+    			<div>
+    				<i class="large material-icons">perm_identity</i>
+    			</div>
+    			<div>
+    				<h5 class="card-text">Users</h5>
+    			</div>
+    			<div>
+    				<h4 class="card-text"><%= lengths.user %></h4>
+    			</div>
+    		</div>
+    	</div>	
+    	<div class="col offset-s1 s4 card-Students hvr-float-shadow" onclick="window.location='/admin/student_list'">
+    		<div class="text-center">
+    			<div>
+    				<i class="fa fa-graduation-cap fa-5" aria-hidden="true"></i>
+    			</div>
+    			<div>
+    				<h5 class="card-text">Students</h5>
+    			</div>
+    			<div>
+    				<h4 class="card-text"><%= lengths.student %></h4>
+    			</div>
+    		</div>
+    	</div>	
+    </div>
+    <div class="row">
+    	<div class="col offset-s2 s4 card-books hvr-float-shadow" onclick="window.location.hash='/asd'">
+    		<div class="text-center">
+    			<div>
+    				<i class="fa fa-book" aria-hidden="true"></i>
+    			</div>
+    			<div>
+    				<h5 class="card-text">Books</h5>
+    			</div>
+    			<div>
+    				<h4 class="card-text">123,123</h4>
+    			</div>
+    		</div>
+    	</div>	
+    	<div class="col offset-s1 s4 card-placement hvr-float-shadow" onclick="window.location.hash='/asd'">
+    		<div class="text-center">
+    			<div>
+    				<i class="large material-icons">work</i>
+    			</div>
+    			<div>
+    				<h5 class="card-text">Placement Head</h5>
+    			</div>
+    			<div>
+    				<h4 class="card-text"><%= lengths.placement %></h4>
+    			</div>
+    		</div>
+    	</div>		
+    </div>
+    
+    <div class="row canvas-cont">
+    	<div class="col m4 offset-m1">
+    		<canvas id="chart-bar" width="400" height="400"></canvas>	
+    	</div>
+    	<div class="col m4">
+    		<canvas id="donut" width="400" height="400"></canvas>	
+    	</div>
+    	<div >
+      	<div class="col s4 offset-s1">
+      		<canvas id="polar" width="400" height="400"></canvas>	
+      	</div>
+      	<div class="col s4">
+      		<canvas id="radar" width="400" height="400"></canvas>	
+      	</div>
+    	</div>
+    </div>
+        
+        
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src= "/js/charts.js" type="text/javascript"></script>
+<script>
+    $('.collapsible').collapsible();
+</script>
+<% include ../partials/footer.ejs %>

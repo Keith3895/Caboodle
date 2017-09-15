@@ -1,0 +1,56 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<style type="text/css">
+  .Item_image{
+    border-radius: 1em;
+  }
+  .Item_image:hover{
+    opacity: .4;
+  }
+  .Item_name{
+    padding-left: 20px;
+    color: black;
+  }
+  .Item_name:hover{
+    color: grey;
+  }
+  .Item_author{
+    padding-left: 17px;
+    color: grey;
+  }
+  #link:hover{
+      color: blue;
+  }
+</style>
+
+<div class="row" style="margin-top:20px">
+    <%  var i = 1; %>
+    <h3 class="center">List of Items Lost</h3>
+    <h6 style="margin: 1% 0 2% 0" class="center">
+        <a href="/lostNfound/addLostItem" id="link">Did you lose anything? Click Here!</a>
+    </h6>
+    <h6 style="margin: 1% 0 2% 0" class="center">
+        <a href="/lostNfound/viewFoundItems" id="link">Check items found!</a>
+    </h6>
+    <% Items.forEach(function(Item){ 
+        if(Item.verified){ %>
+    <% if(i % 4 == 1){  %>
+        <div class="row">
+    <% } %>
+    <div class="col m3 s4" style="" class="center">
+      <a href="/lostNfound/viewItemLost/<%= Item._id %>" class="center-align">
+        <img src="<%= Item.imageLinks[0] %>" style="margin-left:17%;height: 50%;width:70%" 
+        class=" center-align Item_image ">
+        <h5 class="Item_name"><%= Item.itemName %></h5>
+        <h6 class="Item_author"><%= Item.itemSpecifics %></h6>
+        <h6 class="Item_name">Please Contact <%= Item.author.firstName %> on <%= Item.phone %></h6>
+      </a>
+    </div>
+    <% if(i % 4 == 0){  %>
+        </div>
+    <% } 
+    i = i + 1;%>
+    <% } });%>
+</div>
+
+<% include ../partials/footer.ejs %>

@@ -1,0 +1,41 @@
+<div class="rightBoard">
+    <div class="grey darken-3 rightHeaderCard" >
+      <p class="rightHeaderCard-text">RECENT TEST SCORES</p>
+    </div>
+    <div class="rightMainBoard scroll" id="changeScroll">
+    <table>
+        <thead>
+          <tr class="rightTableHead">
+            <th style="width: 3% " class="center"></th>
+            <th style="width: 65% " class="center"></th>
+            <th class="center"></th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        
+          <%
+          for(i=1;i<= board.entry.length;i++){  if(board.entry[i-1].author != null ){
+          var bar = Math.ceil((board.entry[i-1].marks)*2.5)/100 %>
+          <tr class="rightAnimateBox" >
+            <td class="center"><%= ("0" + i).slice(-2) %></td>
+            <td>
+              <p class="name2"><%= board.entry[i-1].author.firstName%> <%= board.entry[i-1].author.lastName%><br>
+              <%= board.entry[i-1].author.usn %><span class="right"><%= board.entry[i-1].marks %>/40</span></p>
+              <!--<p class="progressLine2" value="<%= bar %>"></p>-->
+              <!--<p class="name2"><= board.entry[i-1].author.firstName%> <= board.entry[i-1].author.lastName%><br>-->
+              <!--1AM13CS069<span style="margin-left:100%;">15/20</span></p>-->
+              <!--<p class="progressLine2" value="10"></p>-->
+            </td>
+            <td >
+              <p style="padding-right:5%;margin-top:2px; " class="center xp">
+                <span class="right" style="font-size:20px">+<%= board.entry[i-1].xp%> XP</span>
+              </p>
+            </td>
+          </tr>
+          <% } } %>
+        </tbody>
+      </table>
+      </div>
+</div>
+  

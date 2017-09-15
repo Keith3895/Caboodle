@@ -1,0 +1,14 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<div class="container center">
+    <% var link1 = link.split('.'),
+            linkextension = link1[link1.length - 1]; 
+        if(linkextension==='pdf'){ %>
+        <p>
+            <embed  class="activator" name="plugin" src="<%= link %>" type="application/pdf" width="100%" height="300px">
+        </p>
+        <% } else { %>
+            <img src="<%= link %>">
+        <% } %>
+</div>
+<% include ../partials/footer.ejs %>

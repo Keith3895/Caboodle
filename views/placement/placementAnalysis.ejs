@@ -1,0 +1,112 @@
+
+<style type="text/css">
+	.charts{
+		float: left;
+		margin: 5px 30px;
+	}
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box; }
+@media (min-width: 400px) {
+  .container {
+    width: 85%;
+    padding: 0; }
+}
+
+/* For devices larger than 550px */
+@media (min-width: 550px) {
+  .container {
+    width: 80%; }
+}
+</style>
+<div class="container">
+	<div class="charts">
+		<canvas id="lineCanvas" width="400px" height="400px"></canvas>
+	</div>
+	<div class="charts">
+		<canvas id="BarCanvas" width="400px" height="400px"></canvas>
+	</div>
+	
+</div>
+<script type="text/javascript">
+
+// ==============================Line Chart==============================
+var str =[{x:0,y:0}<%for(i in returnData.arr){ %>,{x:<%=returnData.arr[i].x%> ,y:<%=returnData.arr[i].y%>}<% } %> ,{x:<%=returnData.arr[returnData.arr.length-1].x+20%>,y:<%=returnData.arr[returnData.arr.length-1].y+20%>}];
+var avg= [<%for(i in returnData.arrAvg){ %>,{x:<%=returnData.arrAvg[i].x%> ,y:<%=returnData.arrAvg[i].y%>}<% } %>    
+    
+];
+
+var lineVar = document.getElementById('lineCanvas').getContext('2d');
+	var lineData={
+		// labels: ["January", "February", "March"],
+        // datasets: [{
+            label: "All the Results",
+            backgroundColor: 'rgba(154, 19, 47, 0.8)',
+            showLine:false,
+            pointRadius:2,
+            spanGaps:true,
+            borderColor: 'rgba(154, 19, 47, 0.8)',
+            data: str,
+        // }]
+	};
+	var avg_line = {
+
+			// labels: ["January", "February", "March"],
+        // datasets: [{
+            label: "All the Results",
+            backgroundColor: 'rgba(0, 0, 0, 0.0)',
+            // showLine:false,
+            pointRadius:2,
+            spanGaps:true,
+            borderColor: 'rgba(255, 99, 132,0.4)',
+            data: avg,
+        // }]
+	};
+	var options ={
+                        responsive: false,
+                        width:300,
+                        height:200,
+                        scaleShowGridLines: false,
+                        showScale: false,
+                        maintainAspectRatio: this.maintainAspectRatio,
+                        barShowStroke: false,
+
+                    };
+
+	var myLineChart = new Chart(lineVar, {
+    type: 'scatter',
+    data: {
+    	datasets:[avg_line,lineData]
+    },
+    options: options
+});
+
+// ============================Bar Chart ====================================
+var BarVar = document.getElementById('BarCanvas').getContext('2d');
+	var BarChart = new Chart(BarVar, {
+	  type: 'bar',
+	  data: {
+	    datasets: [{
+	          label: 'Bar Dataset',
+	          data: [<%=returnData.range%>],
+	          backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)'
+               
+            ]
+	        }],
+	    labels: ['0-3', '3-7', '7-13', '13-20','20-25','25-30']
+	  },
+	  options: options
+	});
+
+
+
+
+</script>

@@ -1,0 +1,209 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<% include ./sidenav.ejs %>
+<link href="/stylesheets/avatars.css" rel="stylesheet">    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/image-picker/0.3.0/image-picker.min.css" />
+    <div class="row ">
+        <div class="col l12 z-depth-5" style="margin-top:-50px">
+            <div class="card z-depth-2">
+                <div class="background">
+                    <a class="modal-trigger" href="#modal1"><img class="user" src="<%= student.author.dp %>"></a>
+                </div>
+                <div class="card-content col s12 m12">
+                    <div style="left:10%">
+                        <a class="waves-effect waves-light btn blue" 
+                        href="<%= student.resumeLink%>" target="_blank">
+                            <i class="material-icons left">file_download</i>RESUME</a>
+                    </div>
+                    <div style="padding-top: 30px">
+                        <h5 class="blue-text">PERSONAL INFORMATION</h5>
+                        <table>
+                            <tr >
+                                <td class="border_bottom" width="45%">Name: 
+                                &nbsp;&nbsp;&nbsp;&nbsp; <%= student.author.firstName %>&nbsp;<%= student.author.lastName %></td>
+                                <td class="space"></td>
+                                <td class="border_bottom">USN: 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;<%= student.USN %></td> 
+                            </tr>
+                            <tr >
+                                <td class="border_bottom" width="45%">Gender: 
+                                &nbsp;&nbsp;&nbsp;<%= student.gender %></td>
+                                <td class="space"></td>
+                                <td class="border_bottom">Department: 
+                                &nbsp;&nbsp;&nbsp;CSE</td> 
+                            </tr>
+                            <tr >
+                                <td class="border_bottom" width="45%">DOB: 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= student.DOB %></td>
+                                <td class="space"></td>
+                                <td class="border_bottom">Semester: &nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;&nbsp;<%= student.semester %></td> 
+                            </tr>
+                            <tr >
+                                <td class="border_bottom" width="45%">Phone: 
+                                &nbsp;&nbsp;&nbsp;&nbsp;+91 <%= student.mobile1 %></td>
+                                <td class="space"></td>
+                                <td class="border_bottom">Aggregate: &nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;78%</td> 
+                            </tr>
+                            <tr >
+                                <td class="border_bottom" width="45%">Email: 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= student.author.email %></td>
+                                <td class="space"></td>
+                                <td class="border_bottom">No of Placements: &nbsp;&nbsp;&nbsp;&nbsp;<%= student.placements %></td> 
+                            </tr>
+                            <tr >
+                                <td class="border_bottom" width="45%">Address: 
+                                &nbsp;<%= student.address %></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="padding-top:30px;">
+                        <table>
+                            <tr>
+                                <td class="border_bottom" width="48%">
+                                    <h5 class="blue-text">10TH RESULT DETAILS</h5>
+                                    <div class="card horizontal">
+                                        <div class="card-image">
+                                            <% if(/.pdf/i.test(student.tenthResult.reportLink)){ %>
+                                            <embed  class="activator" name="plugin" src="<%= student.tenthResult.reportLink%>" type="application/pdf" width="100%" height="207">
+                                            <% } else { %>
+                                            <img src="<%= student.tenthResult.reportLink%>">
+                                            <% } %>
+                                        </div>
+                                        <div class="card-stacked">
+                                            <div class="card-content">
+                                                <p>Board: <%= student.tenthResult.board %></p>
+                                                <p>Result: <%= student.tenthResult.Percentage %> %</p>
+                                                <p>Year of Passing: <%= student.tenthResult.yearPassed %></p>
+                                            </div>
+                                            <div class="card-action">
+                                                <a href="/student/viewFile?link=<%= student.tenthResult.reportLink%>" target="_blank">Open</a>
+                                                <a href="<%= student.tenthResult.reportLink%>">Download</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="4%"></td>
+                                <td class="border_bottom">
+                                    <h5 class="blue-text">12TH RESULT DETAILS</h5>
+                                    <div class="card horizontal">
+                                        <div class="card-image">
+                                            <% if(/.pdf/i.test(student.twelfthResult.reportLink) ){ %>
+                                                <embed  class="activator" name="plugin" src="<%= student.twelfthResult.reportLink%>" type="application/pdf" width="100%" height="207">
+                                            <% } else { %>
+                                                <img src="<%= student.twelfthResult.reportLink%>">
+                                            <% } %>
+                                        </div>
+                                        
+                                        <div class="card-stacked">
+                                            <div class="card-content">
+                                                <p>Board: <%= student.twelfthResult.board %></p>
+                                                <p>Result: <%= student.twelfthResult.Percentage %> %</p>
+                                                <p>Year of Passing: <%= student.twelfthResult.yearPassed %></p>
+                                            </div>
+                                            <div class="card-action">
+                                                <a target="_blank" href="/student/viewFile?link=<%= student.twelfthResult.reportLink%>">Open</a>
+                                                <a href="<%= student.twelfthResult.reportLink%>" download>Download</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td> 
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="padding-top:30px; float:left;border-bottom:1px solid #eeeeee;">
+                        <h5 class="blue-text">SEMESTER RESULTS</h5>
+                        <% student.semResults.forEach(function(item,index){ %>
+                            <div class="card col s12 m2" style="margin:10px">
+                                <div class="card-image">
+                                    <% if(/.pdf/i.test(item.reportLink)){ %>
+                                        <embed  class="activator" name="plugin" src="<%= item.reportLink%>" type="application/pdf" width="100%" height="300px">
+                                    <% } else {%>
+                                        <img src="<%= item.reportLink%>">
+                                    <% } %>
+                                    <span class="card-title" style="color:black;">Sem: <%= item.sem%> <br> Result: <%= item.Percentage %>%</span>
+                                </div>
+                                <div class="card-action" style="padding: 5px 5px 5px 5px">
+                                    <a href="/student/viewFile?link=<%= item.reportLink%>" target="_blank">
+                                        <i class="material-icons">remove_red_eye</i></a>
+                                    <a href="<%= item.reportLink%>" download style="margin-right:0" class="right blue-text">
+                                        <i class="material-icons">file_download</i></a>
+                                </div>
+                            </div>
+                        <% }); %>
+                        
+                    </div>
+                    <div style="padding-top:30px; float:left;">
+                        <h5 class="blue-text">CERTIFICATIONS</h5>
+                        <% student.certifications.forEach(function(item,index){ %>
+                            <div class="card col s12 m3" style="margin:10px">
+                                <div class="card-image">
+                                    <% if(/.pdf/i.test(item.docLink)){ %>
+                                        <embed  class="activator" name="plugin" src="<%= item.docLink%>" type="application/pdf" width="100%" height="300px">
+                                    <% } else {%>
+                                        <img src="<%= item.docLink%>">
+                                    <% } %>
+                                    <span class="card-title" style="color:black;"><%= item.description%></span>
+                                </div>
+                                <div class="card-action">
+                                    <a href="/student/viewFile?link=<%= item.docLink%>" target="_blank">Open</a>
+                                    <a href="<%= item.docLink%>" download>Download</a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal1" class="modal">
+        <p class="close">
+        <a href="#!" class="modal-action modal-close blue-text"><i class="small material-icons">close</i></a>
+        </p>
+    <div class="modal-content">
+        <form action="/student/updateDP" method="POST" id="profilePic">
+        <select id="selectImage" name="dp" class="image-picker show-labels show-html">
+          <option data-img-src="/images/male1.png" >male1.png</option>
+          <option data-img-src="/images/female1.png" >female1.png</option>
+          <option data-img-src="/images/male2.png" >male2.png</option>
+          <option data-img-src="/images/female2.jpg" >female2.jpg</option>
+          <option data-img-src="/images/male3.png" >male3.png</option>
+          <option data-img-src="/images/female3.jpg" >female3.jpg</option>
+          <option data-img-src="/images/male4.jpg" >male4.jpg</option>
+          <option data-img-src="/images/female4.jpg" >female4.jpg</option>
+          <option data-img-src="/images/male5.jpg" >male5.jpg</option>
+          <option data-img-src="/images/female5.jpg" >female5.jpg</option>
+        </select>
+        <button class="btn waves-effect waves-light right" style="width:100%" type="submit" name="action">Update
+            <i class="material-icons">done</i>
+          </button>
+        </form>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/image-picker/0.3.0/image-picker.min.js"></script>
+  <script>
+       $(document).ready(function(){
+    // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+    $('.modal').modal({
+        opacity: 0.9,
+        startingTop: '30%'
+    });
+    $("#selectImage").imagepicker({
+        hide_select: true
+    });
+
+    var $container = $('.image_picker_selector');
+    // initialize
+    $container.imagesLoaded(function () {
+        $container.masonry({
+            columnWidth: 30,
+            itemSelector: '.thumbnail'
+        });
+    });
+  });
+  
+  </script>
+<% include ../partials/footer.ejs %>

@@ -1,0 +1,134 @@
+     header, main, footer {
+      padding-left: 300px;
+    }
+	
+
+.cntr{
+    margin: 0px 1px -6px 41px;
+}
+.cntr .cntr-innr {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  
+}
+/*** STYLES ***/
+.search-label {
+  display: inline-block;
+  position: relative;
+  height: 35px;
+
+  width: 35px;
+  box-sizing: border-box;
+  margin: 0px 8px 7px 0px;
+  padding: 7px 9px 0px 9px;
+  border: 3px solid black;
+  border-radius: 25px;
+  -webkit-transition: all 200ms ease;
+  transition: all 200ms ease;
+  cursor: text;
+}
+.search-label:after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 20px;
+  right: -5px;
+  top: 21px;
+  background: black;
+  border-radius: 3px;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  -webkit-transition: all 200ms ease;
+  transition: all 200ms ease;
+}
+.search-label.active,
+.search-label:hover {
+  width: 300px;
+  margin-right: 0px;
+}
+.search-label.active:after,
+.search-label:hover:after {
+  height: 0px;
+}
+.search-label input {
+  width: 100%;
+  border: none;
+  box-sizing: border-box;
+  font-family: Helvetica;
+  font-size: 15px;
+  color: black;
+  background: transparent;
+  outline-width: 0px;
+  height: auto;
+}
+.search-label input:focus {
+    border-bottom: 1px solid transparent !important; 
+    box-shadow: 0 1px 0 0 transparent !important; 
+
+}
+
+    @media only screen and (max-width : 992px) {
+      header, main, footer {
+        padding-left: 0;
+      }
+    }
+    .side-nav{
+        top: 65px;
+        width: 250px;
+        background-color: #a9a8a9;
+            color: white;
+    }
+    .side-nav li>a{
+        background-color: #a9a8a9;
+            color: white;
+    }
+    .delete{
+        background: red;
+        padding: 7px;
+        margin: 0px;
+        transition: background-color .3s;
+        transition: display 3s;
+        /*display: none;*/
+        opacity: 0;
+        font-size: 35px;
+    }
+    .delete:hover{
+        background-color: #a73636;
+    }
+    .edit{
+        background: #eaeaea;
+        padding: 7px;
+        margin: 0px;
+        transition: background-color .3s;   
+        opacity: 0;
+        font-size: 35px
+    }
+    .edit:hover{
+        background-color: #8a8989;   
+    }
+    table.highlight>tbody>tr:hover .delete{
+        /*display: inline-block;*/
+        opacity: 1;
+        animation-name: show;
+        animation-duration: 1s;
+        /*animation-delay: 2s;*/
+    }
+    table.highlight>tbody>tr:hover .edit{
+        /*display: inline-block;   */
+        opacity: 1;
+        animation-name: show;
+        animation-duration: 1s;
+        /*animation-delay: 2s;*/
+    }
+    @keyframes show{
+        from{font-size: 20px}
+        to{font-size: 35px}
+    }
+    .side-nav .collapsible-header, .side-nav.fixed .collapsible-header{
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .side-nav li>a>i, .side-nav li>a>[class^="mdi-"], .side-nav li>a li>a>[class*="mdi-"], .side-nav li>a>i.material-icons{
+        margin:0 5px 0 0;
+    }

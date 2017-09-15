@@ -1,0 +1,73 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+    <div class="row">
+        <div class="col s12 m5 l6 offset-l3">
+            <div class="card-panel row">
+                <h4 class="center">Do you want to sell/giveaway something?</h4>
+                <form action="/sell/addItem" method="POST" enctype="multipart/form-data">
+                    <div class="input-field col s6">
+                        <input name="itemName" id="itemName" type="text" class="validate">
+                        <label for="itemName">What is it?</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="phoneNum" name="phoneNum" type="tel" class="validate">
+                        <label for="phoneNum">Contact Number</label>
+                    </div> 
+                    <div class="input-field col s12">
+                        <input id="specifics" name="specifics" type="text" class="validate">
+                        <label for="specifics">Item Specifics (One line description) </label>
+                    </div> 
+                    <div class="input-field col s6" id="date">
+                        <select class="browser-default" name="itemType" id="itemType" required>
+                        <option value="" disabled selected>Sell/Giveaway?</option>
+                        <option >Sell</option>
+                        <option >Giveaway</option>
+                    </select>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="price" name="price" type="text" value=''>
+                        <label for="price">Price of Item? (If selling it!)</label>
+                    </div> 
+                    <div class="input-field col s12">
+                        <input id="age" name="age" type="text" >
+                        <label for="age">How old is it? (Ex: 2years & 6months)</label>
+                    </div> 
+                    <div class="input-field col s12">
+                        <textarea id="itemDescription" name="itemDescription" class="materialize-textarea"></textarea>
+                        <label for="itemDescription">Detailed Description of Item</label>
+                    </div>
+                    
+                    <div class="input-field col s12" id="image_preview">
+                        <div class="file-field input-field">
+                          <div class="btn">
+                            <span>Browse</span>
+                            <input type="file" name="images[]" id="images[]" multiple onchange="preview_image();">
+                          </div>
+                          <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload images(if any)">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="input-field col s12" >
+                        
+                    </div>
+                    
+                    <button class="btn waves-effect waves-light right blue" type="submit" name="action">Add
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+<script>
+    function preview_image() 
+    {
+        $('#image_preview img').empty();
+        var total_file=document.getElementById("images").files.length;
+        for(var i=0;i<total_file;i++)
+        {
+            $('#image_preview').append("<img src='"+URL.createObjectURL(event.target.files[i])+"'>");
+        }
+    }
+</script>
+<% include ../partials/footer.ejs %>

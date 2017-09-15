@@ -1,0 +1,146 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<style>
+    .inline span{
+       margin: 15px 15px;
+    }
+</style>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.2.0/css/ion.rangeSlider.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.2.0/css/ion.rangeSlider.skinHTML5.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.2.0/js/ion.rangeSlider.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src= "/js/admin_home.js" type="text/javascript"></script>
+<% include ./sidenav.ejs %>
+    <div class="row">
+        <div class="col s12 m10 l10" style="margin-top:-70px;padding:0">
+            <div class="card-panel row">
+                <h4 class="center">New Placement Update</h4>
+                <form action="/placementHead/addNewPlacement" method="POST" enctype="multipart/form-data">
+                    <div class="input-field col s6">
+                        <input name="cName" id="cName" type="text" class="validate">
+                        <label for="cName">Name of Company</label>
+                    </div>
+                    <div class="input-field col s6" id="date">
+                        <input id="driveDate" name="driveDate" type="text" class="validate">
+                        <label for="driveDate">Date of Drive</label>
+                    </div>
+                    
+                    <div class="input-field col s12 inline" style="margin-top:-20; ">
+                        <p>Qualification/Degree</p>
+                        <input type="checkbox" class="filled-in" id="be" name="qualification" value="BE" />
+                         <label for="be">BE</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="me" name="qualification" value="ME" />
+                         <label for="me">ME</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="bca" name="qualification" value="BCA" />
+                         <label for="bca">BCA</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="mca" name="qualification" value="MCA" />
+                         <label for="mca">MCA</label>
+                    </div>
+                    
+                    <div class="input-field col s12 inline" style="padding-bottom: 3%">
+                        <p>Branches Allowed</p>
+                        <input type="checkbox" class="filled-in" id="cse" name="department" value="CSE"/>
+                         <label for="cse">CSE</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="ise" name="department" value="ISE"/>
+                         <label for="ise">ISE</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="ece" name="department" value="ECE"/>
+                         <label for="ece">ECE</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="mech" name="department" value="ME"/>
+                         <label for="mech">ME</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="eee" name="department" value="EEE"/>
+                         <label for="eee">EEE</label>
+                         <span></span>
+                         <input type="checkbox" class="filled-in" id="ce" name="department" value="CE"/>
+                         <label for="ce">CE</label>
+                    </div> 
+                    <div class="input-field col s6">
+                        <input id="package" name="package" type="text" class="validate">
+                        <label for="package">Package</label>
+                    </div> 
+                    <div class="input-field col s6">
+                        <input id="skills" name="skills" type="text" class="validate">
+                        <label for="skills">Skills Required</label>
+                    </div> 
+                    <div class="input-field col s6">
+                        <input id="designation" name="designation" type="text" class="validate">
+                        <label for="designation">Job Title</label>
+                    </div> 
+                    <div class="input-field col s6">
+                        <input id="jobLocation" name="jobLocation" type="text" class="validate">
+                        <label for="jobLocation">Job Location</label>
+                    </div> 
+                    <div class="input-field col s12">
+                        <input id="driveLocation" name="driveLocation" type="text" class="validate">
+                        <label for="driveLocation">Drive Location</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <label for="tenth">Tenth:</label>
+                        <input type="text" name="tenth" id="tenth">
+                    </div>
+                    
+                    <div class="input-field col s12 range-field browser-default">
+                        <label for="twelfth">Twelfth:</label>
+                        <input type="text" name="twelfth" id="twelfth">
+                    </div>
+                    
+                    <div class="input-field col s12">
+                        <label for="engg">BE Aggregate:</label>
+                        <input type="text" name="engg" id="engg">
+                    </div>
+                    <div class="input-field col s12">
+                        <textarea id="jobDescription" name="jobDescription" class="materialize-textarea"></textarea>
+                        <label for="jobDescription">Job Description</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <div class="file-field input-field">
+                          <div class="btn">
+                            <span>Browse</span>
+                            <input type="file" name="docs[]" id="docs[]" multiple>
+                          </div>
+                          <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload relevant documents(if any)">
+                          </div>
+                        </div>
+                    </div>
+                    <button class="btn waves-effect waves-light right blue" type="submit" name="action" id="btnSubmit">Add
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $('#driveDate').datetimepicker({
+          timepicker: false,
+            format: "d-m-Y"
+        });
+        $("#engg,#twelfth,#tenth").ionRangeSlider({
+            min: 0,
+            max: 100,
+            from: 50,
+            hide_min_max: true,
+        });
+    </script>
+    <script>
+        $("#btnSubmit").click(function(e){
+			if( ($("input[name=qualification]:checked").length == 0) || ($("input[name=department]:checked").length == 0)){
+				$("input[name=qualification]:first").attr("required", "required");
+				$("input[name=department]:first").attr("required", "required");
+				alert("Please fill in the empty fields.");
+			}else{
+				$("input[name=qualification]").removeAttr("required");	
+				$("input[name=department]").removeAttr("required");	
+				$("form").submit();
+			}			
+		});
+    </script>
+<% include ../partials/footer.ejs %>

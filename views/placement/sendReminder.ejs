@@ -1,0 +1,25 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src= "/js/admin_home.js" type="text/javascript"></script>
+<% include ./sidenav.ejs %>
+    <div class="row">
+        <div class="col s12 m8 l8 offset-l2" >
+            <div class="card-panel row" style="margin-left: 1%">
+                <h5 class="center">Send Reminder</h5>
+                <form action="/placementHead/sendReminder" method="POST" enctype="multipart/form-data">
+                    <div class="input-field col s12">
+                        <textarea id="reminder" name="reminder" class="materialize-textarea"></textarea>
+                        <label for="reminder">Reminder</label>
+                    </div>
+                
+                    <button class="btn waves-effect waves-light right blue" type="submit" name="action">Remind
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+<% include ../partials/footer.ejs %>

@@ -1,0 +1,44 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src= "/js/admin_home.js" type="text/javascript"></script>
+<% include ./sidenav.ejs %>
+<style>
+    .space{
+        margin-left:10px;
+    }
+</style>
+<div class="row">
+    
+    <div class="col m12" style="margin-top:-70px;padding:0">
+        <h4 class="center"><%= company.cName %> Registrations</h4>
+        <form action="/placementHead/updatePlacementStats/<%= company._id %>" method="post">
+            <input type="text" style="display:none" name="noOfStudents" value=<%= students.length %>>
+    <table class="striped" >
+        <thead class="centered">
+            <tr>
+                <th>Sl No.</th>
+                <th>USN</th>
+                <th>Name</th>
+                <th>Email</th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <% students.forEach(function(student,i){ %>
+                <tr>
+                    <td><%= i + 1 %></td>
+                    <td><%= student.USN %></td>
+                    <td><%= student.author.firstName %> <%= student.author.lastName %></td> 
+                    <td><%= student.author.email %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    </form>
+    </div>
+    </div>
+    </div>
+    
+<% include ../partials/footer.ejs %>

@@ -1,0 +1,109 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+
+<link rel="stylesheet" href="/stylesheets/user_list.css">
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<% include ./sidenav.ejs %>
+
+<!-- Modal Structure -->
+  <div id="modal1" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Delete Account?</h4>
+      <p>You will lose all the details of the student! Are you sure you want to delete this account? </p>
+    </div>
+    <div class="modal-footer">
+        <a onclick="f2('no')" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+        <a href="" onclick="f2('yes')" class="modal-action modal-close waves-effect waves-green btn-flat">Yes</a>
+    </div>
+  </div>
+
+<div class="row">
+    <div class="cntr">
+	<div class="cntr-innr">
+	<div id="searchform">
+	    <div>
+		  <label class="search-label" for="inpt_search">
+		  		<input type="text" id="myInput" class="autocomplete">
+			</label>
+	    </div>
+	</div>
+
+	</div>
+    </div>
+    <table id='myTable' class="highlight centered">
+        <thead>
+          <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>User Type</th>
+              <th>Semester</th>
+              <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+            <% list.forEach(function(el, index){ %>
+          <tr>
+            <td><%= el.author.firstName %></td>
+            <td><%= el.author.lastName %></td>
+            <td><%= el.USN %></td>
+            <td><%= el.semester %></td>
+            <td style="padding: 0px"> 
+                <a href="#modal1" onclick="f1('<%= el.USN %>','<%= el.author._id %>')"><i class="material-icons delete">delete</i></a>
+                <a href=""><i class="material-icons edit">mode_edit</i></a>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+    </table>    
+</div>
+
+<script>
+    $(document).ready(function(){
+        var usn='',userID='';
+        $('.modal').modal();
+  });
+  function f1(usn1,uid){
+      usn = usn1;
+      userID = uid;
+  }
+  function f2(approval){
+    if(approval==='yes'){
+        $.ajax({
+            method: "POST",
+            url: "/placementHead/students/delete",
+            data: {"USN": usn,"userID":userID},
+            success: function() {
+            // if(/* check if it is ok */) {
+                location.reload();
+            // }
+            }
+        })
+    }
+  }
+  $(document).ready(function() {
+        $('#myInput').on( 'keyup change', function () {
+            var table = $('#myTable').DataTable({
+            "pageLength": 100,
+            "paging":   false,
+            "ordering": false,
+            "info":     false,
+            destroy: true
+        })
+        table.search( this.value ).draw();
+            console.log("Key in")
+            $('#myTable_filter').remove();
+        } );
+        $('#myInput').on('focus',function() {
+            $(this).parent().addClass('active');
+        });
+        $('#myInput').on('blur',function() {
+            //do something
+            $(this).parent().removeClass('active');
+        });
+        
+    });
+</script>
+
+
+<% include ../partials/footer.ejs %>

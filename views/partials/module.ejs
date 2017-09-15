@@ -1,0 +1,339 @@
+<link rel="stylesheet" href="/flat/flaticon.css">
+
+<style type="text/css">
+ #hexGrid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 90%;
+  margin: 0 auto;
+  overflow: hidden;
+  font-family: 'Raleway', sans-serif;
+  font-size: 15px;
+  list-style-type: none;
+}
+
+.hex {
+  position: relative;
+  visibility:hidden;
+  outline:1px solid transparent; /* fix for jagged edges in FF on hover transition */
+}
+.hex::after{
+  content:'';
+  display:block;
+  padding-bottom: 86.602%;  /* =  100 / tan(60) * 1.5 */
+}
+.hexIn{
+  position: absolute;
+  width:96%;
+  padding-bottom: 110.851%; /* =  width / sin(60) */
+  margin:0 2%;
+  overflow: hidden;
+  visibility: hidden;
+  outline:1px solid transparent; /* fix for jagged edges in FF on hover transition */
+  -webkit-transform: rotate3d(0,0,1,-60deg) skewY(30deg);
+      -ms-transform: rotate3d(0,0,1,-60deg) skewY(30deg);
+          transform: rotate3d(0,0,1,-60deg) skewY(30deg);
+}
+.hexIn * {
+  position: absolute;
+  visibility: visible;
+  outline:1px solid transparent; /* fix for jagged edges in FF on hover transition */
+}
+.hexLink {
+    display:block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+    -webkit-transform: skewY(-30deg) rotate3d(0,0,1,60deg);
+        -ms-transform: skewY(-30deg) rotate3d(0,0,1,60deg);
+            transform: skewY(-30deg) rotate3d(0,0,1,60deg);
+}
+
+/*** HEX CONTENT **********************************************************************/
+.hex img {
+  left: -100%;
+  right: -100%;
+  width: auto;
+  height: 100%;
+  margin: 0 auto;
+  -webkit-transform: rotate3d(0,0,0,0deg);
+      -ms-transform: rotate3d(0,0,0,0deg);
+          transform: rotate3d(0,0,0,0deg);
+}
+
+.hex h1, .hex p {
+  width: 100%;
+  padding: 5%;
+  box-sizing:border-box;
+  background-color: rgba(0, 128, 128, 0.8);
+  font-weight: 300;
+  -webkit-transition:  -webkit-transform .2s ease-out, opacity .3s ease-out;
+          transition:          transform .2s ease-out, opacity .3s ease-out;
+}
+.hex h1 {
+  bottom: 50%;
+  padding-top:50%;
+  font-size: 1.5em;
+  z-index: 1;
+  -webkit-transform:translate3d(0,-100%,0);
+      -ms-transform:translate3d(0,-100%,0);
+          transform:translate3d(0,-100%,0);
+}
+.hex h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 45%;
+  width: 10%;
+  text-align: center;
+  border-bottom: 1px solid #fff;
+}
+.hex p {
+  top: 50%;
+  padding-bottom:50%;
+  -webkit-transform:translate3d(0,100%,0);
+      -ms-transform:translate3d(0,100%,0);
+          transform:translate3d(0,100%,0);
+}
+
+
+/*** HOVER EFFECT  **********************************************************************/
+.hexLink:hover h1, .hexLink:focus h1,
+.hexLink:hover p, .hexLink:focus p{
+  -webkit-transform:translate3d(0,0,0);
+      -ms-transform:translate3d(0,0,0);
+          transform:translate3d(0,0,0);
+}
+
+/*** HEXAGON SIZING AND EVEN ROW INDENTATION *****************************************************************/
+@media (min-width:1201px) { /* <- 5-4  hexagons per row */
+  #hexGrid{
+    padding-bottom: 4.4%
+  }
+  .hex {
+    width: 20%; /* = 100 / 5 */
+  }
+  .hex:nth-child(9n+6){ /* first hexagon of even rows */
+    margin-left:10%;  /* = width of .hex / 2  to indent even rows */
+  }
+}
+
+@media (max-width: 1200px) and (min-width:901px) { /* <- 4-3  hexagons per row */
+  #hexGrid{
+    padding-bottom: 5.5%
+  }
+  .hex {
+    width: 25%; /* = 100 / 4 */
+  }
+  .hex:nth-child(7n+5){ /* first hexagon of even rows */
+    margin-left:12.5%;  /* = width of .hex / 2  to indent even rows */
+  }
+}
+
+@media (max-width: 900px) and (min-width:601px) { /* <- 3-2  hexagons per row */
+  #hexGrid{
+    padding-bottom: 7.4%
+  }
+  .hex {
+    width: 33.333%; /* = 100 / 3 */
+  }
+  .hex:nth-child(5n+4){ /* first hexagon of even rows */
+    margin-left:16.666%;  /* = width of .hex / 2  to indent even rows */
+  }
+}
+
+@media (max-width: 600px) { /* <- 2-1  hexagons per row */
+  #hexGrid{
+    padding-bottom: 11.2%
+  }
+  .hex {
+    width: 50%; /* = 100 / 3 */
+  }
+  .hex:nth-child(3n+3){ /* first hexagon of even rows */
+    margin-left:25%;  /* = width of .hex / 2  to indent even rows */
+  }
+}
+
+@media (max-width: 400px) {
+    #hexGrid {
+        font-size: 13px;
+    }
+}
+#hexGrid{
+    padding-bottom: 11.2%;
+    font-size: 13px;
+  }
+  .hex {
+    width: 50%; /* = 100 / 3 */
+  }
+  .hex:nth-child(3n+3){ /* first hexagon of even rows */
+    margin-left:25%;  /* = width of .hex / 2  to indent even rows */
+  }
+
+
+  .hex-divs{
+    left: -100%;
+  right: -100%;
+  width: auto;
+  height: 100%;
+  margin: 0 auto;
+  -webkit-transform: rotate3d(0,0,0,0deg);
+  -ms-transform: rotate3d(0,0,0,0deg);
+  transform: rotate3d(0,0,0,0deg);
+  background-color: #7d777f;      
+  }
+</style>
+
+
+<div class='row'>
+  <h3 class='center col s12'>
+    Modules  
+  </h3>
+</div>
+<div class="row" style="padding: 0% 20% 20% 20%">
+  <ul id="hexGrid">
+      <li class="hex">
+        <div class="hexIn">
+          <a class="hexLink" href="#results">
+            <div class="hex-divs">
+              <i class=" flaticon-descendant-graphic" style="padding-top: 10%;margin-left: -84px; font-size: 13em;"></i>
+
+            </div>
+            <h1>Results</h1>
+            <p>Scrapes the results from the main sever and displays it on Gradbunker.....<span style="color: blue;">click for more info</span></p>
+          </a>
+        </div>
+      </li>
+      <li class="hex">
+        <div class="hexIn">
+          <a class="hexLink" href="#place">
+            <div class="hex-divs">
+              <i class="material-icons large" style="padding-top: 10%;margin-left: -84px; font-size: 13em;">work</i>
+            </div>
+            <h1>Placements</h1>
+            <p>
+                Helps the propagation of information regarding the upcoming companies
+                for placements from the placement head to the registered students in a hassle free 
+                manner with the help of an e-mail ... <span style="color: blue;">click for more info</span>
+            </p>
+          </a>
+        </div>
+      </li>
+      <li class="hex">
+        <div class="hexIn">
+          <a class="hexLink" href="#library">
+            <div class="hex-divs">
+              <i class="fa fa-book" aria-hidden="true" style="padding-top: 10%;margin-left: -84px; font-size: 13em;"></i>
+            </div>
+            <h1>Library</h1>
+            <p>
+              Designed to display the availability of the books in the library. 
+            </p>
+          </a>
+        </div>
+      </li>
+      <li class="hex">
+        <div class="hexIn">
+          <a class="hexLink" href="#lost">
+            <div class="hex-divs">
+              <i class="flaticon-objects" aria-hidden="true" style="padding-top: 10%;margin-left: -84px; font-size: 13em;"></i>
+            </div>
+            <h1>Lost and Found</h1>
+            <p>
+              Will help in returning the objects that were lost or misplaced
+              in the college campus to the sole owner of the object.
+            </p>
+          </a>
+        </div>
+      </li>
+      <li class="hex">
+        <div class="hexIn">
+          <a class="hexLink" href="#giveaway">
+            <div class="hex-divs">
+              <i class="flaticon-give-a-gift" aria-hidden="true" style="padding-top: 10%;margin-left: -84px; font-size: 13em;"></i>
+            </div>
+            <h1>Buy/Sell/Giveaway</h1>
+            <p>
+              Enables the students to lend or giveaway various possessions which they no longer use or need to those who need them. This can be a giveaway without any price tag or the giver can tag the object with a price and post it on GradBunker, the buyer who is interested in buying them can contact the giver/seller and get their hands on it. This will help in recyclying and reusing the resources without any wastage.
+            </p>
+          </a>
+        </div>
+      </li>
+  </ul>
+</div>
+
+
+
+<div id="results" class="modal">
+  <div class="modal-content">
+    <h4>Results</h4>
+    <p>
+      Scrapes the results from the main sever and displays it on Gradbunker. This will help the students view their results without any hassle and long waits. The Result module will also help the faculties in analyzing the results and converting them into the desired format. One can download a copy of the result directly from GradBunker to the destination device.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+  </div>
+</div>
+<div id="place" class="modal">
+  <div class="modal-content">
+    <h4>Placement</h4>
+    <p>
+      Helps the propagation of information regarding the upcoming companies
+      for placements from the placement head to the registered students in a hassle free 
+      manner with the help of an e-mail or a text message. The task of the placement head 
+      is made effortless by desiging a form which contains all the mandatory information 
+      with reference to the job interview which will be sent to the students. The placement 
+      head can also remind the students again by sending an alert message. The placement 
+      head can access all the necessary information of the student from the student's profile.
+      Alongside, the number of students placed after every drive is recorded for the purpose 
+      of future compulsion.      
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+  </div>
+</div>
+<div id="library" class="modal">
+  <div class="modal-content">
+    <h4>Library</h4>
+    <p>
+      Designed to display the availability of the books in the library. It will show the exact number of books that are present at a particular point in time which will inturn help the students save their time from those long runs of searching for a book which might not be present in the library. It also helps the students renew their borrowed book via GradBunker, preventing them to carry huge piles of heavy books every single time they had to renew it. 
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+  </div>
+</div>
+<div id="lost" class="modal">
+  <div class="modal-content">
+    <h4>Lost And Found</h4>
+    <p>
+      Will help in returning the objects that were lost or misplaced
+      in the college campus to the sole owner of the object.This is done with the help of posting
+      public posts on GradBunker which will be seen by all the users.
+      There is middle man in between the loser and the founder which may be a faculty who will
+      authenticate their identities.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+  </div>
+</div>
+<div id="giveaway" class="modal">
+  <div class="modal-content">
+    <h4>Buy/Sell/Giveaway</h4>
+    <p>
+      Enables the students to lend or giveaway various possessions which they no longer use or need to those who need them. This can be a giveaway without any price tag or the giver can tag the object with a price and post it on GradBunker, the buyer who is interested in buying them can contact the giver/seller and get their hands on it. This will help in recyclying and reusing the resources without any wastage.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+  </div>
+</div>
+  
+  <script type="text/javascript">
+  $('.modal').modal();
+</script>

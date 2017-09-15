@@ -1,0 +1,120 @@
+<script src="https://cdn.bootcss.com/progressbar.js/1.0.0/progressbar.min.js"></script>
+<script>
+var loadRows = 10;
+// var max = maxLength + 1;
+$('#myTable tbody tr').addClass('dontLoad');
+$('#myTable tbody tr:lt(10)').removeClass('dontLoad');
+function loadMore(max){
+  if(loadRows <= max){
+        loadRows = loadRows + 10;
+        $('#myTable tbody tr:lt('+loadRows+')').removeClass('dontLoad');
+        // $('html, body').animate({
+        //     scrollTop: $("#loadMore").offset().top
+        // }, 3000);
+        if(loadRows > max){
+          $('#loadMore').addClass('dontLoad');
+        }
+      }else{
+        $('#loadMore').addClass('dontLoad');
+      }
+}
+$(document).ready(function(){
+    $("#loadMor").click(function(){
+      // e.preventDefault();
+      if(loadRows <= 60){
+        loadRows = loadRows + 10;
+        $('#myTable tbody tr:lt('+loadRows+')').removeClass('dontLoad');
+        scrollToAnchor('loadMore');
+        if(loadRows > 60){
+          $('#loadMore').addClass('dontLoad');
+        }
+      }
+    });
+});
+</script>
+  <div class="fullBoard">
+    <div class="grey darken-3 headerCard" style="height:100px;">
+      <img class="indexDisplay" src="/images/crown.png">
+      <p class="headerCard-text">LEADERBOARD</p>
+    </div>
+    <% if(board){ %>
+      <%if(board[1]){%>
+      <div class="leaderCard grey lighten-5 hide-on-small-only row">
+            <div class="col s4 grey lighten-5">
+            <img class="secondImage shadowed"  src="/images/2nd.png">
+            <p class="caption2 "><%= board[1].author.firstName%> <%= board[1].author.lastName%><br>
+            1AM13CS069</p>
+            </div>
+      <% }if(board[0]){ %>      
+            <div class="col s4 grey lighten-5">
+            <img class="firstImage shadowed"  src="/images/1st.png">
+            <p class="caption "><%= board[0].author.firstName%> <%= board[0].author.lastName%><br>
+            1AM13CS069</p>
+            </div>
+      <% }if(board[2]){ %>      
+            <div class="col s4 grey lighten-5">
+            <img class="thirdImage shadowed"  src="/images/3rd.png">
+            <p class="caption3 "><%= board[2].author.firstName%> <%= board[2].author.lastName%><br>
+            1AM13CS069</p>
+            </div>
+      <% } %>      
+  
+      </div>
+      <table id="myTable">
+          <thead>
+            <tr>
+              <th style="width: 3% " class="center">Rank</th>
+              <th style="width: 10% " class="center">DP</th>
+              <th style="width: 65% " class="center">Percentile</th>
+              <!--<th style="width: 5% " class="center">Recent</th>-->
+              <th class="center">Overall</th>
+             
+            </tr>
+          </thead>
+          <tbody>
+            <%for(i=1;i<= board.length;i++){ if(board[i-1].author != null ){%>
+            <tr class=" animateBox" >
+              <td class="center"><%= ("0" + i).slice(-2) %></td>
+              <td>
+                 <img class="responsive-img circle shadowed" src="<%= board[i-1].author.dp%>">
+                 <!--<p style="font-size: 1.2em"> </p>-->
+              </td>
+              <td>
+                <p class="name"><%= board[i-1].author.firstName%> <%= board[i-1].author.lastName%><br>
+                <%= board[i-1].author.usn%></p>
+                <p class="progressLine" value="<%= (board[i-1].percentile)/100 %>"></p>
+                
+                <!--<= (board[i-1].percentile)/100 %>-->
+                <!--<span><= board[i-1].percentile%></span>-->
+                  <!--<a class="btn tooltipped" data-position="bottom" data-delay="50" data-tooltip="I am a tooltip">Hover me!</a>-->
+              </td>
+              <!--<td><p><span class="right xp" style="margin-right:10px; font-size:17px;">+4 XP</span></p></td>-->
+              <td >
+                <p class="xp">
+                  <span class="right"><%= board[i-1].xp%> XP</span>
+                </p>
+              </td>
+            </tr>
+            
+            <%  } }%>
+          </tbody>
+        </table>
+        
+      <p class="load">
+        <a class="center" id="loadMore" onclick="loadMore(<%= maxLength %>)" > 
+        More <i class="fa fa-angle-double-down" style="font-size:24px; vertical-align:middle;"></i> </a>
+      </p>
+      <div class="footerCard">
+      <p class="right" style="margin-top:10px;"><a href="/leader">more >>></a></p>
+    </div>
+    <% }%>
+      </div>
+      <script>
+      
+         
+      
+      // $("#loadMore").click(function() {
+      //   scrollToAnchor('loadMore');
+      // });
+          
+      </script>

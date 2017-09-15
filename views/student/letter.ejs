@@ -1,0 +1,42 @@
+<div style="background:#e7f2f6; width:100%; max-width:900px;
+        font-family: Tahoma, Geneva, sans-serif;">
+    <div style="width:100%; height: 100px; background:#355f3b; ">
+        <h2 style="text-align:center; padding-top: 36px;">Leave Letter</h2>
+    </div>
+    <div style=" background:#e7f2f6; padding-bottom: 10px;margin-right: 3%; ">
+        <p style="font-size: 1.3em;margin-bottom:0;text-align:right;">
+            <strong>Date: </strong><%= student.date %>
+        </p>
+        <div style="margin-left:5%;text-align:left; background:#e7f2f6 ">
+            <!--<h2 style="visibility:hidden;">.</h2>-->
+            <p style="font-size: 1.3em;margin-bottom:0;">From,</p>
+            <p style="font-size: 1.3em;margin-top:5px;margin-bottom:30px;">
+                <strong><%= student.name %></strong><br>
+                <%= student.usn %>, <%= student.department %><br>
+                Semester- <%= student.sem %><br>
+                AMC Engineering College<br>
+                Bannerghatta Main Road<br>
+                Bangalore - 560083<br>
+            </p>
+            <p style="font-size: 1.3em;margin-bottom:0;">To,</p>
+            <p style="font-size: 1.3em;margin-top:5px;margin-bottom:30px;">
+                <strong>Head of Department</strong><br>
+                CSE<br>
+                AMC Engineering College<br>
+                Bannerghatta Main Road<br>
+                Bangalore - 560083<br>
+            </p>
+            <p style="font-size: 1.3em;">Madam, </p>
+            <p style="font-size: 1.3em;"><strong>Subject: </strong>
+                <%= student.subject %> </p>
+            <p style="font-size: 1.3em;">&nbsp;&nbsp;&nbsp;&nbsp;
+                <%= student.body %>
+            </p>
+            <p style="font-size: 1.3em;">Yours Sincerely, </p>
+            <p style="font-size: 1.3em;">
+                <strong><%= student.name %></strong><br>
+                <%= student.usn %><br>
+            </p>
+        </div>
+    </div>
+</div>

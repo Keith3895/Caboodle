@@ -1,0 +1,209 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+
+ <style type="text/css">    
+    .title{
+      font-size: 7em;
+    color: white;
+    padding: 1em;  
+    }
+    li.search .search-wrapper {
+    margin: 0 12px;
+    transition: margin .25s ease;
+}
+ li.search .search-wrapper input#search {
+    display: block;
+    font-size: 16px;
+    font-weight: 300;
+    width: 100%;
+    height: 45px;
+    margin: 0;
+    padding: 0 45px 0 15px;
+    border: 0;
+}
+li.search .search-wrapper i.material-icons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+span.as{
+  animation: blink 1s infinite;
+}
+@keyframes blink{
+  to{opacity: .0;}
+}
+
+  </style>
+  <div class="parallax-container">
+    <div class="parallax"><img src="/images/janko-ferlic-174927.jpg" width="70%"></div>
+    <div class="row">
+      <span class="title col m8 s12" style="padding: 1em">Library Module <span class="as">|</span> </span>
+      <div class="col s12 m4">
+        <div class="card-panel" style="background:rgba(255, 255, 255, 0.58);">
+          <h4 class="center">Login</h4>
+          <ul class="tabs" style="background:rgba(255, 255, 255, 0.58);">
+            <li class="tab col s3"><a href="#Student">Student</a></li>
+            <li class="tab col s3"><a class="active" href="#Libr">Librarian</a></li>
+          </ul>
+          <div class="row" id="Student">
+            <form class="col s12" action="/login/student" method="POST" id="LoginForm">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="email" name="email" type="email" class="validate">
+                  <label for="email">Email</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="password" name="password" type="password" class="validate">
+                  <label for="password">Password</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <button class="btn waves-effect waves-light right" type="submit" name="action">Login
+                    <i class="material-icons right">send</i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="row" id="Libr">
+            <form class="col s12" action="/login/library" method="POST" id="LoginForm">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="email" name="email" type="email" class="validate">
+                  <label for="email">Email</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="password" name="password" type="password" class="validate">
+                  <label for="password">Password</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <button class="btn waves-effect waves-light right" type="submit" name="action">Login
+                    <i class="material-icons right">send</i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section white">
+    <div class="row container">
+     <li class="search">
+        <div class="search-wrapper card">
+          <input id="search"><i class="material-icons">search</i>
+        </div>
+      </li>
+      <h2 class="header center">Books Available at the Library </h2>
+        <div class="row">
+          <ul id="staggered-test" style="opacity: 0">
+            <li>
+              <div class="col s12 m6">
+                <div class="card blue-grey darken-1" style="background-image: url('http://www.cdm.depaul.edu/academics/PublishingImages/heroMSCS.jpg');background-size: contain;">
+                  <div class="card-content white-text">
+                    <span class="card-title">Computer Science</span>
+                    <p>200 books</p>
+                  </div>
+                  <div class="card-action">
+                    <a href="/library/view/computer">Link To Books</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="col s12 m6">
+                <div class="card blue-grey darken-1" style="background-image: url('http://www.stetson.edu/business/decision-information-science/media/decision-information-science.jpg');background-size: contain;">
+                  <div class="card-content white-text">
+                    <span class="card-title">Information Science</span>
+                    <p>200 books</p>
+                  </div>
+                  <div class="card-action">
+                    <a href="/library/view/information">Link To Books</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="col s12 m6">
+                <div class="card blue-grey darken-1" style="background-image: url('http://nimtweb.org/userfiles/image/cmspages/Diploma%20In%20Mechanical%20Engg.jpg');background-size: contain;">
+                  <div class="card-content white-text">
+                    <span class="card-title">Mechanical Engineering</span>
+                    <p>200 books</p>
+                  </div>
+                  <div class="card-action">
+                    <a href="/library/view/mechanical">Link To Books</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="col s12 m6">
+                <div class="card blue-grey darken-1" style="background-image: url('https://www.sarvgyan.com/hc/wp-content/uploads/2014/06/electrical-engineering-image.jpg');background-size: contain;">
+                  <div class="card-content white-text">
+                    <span class="card-title">Electrical Engineering</span>
+                    <p>200 books</p>
+                  </div>
+                  <div class="card-action">
+                    <a href="/library/view/electrical">Link To Books</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="col s12 m6">
+                <div class="card blue-grey darken-1" style="background-image: url('http://mondaymorning.nitrkl.ac.in/uploads/post/civil-engineer.jpg');background-size: contain;">
+                  <div class="card-content white-text">
+                    <span class="card-title">Civil Engineering</span>
+                    <p>200 books</p>
+                  </div>
+                  <div class="card-action">
+                    <a href="/library/view/civil">Link To Books</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="col s12 m6">
+                <div class="card blue-grey darken-1" style="background-image: url('https://www.sarvgyan.com/hc/wp-content/uploads/2014/06/electrical-engineering-image.jpg');background-size: contain;">
+                  <div class="card-content white-text">
+                    <span class="card-title">Electronics Engineering</span>
+                    <p>200 books</p>
+                  </div>
+                  <div class="card-action">
+                    <a href="/library/view/electronics">Link To Books</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>     
+    </div>
+  </div>
+
+
+<script type="text/javascript">
+   $(document).ready(function(){
+      $('.parallax').parallax();
+       var options = [
+      {selector: '#staggered-test', offset: 400, callback: function(el) {
+         Materialize.fadeInImage($(el));
+      } }
+    ];
+      Materialize.scrollFire(options);
+      $(document).ready(function(){
+    $('ul.tabs').tabs();
+  });
+    });
+</script>
+
+
+<% include ../partials/footer.ejs %>

@@ -1,0 +1,42 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<div class="container">
+    <a class="waves-effect waves-light btn blue" style="margin-top:3%"
+        href="/sell/addItem">Add more items?</a>
+    
+    <table class="highlight centered">
+        <thead>
+          <tr>
+              <th>Item </th>
+              <th>Date Posted</th>
+              <th>Sell/Giveaway</th>
+              <th>Age</th>
+              <th>Verified?</th>
+              <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+        <% Items.forEach(function(item){ %>
+
+             <tr>
+            <td><%= item.itemName %></td>
+            <td><%= item.DatePosted %></td>
+            <td><%= item.type %></td>
+            <td><%= item.itemAge %></td>
+            <% if(item.verified==true){ %>
+            <td>Verified & listed</td>
+            <% } else { %>
+            <td>Not Verified</td>
+            <% } %>
+            <td style="padding: 0px"> 
+                <i class="material-icons delete">delete</i> 
+                <i class="material-icons edit">mode_edit</i>
+            </td>
+          </tr>
+         
+        <% }); %>
+        </tbody>
+    </table>    
+</div>
+<% include ../partials/footer.ejs %>

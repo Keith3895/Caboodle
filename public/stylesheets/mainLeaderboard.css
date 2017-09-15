@@ -1,0 +1,467 @@
+@import url(https://fonts.googleapis.com/css?family=Days+One);
+nav,footer{
+    background: #546e7a !important;
+}
+
+table.br tbody {
+    display:block;
+    height:150px;
+    overflow:auto;
+}
+
+table.br thead,table.br tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+
+table.br {
+    width:100%;
+}
+
+table tr td{
+    padding:8px;
+    margin:0;
+}
+
+table tr td:hover{
+    margin:0;
+}
+
+.dataTables_info{
+    display:none;
+}
+
+.dataTables_paginate{
+    display:none;
+}
+
+.dataTables_length{
+    display:none;
+}
+
+.dataTables_filter{
+    display:none;
+}
+
+.dontLoad{
+    display:none;
+}
+
+#loadMore{
+    padding:5px;
+    margin-left:47%;
+}
+
+
+#loadMore:hover{
+    color:green;
+    cursor: pointer; 
+    cursor: hand;
+}
+
+.fullBoard{
+    margin: 20px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    /*overflow-y:scroll;*/
+    /*height:85vh;*/
+}
+
+.leaderCard{
+    height:230px;
+    width:100%;
+}
+
+.row{
+    margin-bottom: 0;
+}
+
+.xp{
+    padding-right:20%;
+    margin-top:2px;
+    font-family: Raleway, Helvetica, sans-serif;
+}
+
+.firstImage{
+    width:130px;
+    height:120px;
+    margin-left: auto;
+	margin-right: auto;
+	display: block;
+    margin-top: 30px;
+    /*display: inline;*/
+    /*position:relative;*/
+}
+
+.secondImage{
+    width:110px;
+    height:100px;
+    margin-left: auto;
+	margin-right: auto;
+	display: block;
+    margin-top: 45px;
+}
+
+.thirdImage{
+    width:100px;
+    height:90px;
+    margin-left: auto;
+	margin-right: auto;
+	display: block;
+    margin-top: 60px;
+}
+
+.lowerCard{
+    width:400px;
+}
+
+
+.shadowed {
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter:         drop-shadow(5px 5px 5px #222); 
+}
+
+table{
+    font-family: 'Didact Gothic';font-size: 22px;
+}
+
+.caption {
+    font-family: 'Days One', sans-serif;
+    font-size: 18px;
+    text-align:center;
+    display:block;
+    margin-top: 8px;
+}
+
+.caption2 {
+    font-family: 'Days One', sans-serif;
+    font-size: 18px;
+    text-align:center;
+    display:block;
+    margin-top: 8px;
+}
+
+.caption3 {
+    font-family: 'Days One', sans-serif;
+    font-size: 18px;
+    text-align:center;
+    display:block;
+    margin-top: 8px;
+}
+
+.headerCard{
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.headerCard > img{
+    width:90px;
+    height:60px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:5px;
+    display: block;
+    position:relative;
+}
+
+.headerCard-text{
+    display: block;
+    font-family: 'Days One', sans-serif;
+    font-size: 20px;
+    text-align:center;
+    position: relative;
+    margin-left: auto;
+    margin-top: 10px;
+    color:white;
+}
+
+.footerCard{
+    display:none;
+    height: 40px;
+    margin-right:10px;
+}
+
+.footerCard a:hover{
+    color: green;
+}
+
+.progressLeader {
+    height: 60px;
+}
+
+.progressLeader > svg {
+    height: 100%;
+    display: inline;
+}
+
+
+.progressLine {
+    height: 4px;
+    width: 100%;
+    margin-top:5px;
+}
+
+.progressLine2 {
+    height: 4px;
+    width: 100%;
+    margin-top:5px;
+}
+
+.progressLine > svg {
+    /*height: 25%;*/
+    display: inline;
+}
+
+.progressLineText{
+    color:#fcc;
+}
+
+.progressbar-text{
+    color: black !important;
+    margin-left: 40%;
+    margin-top: 3px;
+    font-size:15px;
+}
+
+td img{
+    width: 60px;
+    height:60px;
+}
+.name{
+    font-size:70%;
+    margin-bottom:0;
+}
+/*tr{*/
+/*  border-bottom: 2px solid #d0d0d0;*/
+/*}*/
+.animateBox {
+    box-shadow: 0 2px 3px rgba(0,0,0,0.15);
+    border-radius: 5px;
+    -webkit-transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* Pre-render the bigger shadow, but hide it */
+.animateBox::after {
+    box-shadow: 2px 10px 20px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    border:0;
+    -webkit-transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.animateBox:hover {
+    background: #dcdcdc;
+    -webkit-transform: scale(1.05, 1.05);
+    transform: scale(1.05, 1.05);
+}
+
+
+/* Transition to showing the bigger shadow on hover */
+.animateBox:hover::after {
+    opacity: 1;
+}
+  
+.selfBox{
+    background: lightblue;
+    /*#38eeff;*/
+}
+
+.selfBox:hover{
+    background: lightblue;
+}
+
+.rightBoard{
+    /*margin-top:-15px;*/
+    /*position: fixed;*/
+    height:auto;
+    width:100%;
+    border-radius: 10px;
+    margin:5px;
+    box-shadow: -5px 2px 10px 0px rgba(0, 0, 0, 0.2)
+}
+
+.rightHeaderCard{
+    /*position: fixed;*/
+    width:inherit;
+    height:60px;
+}
+
+.rightHeaderCard-text{
+    display: block;
+    font-family: 'Days One', sans-serif;
+    font-size: 15px;
+    text-align:center;
+    width:100%;
+    border-radius:10px;
+    /*margin-left: 8%;*/
+    
+    padding-top: 15px;
+    color:white;
+}
+
+.rightMainBoard{
+    /*margin-top: 60px;*/
+    /*position:fixed;*/
+}    
+
+.scroll{
+    height:400px;
+    overflow:auto;
+}
+
+#changeScroll::-webkit-scrollbar{
+    margin-top:50px;
+width:8px;
+background-color:#cccccc;
+} 
+
+#changeScroll::-webkit-scrollbar-thumb{
+background-color:#787878;
+border-radius:10px;
+}
+
+#changeScroll::-webkit-scrollbar-thumb:hover{
+background-color:#303030;
+border:1px solid #333333;
+}
+
+#changeScroll::-webkit-scrollbar-thumb:active{
+background-color:#303030;
+border:1px solid #333333;
+} 
+
+.rightAnimateBox {
+    box-shadow: 0 2px 3px #708090;
+    border-radius: 5px;
+}
+
+.rightAnimateBox td{
+    padding-bottom:0;
+    padding-top:10px;
+}
+
+.rightAnimateBox:hover {
+    background: #dcdcdc;
+}
+  
+.selfBox{
+    background: lightblue;
+    /*#38eeff;*/
+}
+
+.selfBox:hover{
+    background: lightblue;
+}
+
+.name2{
+    font-size:70%;
+    margin:0;
+}
+
+.rightTableHead th{
+    padding:0;
+}
+
+.animated {
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
+}
+
+
+	@keyframes slideInLeft {
+  from {
+    transform: translate3d(-100%, 0, 0);
+    visibility: visible;
+    opacity: 0;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0) ;
+    opacity: 1 !important;
+  }
+}
+
+.slideInLeft {
+  animation-name: slideInLeft;
+  /*opacity: 1 !important;*/
+
+}
+
+	
+
+.cntr{
+    margin: 20px 1px -6px 41px;
+}
+.cntr .cntr-innr {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  
+}
+/*** STYLES ***/
+.search-label {
+  display: inline-block;
+  position: relative;
+  height: 35px;
+
+  width: 35px;
+  box-sizing: border-box;
+  margin: 0px 8px 7px 0px;
+  padding: 7px 9px 0px 9px;
+  border: 3px solid black;
+  border-radius: 25px;
+  -webkit-transition: all 200ms ease;
+  transition: all 200ms ease;
+  cursor: text;
+}
+.search-label:after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 20px;
+  right: -5px;
+  top: 21px;
+  background: black;
+  border-radius: 3px;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  -webkit-transition: all 200ms ease;
+  transition: all 200ms ease;
+}
+.search-label.active,
+.search-label:hover {
+  width: 300px;
+  margin-right: 0px;
+}
+.search-label.active:after,
+.search-label:hover:after {
+  height: 0px;
+}
+.search-label input {
+  width: 100%;
+  border: none;
+  box-sizing: border-box;
+  font-family: Helvetica;
+  font-size: 15px;
+  color: black;
+  background: transparent;
+  outline-width: 0px;
+  height: auto;
+}
+.search-label input:focus {
+    border-bottom: 1px solid transparent !important; 
+    box-shadow: 0 1px 0 0 transparent !important; 
+
+}
+
+
+
+
+@media only screen and (min-width: 600px){
+    #testLeadBoardComp{
+        /*margin-left:70px;*/
+    }
+}

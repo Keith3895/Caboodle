@@ -1,0 +1,89 @@
+</div>
+<style>
+  h6{
+    font-size:1.25rem;
+  }
+ footer{
+    	background: #3b4446 !important;
+    }
+  footer li{
+    list-style-type:square !important;
+    text-decoration:underline;
+    
+  }
+  footer ul{
+    padding-left:20px !important;
+  }
+  footer li a{
+    color:#eee;
+  }
+  footer li a:hover{
+    color: black !important;
+  }
+  @media only screen and (max-width: 600px) {
+    footer ul{
+    padding-left:0px !important;
+  }
+  }
+</style>
+
+
+<footer class="page-footer">
+  <div class="container">
+    <div class="row">
+    <h6 class="white-text">Site Map</h6>
+      <div class="col s4 m3 l3">
+        <h6 class="white-text">Placement</h6>
+        <ul>
+          <li><a  href="/placements">Upcoming Drives</a></li>
+          <li><a href="/placements#completed">Completed Drives</a></li>
+          <li><a href="/placements#upcomingInt">Internships</a></li>
+          <li><a href="/placementHead">Placement Co-ordinators</a></li>
+        </ul>
+      </div>
+      <div class="col s4 m3 l3">
+        <h6 class="white-text">Aptitude Tests</h6>
+        <ul>
+          <li><a href="/leader">Leader-Board</a></li>
+          <li><a href="/student/testAnalysis">Test Analysis</a></li>
+          <li><a href="/test">Take Test</a></li>
+        </ul>
+      </div>
+      <div class="col s3 m3 l3">
+        <h6 class="white-text">Results</h6>
+        <ul>
+          <li><a href="/viewResults">View Results</a></li>
+          <li><a href="#">Test Analysis</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © 2017 Gradbunker
+    <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script>
+$( document ).ready(function(){
+    $('ul.tabs').tabs();
+    $('select').material_select();
+    
+    $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrainWidth: false, // Does not change width of dropdown to that of the activator
+      hover: true, // Activate on hover
+      gutter: 0, // Spacing from edge
+      belowOrigin: true, // Displays dropdown below the button
+      alignment: 'left', // Displays dropdown with edge aligned to the left of button
+      stopPropagation: false // Stops event propagation
+    }
+  );
+}) 
+</script>
+</body>
+</html>

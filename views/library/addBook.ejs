@@ -1,0 +1,125 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src= "/js/admin_home.js" type="text/javascript"></script>
+<style>
+    .side-nav{
+        top: 65px;
+        width: 250px;
+        background-color:#2f2f2f;
+            color: white;
+    }
+    .side-nav li>a>i, .side-nav li>a>[class^="mdi-"], .side-nav li>a li>a>[class*="mdi-"], .side-nav li>a>i.material-icons{
+      color: white;
+    }
+    .side-nav li>a{
+        background-color:#2f2f2f;
+            color: white;
+    }
+</style>
+	<ul id="slide-out" class="side-nav fixed collapsible" data-collapsible="accordion">
+      	<li class="logo">
+      		<a id="logo-container" href="/library" class="brand-logo">
+      		Library
+            </a>
+        </li>
+        <li><a href="/library/addBook">Add Book</a></li>
+        <li><a href="/library/viewBooks">View Books</a></li>
+    </ul>
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+    <div class="row">
+        <div class="col s12 m10 l10">
+            <div class="card-panel row">
+                <h4 class="center">Add New Book</h4>
+                <form action="/library/addBook" method="POST" enctype="multipart/form-data">
+                    <!--Book Code-->
+                    <div class="input-field col s6">
+                        <input id="code" name="code" type="text" class="validate" required="">
+                        <label class="active" for="code">Book Code</label>
+                    </div>
+                    
+                    <!--ISBN-->
+                    <div class="input-field col s6">
+                        <input id="isbn" name="isbn" type="text" class="validate" required="">
+                        <label class="active" for="isbn">ISBN</label>
+                    </div>
+
+                    <!--Book Name-->
+                    <div class="input-field col s6">
+                        <input id="title" name="title" type="text" class="validate" required="">
+                        <label class="active" for="title">Title of the Book</label>
+                    </div>
+        
+        
+                    <!--Author -->
+                    <div class="input-field col s6">
+                        <input id="author" name="author" type="text" class="validate" required="">
+                        <label class="active" for="author">Author of the Book</label>
+                    </div>
+        
+        
+                    <!--Category-->
+                    <div class="input-field col s6">
+                        <select id="category" name="category">
+                            <option value="" disabled selected>Select Category of Book</option>
+                            <option>Computer Science</option>
+                            <option>Electrical</option>
+                            <option>Electronics</option>
+                            <option>Information Science</option>
+                            <option>Civil</option>
+                            <option>Mechanical</option>
+                            <option>Others</option>
+                        </select>
+                        <label>Category</label>
+                    </div>
+                    
+                    <!--Name of Publication -->
+                    <div class="input-field col s6">
+                        <input id="publicationName" name="publicationName" type="text" class="validate" required="">
+                        <label class="active" for="publicationName">Name of Publication</label>
+                    </div>
+                    
+                    <!--Edition of Book -->
+                    <div class="input-field col s6">
+                        <select id="edition" name="edition">
+                            <option value="" disabled selected>Select Edition of Book</option>
+                            <option>First</option>
+                            <option>Second</option>
+                            <option>Third</option>
+                            <option>Fourth</option>
+                            <option>Fifth</option>
+                            <option>Sixth</option>
+                            <option>Seventh</option>
+                            <option>Eighth</option>
+                        </select>
+                        <label>Edition of Book</label>
+                    </div>
+        
+                    <!--Published Year -->
+                    <div class="input-field col s6">
+                        <input id="publishedYear" name="publishedYear" type="text" class="validate" required="">
+                        <label class="active" for="publishedYear">Published Year</label>
+                    </div>
+
+                    <div class="input-field col s12">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>Browse</span>
+                                <input type="file" name="coverImage" id="coverImage">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload image of Book">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn waves-effect waves-light right blue" type="submit" name="action">Add
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+<% include ../partials/footer.ejs %>

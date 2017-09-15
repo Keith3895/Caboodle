@@ -1,0 +1,30 @@
+<% include ./partials/header.ejs %>
+<title>GradBunker - Verify Email</title>
+<% include ./partials/navbar.ejs %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css" />
+<div class="row" style="margin-top: 10%">
+    <div class="col s12 m10 offset-m1 l4 offset-l4">
+      <div class="card-panel">
+        <h4 class="center"></h4>
+        <div class="row">
+    <form class="col s12" action="/verifyEmail" method="POST" id="forgotPasswordForm">
+      <div class="row">
+      <div class="input-field col s12">
+        <input id="code" name="code" type="text" class="validate">
+        <label for="code">Enter Verification Code Sent To Your Mail</label>
+      </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+          <button class="btn waves-effect waves-light right" type="submit" style="width:100%" name="action">Verify Email
+            <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+      </div>
+    </div>
+</div>
+
+<% include ./partials/footer.ejs %>

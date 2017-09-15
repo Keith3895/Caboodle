@@ -1,0 +1,50 @@
+.container{
+    width:596px !important;
+    height:814px !important;
+}
+
+.fullPage{
+    margin:10px;
+}
+
+.image {
+    width: 10%;
+    height: 7%;
+    /*border: 1px solid black;*/
+}
+
+.option{
+    margin-right: 8%;
+    margin-left: 2%;
+}
+
+.option img{
+    width:2.5%;
+    height:2.5%;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr td:nth-child(1) {  
+    width: 6%;
+}
+
+table tbody tr:nth-child(even) td {  
+    padding-top: 0;
+   padding-bottom: 20px;
+}
+
+.pageHeader{
+    font-size: 12px;
+    margin:10px;
+}
+
+.pageBody{
+    margin:10px;
+}
+
+.pageTable{
+    font-size: 11px !important;
+}

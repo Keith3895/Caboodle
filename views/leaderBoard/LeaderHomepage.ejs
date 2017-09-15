@@ -1,0 +1,92 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/mainLeaderboard.css" rel="stylesheet">
+
+
+<div class="cntr">
+	<div class="cntr-innr">
+	<div id="searchform">
+	    <div>
+		  <label class="search-label" for="inpt_search">
+		  		<input type="text" id="myInput" class="autocomplete">
+			</label>
+	    </div>
+	</div>
+
+	</div>
+    </div>
+
+<div class="row">
+    
+        
+    <!--Search: <input type="text" id="myInput">-->
+    
+
+
+  <div class="col m12 s12 l9" id="overAllComp"></div>
+  <div class="col m12 s12 l3" id="testLeadBoardComp"></div>
+</div>
+
+
+<script src="https://cdn.bootcss.com/progressbar.js/1.0.0/progressbar.min.js"></script>
+<script src="/js/mainLeaderBoard.js"></script>
+<script>
+
+    $.ajax({
+        method: "GET",
+        url: "/leader/test",
+        // data: Score,
+        success: function(data){
+            // console.log(data);
+            $('#testLeadBoardComp').append(data);
+            onLoad3();
+        }
+    });
+    $.ajax({
+        method: "GET",
+        url: "/leader/overall",
+        // data: Score,
+        success: function(data){
+            // console.log(data);
+            $('#overAllComp').append(data);
+            // onLoad();
+            onLoad2();
+            
+
+        }
+    });
+    $(document).ready(function() {
+        $('#myInput').on( 'keyup change', function () {
+             $('#myTable tbody tr').removeClass('dontLoad');
+            $("#loadMore").addClass("dontLoad");
+            var table = $('#myTable').DataTable({
+            "pageLength": 100,
+            "paging":   false,
+            "ordering": false,
+            "info":     false,
+            destroy: true
+        })
+        table.search( this.value ).draw();
+            console.log("Key in")
+        } );
+        $('#myInput').focusout(function(){
+            if( !$(this).val() ) {
+                $('#myTable tbody tr').addClass('dontLoad');
+                $('#myTable tbody tr:lt(10)').removeClass('dontLoad');
+                $("#loadMore").removeClass("dontLoad");
+            }
+        })
+        
+    })
+    
+
+    $('#myInput').on('focus',function() {
+            $(this).parent().addClass('active');
+        });
+        $('#myInput').on('blur',function() {
+            //do something
+            $(this).parent().removeClass('active');
+        });
+</script>
+
+<% include ../partials/footer.ejs %>

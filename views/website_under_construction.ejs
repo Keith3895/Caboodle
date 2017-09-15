@@ -1,0 +1,20 @@
+<% include ./partials/header.ejs %>
+<% include ./partials/navbar.ejs %>
+    <div class="row">
+        <div class="col s10 offset-s1 m5 offset-m3 center">
+            <img class="responsive-img" src="/images/website_under_construction.gif">
+        </div>
+    </div>
+<!--< include ./partials/script.ejs %>-->
+<script>
+    $(window).focus(function(ele) {
+            //do something
+            console.log(ele);
+        });
+        
+        $(window).blur(function() {
+            //do something
+            console.log("blur");
+        });
+</script>
+<% include ./partials/footer.ejs %>

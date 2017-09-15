@@ -1,0 +1,66 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<title>GradBunker - Result</title>
+<div class="row">
+    <div class="col m2 z-depth-1" style="padding-top: 3%;height:100%;position:fixed;">
+        <div>
+            <h6 class="center">Check Your Result</h6>
+            <div class="row">
+                <form class="col s12" action="/viewResult" method="POST" id="LoginForm">
+                    
+                <div class="input-field col s12">
+                    <input id="usn" name="usn" type="text" class="validate">
+                    <label for="usn">Your USN</label>
+                </div>
+    
+                <div class="input-field col s12">
+                  <button class="btn waves-effect waves-light center red" type="submit" name="action">Check Result
+                  </button>
+                </div>
+      
+                </form>
+            </div>
+            <h5 class="center">Branchwise Result</h5>
+            <div class="row">
+                <form class="col s12" action="/viewScrapedResults" method="POST" id="LoginForm">
+                    
+                <div class="input-field col s12">
+                    <select class="browser-default"name="sem" id="sem" required>
+                        <option value="" disabled selected>Select Semester</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                    </select>
+                </div>
+                
+                <div class="input-field col s12">
+                    <select class="browser-default" name="department" id="department" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="CS">Computer Science</option>
+                        <option value="IS">Information Science</option>
+                        <option value="EC">Electronics & Communication</option>
+                        <option value="ME">Mechanical</option>
+                        <option value="EE">Electrical</option>
+                        <option value="CE">Civil</option>
+                    </select>
+                </div>
+    
+                <div class="input-field col s12">
+                  <button class="btn waves-effect waves-light center red" type="submit" name="action">Check Result
+                  </button>
+                </div>
+      
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col m10" style="position:relative;left: 16.5%">
+    </div>
+</div>
+
+<% include ../partials/footer.ejs %>

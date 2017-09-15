@@ -1,0 +1,179 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<% include ./sidenav.ejs %>
+<link href="/stylesheets/indexLeaderboard.css" rel="stylesheet">
+    <style>
+      .graph_disc{
+            font-size: 1.2em;
+    padding: 23% 0px;
+    text-align: center;
+      }
+    </style>
+    
+    <div class="row ">
+        
+        <div class="col s12 m6">
+          <div id='leaderCard'></div>
+        </div>
+        <div class="col s12 m6">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title text-center">Score of your recent test</span>
+                  <p>A comprehensive list of all the results for the various placement tests that you have taken.</p>
+                </div>
+                <div class="card-tabs">
+                  <ul class="tabs tabs-fixed-width">
+                    <li class="tab"><a href="#test4">All</a></li>
+                    <li class="tab"><a class="active" href="#test1">Last Test</a></li>
+                    <li class="tab"><a href="#test2">Before</a></li>
+                    <li class="tab"><a href="#test3">Before That</a></li>
+                  </ul>
+                </div>
+                <div class="card-content grey lighten-4">
+                  <div id="test4">
+                      <table>
+                          <thead>
+                              <tr>
+                                  <th>test number</th>
+                                  <th>marks obtained</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <%for(i=1;i<=testResult.length;i++){%>
+                              <tr>
+                                  <td>test <%=i%></td>
+                                  <td><%=testResult[i-1][0].marks%></td>
+                              </tr>
+                              <% }%>
+                          </tbody>
+                      </table>
+                  </div>
+                  
+                <%for(i=1;i<=testResult.length && i<=3;i++){%>
+                  <div id="test<%= i%>">
+                      <h5>Marks Scored: <%= testResult[testResult.length- i][0].marks%></h5>
+                      <div>
+                          <table>
+                              <thead>
+                                  <tr>
+                                      <th>Types</th>
+                                      <th>number Correct</th>
+                                      <th>number of questions</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <%for(j in testResult[testResult.length-i][0].type){%>
+                                  <tr>
+                                      <th><%= testResult[testResult.length-i][0].type[j]%></div></th>
+                                      <td class="text-center"><%= testResult[testResult.length-i][0].typeCorrect[j]%></td>
+                                      <td class="text-center"><%= testResult[testResult.length-i][0].typeCount[j]%></td>
+                                  </tr>
+                                  <% } %>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+                  <% }%>
+                  
+                  
+                  
+                </div>
+              </div>
+        </div>
+        
+        </div>
+        <div class="row">
+        <div  >
+          <h2 class="text-center">analysis on your test reuslts</h2>
+          <div class='col s12 m12'>
+            <h4>Your performance based on all the tests taken</h4>  
+            <p class="col s12 m12">
+              The algorithm of GradBunker callculates the score and plots your progress based on all the test you have taken
+              it also will help you isolate the areas where you would have to pay more attention to improve your score and dominate
+              the leaderboard.
+            </p>
+            <div class='col s12 m12'>
+              <div class="col s12 m6" id="LineContainer"></div>
+              <div class="col hide-on-small-only m6">
+                <p class="graph_disc">
+                  This graph depicts the number of tests you have taken (tests 1,test 2) at x-axis vs your scores at y-axis.
+                  This graph helps you to track all your scores with respect to the test you have taken.
+                </p>
+              </div>
+            </div>
+            <div class='col s12 m12'>
+              <div class="col hide-on-small-only m6">
+                <p class="graph_disc">
+                  The blue area shows the number of questions answered. 
+                  The red area shows the number of questions correctly answered.
+                  The four directions in the graph correspond to questions in Quantitative aptitude to the North, 
+                  Logical Reasoning to the East, Verbal Reasoning to the South and Puzzles to the West. 
+                </p>
+              </div>
+              <div class="col s12 m6" id="RadarContainer"></div>
+            </div>
+          </div>
+        </div>
+        <div class='col s12 m12'>
+        <h4>Your performance as of the last most resent test taken.</h4>
+        <div class='col s12 m12'>
+            <div class="col s12 m6" id="BarLineContainer"></div>
+            <div class="col hide-on-small-only  m6">
+              <p class="graph_disc">
+                This graph depicts the Question-type (Quantitative, Logical Reasoning, Verbal Reasoning, Puzzle) at x-axis 
+                and number of your questions correctly answered in that particular type at y-axis.
+                The bars shows your peers’ scores. The line graph shows your score
+
+              </p>
+            </div>
+          </div>
+          <div class='col s12 m12'>
+            <div class="col m6 hide-on-small-only">
+              <p class='graph_disc '>
+                This graph depicts the range of marks(0-3,3-7,....) at x-axis vs number of students in that range at y-axis.
+                The bars in the graph are indicative of
+              </p>
+            </div>
+            <div class="col s12 m6 " id="BarContainer"></div>
+          </div>
+        </div>
+        </div>
+        
+    
+    </div>
+    <div id="resultAnalysis"></div>
+    <script type="text/javascript">
+        $.ajax({
+            method: "GET",
+            url: "/student/getAnalysis",
+            // data: Score,
+            success: function(data){
+                console.log(data);
+                $('#resultAnalysis').append(data);
+                var chart=$('.charts');
+                for(i=0;i<chart.length;i++)
+                  chart[i].remove();
+                $('#LineContainer').html(chart[0]);
+                $('#RadarContainer').html(chart[3]);
+                $('#BarLineContainer').html(chart[1]);
+                $('#BarContainer').html(chart[2]);
+                console.log(chart);
+                
+            }
+          });
+          
+          $.ajax({
+        method: "GET",
+        url: "/leader/overall",
+        // data: Score,
+        success: function(data){
+            // console.log(data);
+            $('#leaderCard').append(data);
+            // onLoad();
+            // onLoad2();
+            $('.leaderCard').remove();
+            $("table").find("tr:gt(5)").remove();
+        }
+    });
+    </script>
+<% include ../partials/footer.ejs %>

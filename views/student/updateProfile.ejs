@@ -1,0 +1,338 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<% include ./sidenav.ejs %>
+
+    <div class="row">
+        <div class="col s12 m10 l10">
+            <div class="card-panel row">
+                <h4 class="center">Update Your Profile</h4>
+                <form  method="POST" enctype="multipart/form-data" action="/student/updateProfile">
+                    <section id="first">
+                    <h6 class="center">Personal Info</h6>
+                    <div class="input-field col s6">
+                        <input name="firstName" id="firstName" type="text" readonly value="<%= student.author.firstName %>">
+                        <label for="firstName">First Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input name="lastName" id="lastName" type="text" readonly value="<%= student.author.lastName %>">
+                        <label for="lastName">Last Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="usn" name="usn" type="text" readonly value="<%= student.USN %>">
+                        <label for="usn">USN</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="placementNumber" name="placementNumber" type="text" class="validate" value="<%= student.placements %>">
+                        <label for="placementNumber">Number of Placements</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="sem" name="sem" type="text" readonly value="<%= student.semester %>">
+                        <label for="sem">Semester</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <select id="department" name="department">
+                            <option value="<%= student.department %>" readonly selected><%= student.department %></option>
+                            <option>CSE</option>
+                            <option>ECE</option>
+                            <option>EEE</option>
+                            <option>ISE</option>
+                            <option>CE</option>
+                            <option>ME</option>
+                        </select>
+                        <label>Department</label>
+                    </div>
+                    <div class="input-field col s6" id="date">
+                        <input data-toggle="datepicker" id="dob" name="dob" type="text" class="validate" value="<%= student.DOB %>">
+                        <label for="dob">Date of Birth</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <select id="gender" name="gender" >
+                            <option readonly value="<%= student.gender %>" selected><%= student.gender %></option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                        <label>Gender</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="email" name="email" type="email" readonly value="<%= student.author.email %>">
+                        <label for="email">Email</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="phone" name="phone" type="tel" class="validate" value="<%= student.mobile1 %>">
+                        <label for="phone">Phone number</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <textarea id="address" name="address" class="materialize-textarea" ><%= student.address %></textarea>
+                        <label for="address">Address</label>
+                    </div>
+                    <div class="input-field">
+                        <button type="button" onclick="next_step1()" class="waves-effect waves-light btn blue right">Next  &gt;</button>
+                    </div>
+                    </section>
+                    
+                    <section id="second">
+                    <h6 class="center-align">Educational Profile</h6>
+                    <!--10th Result-->
+                    <div class="input-field col s9">
+                        <p style="color: grey">10th Result Details</p>
+                    </div>
+                    <div class="input-field col s4">
+                        <select id="tenthBoard" name="tenthBoard" >
+                          <option readonly value="<%= student.tenthResult.board %>" selected><%= student.tenthResult.board %></option>
+                          <option>SSLC</option>
+                          <option>CBSE</option>
+                          <option>ICSE</option>
+                          <option>Other</option>
+                        </select>
+                        <!--<label>Select Board</label>-->
+                    </div>
+                    
+                    <!--Percentage-->
+                    <div class="input-field col s4">
+                      <input id="tenthPercentage" name="tenthPercentage" type="text" class="validate"  value="<%= student.tenthResult.Percentage %>">
+                      <label class="active" for="tenthPercentage">Percentage</label>
+                    </div>
+                    
+                    <!--Year of Passing-->
+                    <div>
+                    <div class="input-field col s4">
+                      <select id="tenthPassYear" name="tenthPassYear" >
+                          <% var dt = new Date();
+                             var year = dt.getFullYear() %>
+                          <option value="<%= student.tenthResult.yearPassed %>" readonly selected><%= student.tenthResult.yearPassed %></option>
+                          <% for(var i = 2005;i <= year;i++){ %>
+                              <option><%= i %></option>
+                            <% } %>
+                        </select>
+                        <label>Year Of Passing</label>
+                    </div>
+                    
+                    <!--Upload marks card-->
+                    <div class="input-field col s12">
+                        <div class="file-field input-field">
+                        <div class="btn blue-grey">
+                            <span>Browse</span>
+                            <input type="file" name="tenthCard">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload 10th marks card">
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!--12th Result-->
+                    <div class="input-field col s9">
+                        <p style="color: grey">12th Result Details</p>
+                    </div>
+                    <div class="input-field col s4">
+                        <select id="twelfthBoard" name="twelfthBoard" >
+                          <option readonly value="<%= student.twelfthResult.board %>" selected><%= student.twelfthResult.board %></option>
+                          <option>PU</option>
+                          <option>CBSE</option>
+                          <option>ISC</option>
+                          <option>Other</option>
+                        </select>
+                        <!--<label>Select Board</label>-->
+                    </div>
+                    
+                    <!--Percentage-->
+                    <div class="input-field col s4">
+                      <input id="twelfthPercentage" name="twelfthPercentage" type="text" class="validate" value="<%= student.twelfthResult.Percentage %>" >
+                      <label class="active" for="twelfthPercentage">Percentage</label>
+                    </div>
+                    
+                    <!--Year of Passing-->
+                    <div class="input-field col s4">
+                      <select id="twelfthPassYear" name="twelfthPassYear" >
+                          <% var dt = new Date();
+                             var year = dt.getFullYear() %>
+                          <option readonly value="<%= student.twelfthResult.yearPassed %>" selected><%= student.twelfthResult.yearPassed %></option>
+                          <% for(var i = 2005;i <= year;i++){ %>
+                              <option><%= i %></option>
+                            <% } %>
+                        </select>
+                        <label>Year Of Passing</label>
+                    </div>
+                    
+                    <!--Upload marks card-->
+                    <div class="input-field col s12" style="padding-bottom: 5%">
+                        <div class="file-field input-field">
+                        <div class="btn blue-grey">
+                            <span>Browse</span>
+                            <input type="file" name="twelfthCard">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload 12th marks card">
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button type="button" onclick="prev_step1()" class="waves-effect waves-light btn blue left">&lt; Previous</button>
+                        <button type="button" onclick="next_step2()" class="waves-effect waves-light btn blue right">Next  &gt;</button>
+                    </div>
+                    </section>
+
+                    <section id="third">
+                    <h6 class="center-align">Educational Profile</h6>
+                    <!--BE Result-->
+                    <div class="input-field col s12">
+                        <p style="color: grey">BE Result Details</p>
+                    </div>
+                    <div id="semResults">
+                    <div class="forCount">
+                        <% var id1,id2,id3,percent,len,reportName,path= []; %>
+                        <% for(var i = 1; i< student.semester;i++){ 
+                            id1 = "sem"+i;
+                            id2 = "semPercentage"+i;
+                            id3 = "semCard"+i;
+                            len = student.semResults.length;
+                            if(i<=len){
+                                percent = student.semResults[i-1].Percentage;
+                                // path = student.semResults[i-1].reportLink.split('/');
+                                reportName = path[path.length-1] ;
+                            }
+                            else{
+                                percent = null;
+                                reportName = null;
+                            } %>
+                        <div class="input-field col s2">
+                            <input id="<%= id1 %>" name="<%= id1 %>" type="text" class="validate"   value="<%= i %>">
+                            <label class="active" for="<%= id1 %>">Sem</label>
+                        </div>
+                    
+                    <!--Percentage-->
+                        <div class="input-field col s2">
+                          <input id="<%= id2 %>" name="<%= id2 %>" type="text" class="validate"  value="<%= percent %>">
+                          <label class="active" for="<%= id2 %>">Percentage</label>
+                        </div>
+                        
+                        <!--Upload marks card-->
+                        <div class="input-field file-field col s8">
+                            <div class="btn blue-grey">
+                                <span>Browse</span>
+                                <input type="file" name="<%= id3 %>">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Marks Sheet">
+                                <!--<label class="active">Marks Sheet</label>-->
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                    
+                    </div>
+                    
+                    
+                    <!--Certifications-->
+                    <div class="input-field col s12">
+                        <p style="color: grey">Certifications</p>
+                    </div>
+                    <% var allcerts = '';
+                        if(student.certifications.length>0){
+                            student.certifications.forEach(function(cert){
+                                allcerts = allcerts + cert.description + ', ';
+                            })
+                        }
+                    %>
+                    <div class="input-field col s12">
+                        <input id="titles" name="titles" type="text" class="validate" value="<%= allcerts %>" >
+                        <label class="active" for="titles">Certifications Submitted</label>
+                    </div>
+                    <div id="certifications">
+                    <div class="forCount">
+                    
+                        <div class="input-field col s4">
+                            <input id="title1" name="title1" type="text" class="validate"  >
+                            <label class="active" for="title1">Title</label>
+                        </div>
+                        
+                        <!--Upload certificate-->
+                        <div class="input-field file-field col s8">
+                            <div class="btn blue-grey">
+                                <span>Browse</span>
+                                <input type="file" name="title1Card">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload Certificate">
+                            </div>
+                        </div>
+                    
+                    </div>
+                    </div>
+                    
+                    <!--Upload Resume-->
+                    <div class="input-field col s12">
+                        <p style="color: grey">Resume</p>
+                    </div>
+                    <div class="input-field col s12" style="padding-bottom: 5%">
+                        <div class="file-field input-field">
+                        <div class="btn blue-grey">
+                            <span>Browse</span>
+                            <input type="file" name="resume">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload your resume">
+                        </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="input-field col s12">
+                        <button type="button" onclick="prev_step2()" class="waves-effect waves-light btn blue left">&lt; Previous</button>
+                        <button id="submit" name="submit" class="waves-effect waves-light btn green right">ADD  &gt;</button>
+                    </div>
+                    </section>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    
+<script type="text/javascript">
+    document.getElementById("second").style.display = "none";
+    document.getElementById("third").style.display = "none";
+    function next_step1() {
+        document.getElementById("first").style.display = "none";
+        document.getElementById("second").style.display = "block";
+    }
+    // Function that executes on click of first previous button.
+    function prev_step1() {
+        document.getElementById("first").style.display = "block";
+        document.getElementById("second").style.display = "none";
+    }
+    // Function that executes on click of second next button.
+    function next_step2() {
+        document.getElementById("second").style.display = "none";
+        document.getElementById("third").style.display = "block";
+    }
+    // Function that executes on click of second previous button.
+    function prev_step2() {
+        document.getElementById("third").style.display = "none";
+        document.getElementById("second").style.display = "block";
+    }
+    
+    
+    $(document).on("focus",'#certifications > div:last', function(){
+        var allGood=true;
+        var lastInputField=1;
+        $("#certifications .forCount").each(function() {
+            lastInputField++;
+        });
+        if (allGood) {
+            var inputField = '<div class="forCount"> '+
+                '<div class="input-field col s4"> '+
+                '<input id="title'+lastInputField+'" name="title'+lastInputField+'" type="text" '+ 
+                'class="validate"  > <label class="active" for="title'+
+                lastInputField+'">Title</label> </div> <div class="input-field file-field col s8"> '+
+                '<div class="btn blue-grey"> <span>Browse</span> <input type="file" name="title'+
+                lastInputField+'Card"> </div> <div class="file-path-wrapper"> '+
+                '<input class="file-path validate" type="text" placeholder="Upload Certificate"> '+
+                ' </div> </div> </div>'
+            $(inputField).appendTo("#certifications");
+        }
+    });
+</script>
+
+<% include ../partials/footer.ejs %>

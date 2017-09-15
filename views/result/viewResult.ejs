@@ -1,0 +1,131 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<style>
+.mob_hide{
+            padding-top: 3%;height:100%;position:fixed;
+        }
+        .tab-cont{
+            position:relative;left: 16.5% !important;
+        }
+    @media only screen and (max-width: 760px) {
+        .tab-cont{
+            position:relative;left: 0% !important;
+        }
+        .mob_hide{
+            padding-top: 3%;
+            height: 70%;
+            position: relative;
+        }
+    }
+</style>
+
+
+<title>GradBunker - Result</title>
+<div class="row">
+    <div class="col m2 z-depth-1 mob_hide" style="">
+        <div>
+            <h6 class="center">Check Your Result</h6>
+            <div class="row">
+                <form class="col s12" action="/viewResult" method="POST" id="LoginForm">
+                    
+                <div class="input-field col s12">
+                    <input id="usn" name="usn" type="text" class="validate">
+                    <label for="usn">Your USN</label>
+                </div>
+    
+                <div class="input-field col s12">
+                  <button class="btn waves-effect waves-light center red" type="submit" name="action">Check Result
+                  </button>
+                </div>
+      
+                </form>
+            </div>
+            <h5 class="center">Branchwise Result</h5>
+            <div class="row">
+                <form class="col s12" action="/viewScrapedResults" method="POST" id="LoginForm">
+                    
+                <div class="input-field col s12">
+                    <select class="browser-default"name="sem" id="sem" required>
+                        <option value="" disabled selected>Select Semester</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                    </select>
+                </div>
+                
+                <div class="input-field col s12">
+                    <select class="browser-default" name="department" id="department" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="CS">Computer Science</option>
+                        <option value="IS">Information Science</option>
+                        <option value="EC">Electronics & Communication</option>
+                        <option value="ME">Mechanical</option>
+                        <option value="EE">Electrical</option>
+                        <option value="CE">Civil</option>
+                    </select>
+                </div>
+    
+                <div class="input-field col s12">
+                  <button class="btn waves-effect waves-light center red" type="submit" name="action">Check Result
+                  </button>
+                </div>
+      
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col m10 s12 tab-cont" style="">
+    <h2 class="center" style="margin-top:3%">VTU Provisional Result</h2>
+    <div>
+        <p>University Seat Number: <%= student.usn %></p>
+    </div>
+    <div>
+        <p>Student Name          : <%= student.name %></p>
+    </div>
+    <div><a class="waves-effect waves-light btn blue" target="_blank"
+        href="/exportPDF/<%= student.usn %>">Download Result</a></div>
+    <% student.marks.forEach(function(marks){ %>
+    <h4 class="center">Semester: <%= marks.sem %></h4>
+    <table class="striped responsive-table">
+        <thead class="centered">
+            <tr>
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Internal Marks</th>
+                <th>External Marks</th>
+                <th>Total</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% marks.subjects.forEach(function(marks){ %>
+                <tr>
+                    <% var percentage = Math.round((student.marks[0].total / 9) * 100) / 100 %>
+                    <td><%= marks.subjectCode %></td>
+                    <td><%= marks.subjectName %></td> 
+                    <td><%= marks.internalMarks %></td>
+                    <td><%= marks.externalMarks %></td>
+                    <td><%= marks.subTotal %></td>
+                    <td><%= marks.subResult %></td>
+                    <!--<td><a class="waves-effect waves-light btn green accent-4" -->
+                    <!--    href="/viewResult/<= student.usn %>">View</a></td>-->
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>  
+    <div>
+        <p>Total Marks: <%= marks.total %></p>
+    </div>
+    <div>
+        <p>Result     : <%= marks.result %></p>
+    </div>
+    <% }) %>
+</div>
+</div>
+
+<% include ../partials/footer.ejs %>

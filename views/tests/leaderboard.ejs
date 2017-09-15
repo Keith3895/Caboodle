@@ -1,0 +1,89 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<% include ../partials/script.ejs %>
+<link href="/stylesheets/leaderboard.css" rel="stylesheet">
+<title>GradBunker - Leaderboard</title>
+
+<div class="row">
+  <div class="fullBoard">
+    <div class="grey darken-3 headerCard" style="height:100px;">
+      <img src="/images/crown.png">
+      <p class="headerCard-text">LEADERBOARD</p>
+    </div>
+    <div class="leaderCard grey lighten-5">
+      <img class="firstImage shadowed"  src="/images/1st.png">
+      <p class="caption ">Keith Franklin<br>1AM13CS069</p>
+      <img class="secondImage shadowed"  src="/images/2nd.png">
+      <p class="caption2 ">Keith Franklin<br>1AM13CS069</p>
+      <img class="thirdImage right shadowed"  src="/images/3rd.png">
+      <p class="caption3 ">Keith Franklin<br>1AM13CS069</p>
+    </div>
+    <table>
+      <thead>
+        <tr style="height:0">
+          <th style="width:3%;padding:0"></th>
+          <th style="width:8%;padding:0"></th>
+          <th style="width:79%;padding:0"></th>
+          <th style="width:10%;padding:0"></th>
+        </tr>
+      </thead>
+      <tbody >
+        <tr class="animateBox">
+          <td class="center">01</td>
+          <td><img src="/images/steve_jobs.jpg" alt="Keith" class="circle shadowed"></td>
+          <td>
+            <p class="name">Keith Franklin<br>1AM13CS069<span class="right" style="margin-right:10px;">+4 XP</span></p>
+            <p class="progressLine" value="0.6"></p>
+          </td>
+          <td>
+            <div class="progressLeader" value=0.7></div>
+            <p style="font-size:13px;margin-top:2px" class="center">GB 3</p>
+          </td>
+        </tr>
+        <tr class="animateBox">
+          <td class="center">02</td>
+          <td><img src="/images/steve_jobs.jpg" alt="Keith" class="circle shadowed"></td>
+          <td>
+            <p class="name">Keith Franklin<br>1AM13CS069<span class="right" style="margin-right:10px;">+5 XP</span></p>
+            <p class="progressLine" value="0.54"></p>
+          </td>
+          <td>
+            <div class="progressLeader" value=0.75></div>
+            <p style="font-size:13px;margin-top:2px" class="center">GB 2</p>
+          </td>
+        </tr>
+        <tr class="animateBox">
+          <td class="center">03</td>
+          <td><img src="/images/steve_jobs.jpg" alt="Keith" class="circle shadowed"></td>
+          <td>
+            <p class="name">Keith Franklin<br>1AM13CS069<span class="right" style="margin-right:10px;">+1 XP</span></p>
+            <p class="progressLine" value="0.15"></p>
+          </td>
+          <td>
+            <div class="progressLeader" value=0.7></div>
+            <!--<p style="font-size:13px;margin-top:2px" class="center">GB 1</p>-->
+          </td>
+        </tr>
+        <!--<if(board){%>-->
+        <!--< for(i=1;i <= board.entry.length;i++){ %>-->
+        <!--  <tr>-->
+        <!--    <td><=i%></td>-->
+        <!--    <td><a href="#"> <=board.entry[i-1].author.firstName%> <=board.entry[i-1].author.lastName%> </a></td>-->
+        <!--    <td><=board.entry[i-1].xp%></td>-->
+        <!--  </tr>-->
+        <!--  < } %>-->
+        <!--  < }%>-->
+      </tbody>
+    </table>
+    <div class="footerCard">
+      <!--<p class="left" style="margin:12px 0 0 5px; font-size:12px;">1 GB(GradBunker pt) = 100 XP</p>-->
+      <p class="right" style="margin-top:10px;"><a href="/leader">more >>></a></p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.bootcss.com/progressbar.js/1.0.0/progressbar.min.js"></script>
+<script src="/js/leaderBoard.js"></script>
+</body>
+</html>
+

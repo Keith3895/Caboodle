@@ -1,0 +1,179 @@
+<% include ./partials/header.ejs %>
+<link href="/stylesheets/homepage2.css" rel="stylesheet">
+<link href="/stylesheets/indexLeaderboard.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/progressbar.js/1.0.0/progressbar.min.js"></script>
+<script src="/js/mainLeaderBoard.js"></script>
+<script src="/js/homepage2.js"></script>
+
+
+<% include ./partials/navbar.ejs %>
+
+
+
+<!--<h3 class="center-align">moto</h3>-->
+<!--<div >-->
+ <div class="parallax-container">
+       <div class="parallax">
+       	<img style='opacity:.4' src="/images/pencileditnext.jpg">
+      </div>
+      <div class="row" style="padding-top:70px">
+	<div class="col s12 m7 animated" id="pageDisc">
+		<!--<p >-->
+		  <h5 class="center-align">Why GB?</h5>
+			<ul class="pageDisc" >
+			  
+			  <li>GB is highly specific. </li>
+        <li>Utilised for Education Management System in Professional College, Degree college, Universities, Autonomous Institutions and Private College levels</li>
+        <li>It is a holistic approach to comprehensively fulfill all Student, administration and educational management requirements</li>
+        <li>Most important features of GB are the INCLUSIVITY of Results, Placement tests and information and more, all at once, in an orderly manner.</li>
+        <li>Forgot a textbook in a EDUSAT room? Find it here in GB! </li>
+        <li>Finished the semester with no backlogs? GB helps you sell your study material!</li>
+        <!--<li>GB provides DATA SECURITY and DATA PROTECTION</li>-->
+			</ul>
+		<!--</p>-->
+	</div>
+	<div class="col s12 m4 animated" id="loginCard">
+		<div class="row">
+			<div class="col s12">
+				<div class="card-panel">
+				  <% if(!currentUser){ %>
+					<h4 class="center">Login</h4>
+					<div class="row">
+						<form class="col s12" action="/login" method="POST" id="LoginForm">
+							<div class="row">
+								<div class="input-field col s12">
+									<input id="email" name="email" type="email" class="validate">
+									<label for="email">Email</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-field col s12">
+									<input id="password" name="password" type="password" class="validate">
+									<label for="password">Password</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-field col s12">
+									<button class="btn waves-effect waves-light right" type="submit" name="action">Login
+										<i class="material-icons right">send</i>
+									</button>
+								</div>
+							</div>
+						<% } else{ %>
+						  <div style="padding:10%"><h4>Hi <%= currentUser.firstName%>. You are the currently logged in user.If you like to logout click:  <a href='/logout'>link</a></h4></div>
+						<% } %>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+    </div>
+        
+
+<!-- <hr> -->
+<div class="row">
+	<div class="col s12 m4 offset-m1 animated " id="placmentCard">
+		<h5 class="center-align">recent Placements</h5>
+		<div style="perspective: 1200px;" id="PlacementsCardHolder">
+		</div>
+	</div>
+	<div class="col s12 m5 offset-m1 animated " id="placementDisc">
+
+		<div class="placementDisc">
+			<h4 class="center-align">Placements Details</h4>
+			<ul>
+			  	<li>Placements schedule</li>
+		        <li>Placement companies</li>
+		        <li>Placement rounds</li>
+		        <li>Test syllabus, format and contents</li>
+		        <!--<li>Mock papers</li>-->
+		        <!--<li>Senior’s advice, tips and tricks</li>-->
+		        <li>General knowledge and Current affairs</li>
+		        <li>The To Do List before any interview</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<!-- <hr> -->
+ <div class="parallax-container">
+       <div class="parallax">
+       	<img style='opacity:.4' src="/images/coffeethinkeditsize.jpg">
+       	
+       	<!--https://images.unsplash.com/photo-1422207258071-70754198c4a2?dpr=1&auto=format&fit=crop&w=1500&h=1013&q=80&cs=tinysrgb&crop=-->
+      </div>
+			<div class="row" >
+				<div class="col s12 m5 offset-m1 center-align animated " id="leaderDisc">
+					<div class="leaderDisc">
+					  <h5>LeaderBoard System</h5>
+						<ul>
+						  	<li> Encourage the competitive spirit </li>
+					        <li> Level up your Academics</li>
+					        <li> Based on Individual Performances</li>
+					        <li> Effectively drive learning based XP</li>
+					        <li> Motivate yourself by setting goals </li>
+					        <li> Succeed in your academics </li>
+					        <li> Monitor yourself with the medals you gain</li>
+						</ul>
+					</div>
+						
+				</div>
+				<div class="col s12 m5 center-align animated " id="leaderCard">
+					<!--<div id="overAllComp"></div>-->
+				</div>
+			</div>
+	</div>
+
+<!-- <hr> -->
+
+<div class="row">
+	<h4 class="center-align">Vtu Results</h4>
+	<div class="col s12">
+	  <form action="/viewResult" method="POST">
+	    <div class="row center-align animated" id="search">
+        <div class="input-field col s12 m4 offset-m4">
+          <i class="material-icons prefix">search</i>
+          <input type="text" id="usn-input" class="autocomplete validate" name="usn" pattern='^[1-4][a-zA-Z]{2}[0-9]{2}[a-zA-Z]{2}[0-9]{3}$'>
+          <label for="usn-input">USN</label>
+        </div>
+      </div>
+	  </form>
+      
+    </div>
+    <div class="col s12 m8 offset-m2 center-align" id="vtuDisc">
+    	<p>
+    		Keep track of your semester wise grades and percentages with the Leaderboard. Type in your USN(University seat Number)
+    		in the search bar and have a quick access to your score card.
+    	</p>
+    </div>
+</div>
+
+
+<!--</div>-->
+
+
+<script>
+	 $(document).ready(function(){
+      $('.parallax').parallax();
+      $('#usn-input').on('keyup change',function(){
+      	
+      	if(/^[1-4][a-zA-Z]{2}[0-9]{2}[a-zA-Z]{2}[0-9]{3}$/.test($(this).val())){
+      		$(this).addClass('valid');
+      		$(this).removeClass('invalid');
+      	}else{
+      		$(this).removeClass('valid');
+      		$(this).addClass('invalid');
+      	}
+      });
+    });
+    
+</script>
+
+
+
+
+
+
+<% include ./partials/footer.ejs %>

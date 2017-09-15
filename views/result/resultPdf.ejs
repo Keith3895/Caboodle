@@ -1,0 +1,53 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<title>GradBunker - Result</title>
+<div class="container">
+    <h5 class="center" style="margin-top:3%">VTU PROVISIONAL RESULT</h5>
+    <div>
+        <p>University Seat Number: <%= student.usn %></p>
+    </div>
+    <div>
+        <p>Student Name          : <%= student.name %></p>
+    </div>
+    <% student.marks.forEach(function(marks){ %>
+    <h6 class="center">Semester: <%= marks.sem %></h6>
+    <table class="striped">
+        <thead class="centered">
+            <tr>
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Internal Marks</th>
+                <th>External Marks</th>
+                <th>Total</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% marks.subjects.forEach(function(marks){ %>
+                <tr>
+                    <% var percentage = Math.round((student.marks[0].total / 9) * 100) / 100 %>
+                    <td><%= marks.subjectCode %></td>
+                    <td><%= marks.subjectName %></td> 
+                    <td><%= marks.internalMarks %></td>
+                    <td><%= marks.externalMarks %></td>
+                    <td><%= marks.subTotal %></td>
+                    <td><%= marks.subResult %></td>
+                    <!--<td><a class="waves-effect waves-light btn green accent-4" -->
+                    <!--    href="/viewResult/<= student.usn %>">View</a></td>-->
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>  
+    <div>
+        <p>Total Marks: <%= marks.total %></p>
+    </div>
+    <div>
+        <p>Result     : <%= marks.result %></p>
+    </div>
+    <% }) %>
+</div>
+
+</body>
+</html>

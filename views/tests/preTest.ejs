@@ -1,0 +1,67 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+
+
+
+<div class="row">
+    <h3>The test will begin in approximately <span id="time"></span> Seconds please read the following.</h3>
+    <div class='col s12 m8'>
+        <h5>Follow these instructions:</h5>
+        <ol>
+            <li>Do not leave the test environment (test tab)</li>
+            <li>Do not change/switch between tabs.</li>
+            <li>Do not open any form of a developer console</li>
+            <li>The use of a calculator is strictly prohibited</li>
+            <li>Do submit the test, only once.</li>
+            <li>The time period for the test is _, after which the test will be automatically submitted.</li>
+        </ol>
+        <h6>Failure to comply with any of the rules will result in immediate disqualification.All the best!</h6>
+    </div>
+    <div class="col s12 m3">
+        <div>Click Here to Start The test.</div>
+        <a href="javascript:window.open('/test/testEnv','mypopuptitle','width=1295,height=1000')" class="time btn-large disabled" id='buttonTime' style="padding:0px 40%;">Take Test</a>
+    </div>
+    
+</div>
+
+
+<script>
+    var timelimit =0;
+    var d1 = new Date (),
+      d2 = new Date ( d1 );
+  d2.setMinutes ( d1.getMinutes() + timelimit);
+  var countDownDate = new Date(d2).getTime();
+
+  // Update the count down every 1 second
+  var x = setInterval(function() {
+
+      // Get todays date and time
+      var now = new Date().getTime();
+      
+      // Find the distance between now an the count down date
+      var distance = countDownDate - now;
+      
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      // Output the result in an element with id="demo"
+      document.getElementById("buttonTime").innerHTML = seconds;
+      document.getElementById("time").innerHTML = seconds ;
+      
+      // If the count down is over, write some text 
+      if (distance < 0) {
+          clearInterval(x);
+          document.getElementById("buttonTime").innerHTML = "Start Test";
+          $('.btn-large').removeClass('disabled');
+          $('.btn-large').addClass('waves-effect waves-light');
+      }
+        
+  }, 1000);
+
+</script>
+
+
+<% include ../partials/footer.ejs %>

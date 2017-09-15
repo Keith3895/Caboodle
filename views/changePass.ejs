@@ -1,0 +1,36 @@
+<% include ./partials/header.ejs %>
+<title>GradBunker - Change Password</title>
+<% include ./partials/navbar.ejs %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css" />
+<div class="row">
+    <div class="col s12 m10 offset-m1 l4 offset-l4">
+      <div class="card-panel">
+        <h4 class="center">Change Password</h4>
+        <div class="row">
+    <form class="col s12" action="/changePassword" method="POST" id="changePasswordForm">
+      <div class="row">
+      <div class="input-field col s12">
+        <input id="pass" name="pass" type="password" class="validate">
+        <label for="pass">Enter New Password</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="pass1" name="pass1" type="password" class="validate">
+        <label for="pass1">Re-Enter New Password</label>
+      </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+          <button class="btn waves-effect waves-light right" type="submit" name="action">Submit
+            <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+      </div>
+    </div>
+</div>
+
+<% include ./partials/footer.ejs %>

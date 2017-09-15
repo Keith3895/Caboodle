@@ -1,0 +1,33 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<style type="text/css">
+  .Item_image{
+    border-radius: 1em;
+  }
+  #link:hover{
+      color: blue;
+  }
+</style>
+
+<div class="row" style="margin-top:20px">
+    <%  var i = 1; %>
+    <h3 class="center">Item LOST! Kindly Contact Me if found!</h3>
+    <h6 style="margin: 1% 0 2% 0" class="center">
+        <a href="/lostNfound/viewLostItems" id="link">Go Back to the list</a>
+    </h6>
+    <div class="col s6 m3 offset-m2">
+        <img src="<%= Item.imageLinks[0] %>" style="margin-left:17%;height: 50%;width:70%" 
+        class=" center-align Item_image ">
+    </div>
+    <div class="col m5 s4" style=" float: left" >
+        <h5><strong>Item Name: </strong><%= Item.itemName %></h5>
+        <h5><strong>Item Lost on: </strong><%= Item.lostDate %></h5>
+        <h5><strong>Item Lost at: </strong><%= Item.lostPlace %></h5>
+        <h5><strong>Item Specifics: </strong><%= Item.itemSpecifics %></h5>
+        <h5><strong>Contact</strong> <%= Item.author.firstName %> on <%= Item.phone %> if found</h5>
+        <h5><strong>Details about item: </strong><%= Item.description %></h5>
+      </a>
+    </div>
+</div>
+
+<% include ../partials/footer.ejs %>

@@ -1,0 +1,43 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src= "/js/admin_home.js" type="text/javascript"></script>
+<% include ./sidenav.ejs %>
+
+<div class="row">
+    <div class="col m12"  style="margin-top:-70px;padding:0" >
+        <h4 class="center"><%= company.cName %> Registrations</h4>
+    <table class="striped">
+        <thead class="centered">
+            <tr>
+                <th>Sl No.</th>
+                <th>USN</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>10th Result</th>
+                <th>12th Result</th>
+            </tr>
+        </thead>
+        <% var i = 1; %>
+        <tbody>
+            <% students.forEach(function(student){ %>
+                <tr>
+                    <td><%= i %></td>
+                    <td><%= student.USN %></td>
+                    <td><%= student.author.firstName %> <%= student.author.lastName %></td> 
+                    <td><%= student.author.email %></td>
+                    <td><%= student.mobile1 %></td>
+                    <td><%= student.tenthResult.Percentage %></td>
+                    <td><%= student.twelfthResult.Percentage %></td>
+                </tr>
+                <% i= i + 1; %>
+            <% }) %>
+        </tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+    
+<% include ../partials/footer.ejs %>

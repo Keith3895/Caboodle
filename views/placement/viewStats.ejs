@@ -1,0 +1,83 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<link href="/stylesheets/indexLeaderboard.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+<script src="https://cdn.bootcss.com/progressbar.js/1.0.0/progressbar.min.js"></script>
+<script src="/js/mainLeaderBoard.js"></script>
+<!--<script src= "/js/admin_home.js" type="text/javascript"></script>-->
+<style>
+    .stat th,.stat td{
+        border:1px solid;
+        
+    }
+    .stat th{
+        display:table-cell;
+    }
+</style>
+<% include ./sidenav.ejs %>
+    <div class='row'>
+        <div class='col m5 s12'>
+            <div id='leaderCard'></div>
+        </div>
+        <div class='col m5 offset-m1 s12 center-align'>
+            <div class="card">
+                <div class="card-content">
+                    <div class='card-title'>
+                        <h5>Current test status</h5>
+                    </div>
+                    <div class="card-content">
+                        
+                    <table class='stat'>
+                          
+                          
+                      </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="graphs"></div>
+    </div>
+    <script>
+        $.ajax({
+            method: "GET",
+            url: "/placementHead/getAnalysis",
+            // data: Score,
+            success: function(data){
+                
+                $('#graphs').append(data);
+               
+                
+            }
+          });
+          $.ajax({
+        method: "GET",
+        url: "/leader/overall",
+        // data: Score,
+        success: function(data){
+            
+            $('#leaderCard').append(data);
+            
+            // onLoad();
+            onLoad2();
+            $('.leaderCard').remove();
+            $("#leaderCard table").find("tr:gt(5)").remove();
+        }
+    });
+         $.ajax({
+                method: "GET",
+                url: "/test/status",
+                // data: Score,
+                success: function(data){
+                    console.log(data);
+                    str ="<tr><th>Test No.</th><th>Submissions</th><th>Yet to take</th></tr>";
+                    str +="<tr><td class='center-align'>"+data.questionset+"</td><td class='center-align'>"+data.Submit+"</td><td class='center-align'>"+parseInt(parseInt(data.total)-parseInt(data.Submit))+"</td></tr>";
+                    $('.stat').append(str);
+                    
+                }
+            });
+    </script>
+<% include ../partials/footer.ejs %>

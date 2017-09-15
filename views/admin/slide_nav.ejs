@@ -1,0 +1,80 @@
+<style>
+    .side-nav{
+        top: 65px;
+        width: 250px;
+        background-color:#2f2f2f;
+            color: white;
+    }
+    .side-nav li>a>i, .side-nav li>a>[class^="mdi-"], .side-nav li>a li>a>[class*="mdi-"], .side-nav li>a>i.material-icons{
+      color: white;
+    }
+    .side-nav li>a{
+        background-color:#2f2f2f;
+            color: white;
+    }
+</style>
+<ul id="slide-out1" class="side-nav fixed collapsible" data-collapsible="accordion">
+        <li class="logo">
+            <a id="logo-container" href="/admin" class="brand-logo1">
+            Admin page <i class="fa fa-free-code-camp" aria-hidden="true"></i>
+
+            </a>
+        </li>
+        <li><a href="/admin/user_list"><i class="fa fa-user-circle" aria-hidden="true"></i>
+            Users</a>
+        </li>
+        
+        <li>
+            <div class="collapsible-header waves-effect">
+                <i class="fa fa-user-o" aria-hidden="true"></i>
+                Student
+            </div>
+              <div class="collapsible-body">
+                <ul>
+                    <li><a href="/admin/student_list" >List</a></li>
+                    <li><a href="/admin/addStudent">Add</a></li>
+                </ul>
+                
+              </div>
+        </li>
+        <li>
+            <div class="collapsible-header waves-effect">
+                <i class="fa fa-briefcase" aria-hidden="true"></i>
+                Placement Head
+            </div>
+              <div class="collapsible-body">
+                <ul>
+                    <li><a href="#" >List</a></li>
+                    <li><a href="/admin/addPlacementHead">Add</a></li>
+                </ul>
+              </div>
+        </li>
+        <li>
+            <div class="collapsible-header waves-effect">
+                <i class="fa fa-book" aria-hidden="true"></i>
+                Books
+            </div>
+              <div class="collapsible-body">
+                <ul>
+                    <li><a href="#" >List</a></li>
+                    <li><a href="/library/addBook">Add</a></li>
+                    <li><a href="#">search</a></li>
+                </ul>
+                
+              </div>
+        </li>
+        <li><a href="/email">Email format</a></li>
+        <li><a href="/admin/scrapeResults">Scrape Results</a></li>
+        <li><a href="/viewScrapedResults">View Scraped Results</a></li>
+        <li><a href="/test/refreshQuestions">
+            reset question set
+            </a>
+        </li>
+    </ul>
+    <a href="#" data-activates="slide-out1" class="button-collapse1"><i class="material-icons large">label_outline</i></a>
+    <script>
+    $('.button-collapse').sideNav({
+        edge: 'right'
+    });
+    $('.button-collapse1').sideNav();
+    </script>

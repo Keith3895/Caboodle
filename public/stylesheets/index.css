@@ -1,0 +1,110 @@
+#down_arr a {
+	padding-top: 60px;
+}
+#down_arr a div {
+    position: absolute;
+    top: 535px;
+    z-index: 10;
+    left: 48%;
+    width: 33px;
+    height: 34px;
+    color: white;
+    font-size: 1.5em;
+}
+#down_arr a span {
+	position: absolute;
+	top: 500px;
+    z-index: 10;
+	left: 50%;
+	width: 24px;
+	height: 24px;
+	margin-left: -12px;
+	border-left: 7px solid #fff;
+	border-bottom: 7px solid #fff;
+	-webkit-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+	-webkit-animation: sdb04 2s infinite;
+	animation: sdb04 2s infinite;
+	box-sizing: border-box;
+}
+@-webkit-keyframes sdb04 {
+	0% {
+		-webkit-transform: rotate(-45deg) translate(0, 0);
+	}
+	20% {
+		-webkit-transform: rotate(-45deg) translate(-10px, 10px);
+	}
+	40% {
+		-webkit-transform: rotate(-45deg) translate(0, 0);
+	}
+}
+@keyframes sdb04 {
+	0% {
+		transform: rotate(-45deg) translate(0, 0);
+	}
+	20% {
+		transform: rotate(-45deg) translate(-10px, 10px);
+	}
+	40% {
+		transform: rotate(-45deg) translate(0, 0);
+	}
+}
+
+@keyframes fadeInLeftBig {
+  from {
+    opacity: 0;
+    transform: translate3d(-2000px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fadeInLeftBig {
+  animation-name: fadeInLeftBig;
+  animation-delay: .0s;
+  animation-duration: 1s;
+}
+@keyframes fadeInRightBig {
+  from {
+    opacity: 0;
+    transform: translate3d(2000px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fadeInRightBig {
+  animation-name: fadeInRightBig;
+  animation-delay: .0s;
+  animation-duration: 1s;
+
+
+}
+.Placement-exp{
+	margin-left: 20px;
+    line-height: 2;
+    border-left: 10px solid indianred;
+    text-align: center;
+}
+.Results-exp{
+	margin-left: 20px;
+    line-height: 2;
+    border-left: 10px solid indianred;
+    text-align: center;
+}
+.Placement-list{
+	overflow-y: scroll;
+	height: 150px;
+	margin-top: 56px;
+}
+.abstract{
+	font-size: 1.5em;
+	line-height: 2;
+	font-family: 'Droid Sans', sans-serif;
+}

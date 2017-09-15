@@ -1,0 +1,173 @@
+
+<style type="text/css">
+	.charts{
+		float: left;
+		margin: 5px 30px;
+	}
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box; }
+@media (min-width: 400px) {
+  .container {
+    width: 85%;
+    padding: 0; }
+}
+
+/* For devices larger than 550px */
+@media (min-width: 550px) {
+  .container {
+    width: 80%; }
+}
+</style>
+<div class="container">
+	<div class="charts">
+		<canvas id="lineCanvas" width="400px" height="400px"></canvas>
+	</div>
+	<div class="charts">
+		<canvas id="BarlineCanvas" width="400px" height="400px"></canvas>
+	</div>
+	<div class="charts">
+		<canvas id="BarCanvas" width="400px" height="400px"></canvas>
+	</div>
+	<div class="charts">
+		<canvas id="radarCanvas" width="400px" height="400px"></canvas>
+	</div>
+</div>
+<script type="text/javascript">
+
+var label="<%=returnData.types%>";
+label=label.split(',');
+var requestedTestCor = [<%= returnData.requestedTest.typeCorrect%>];
+var requestedTestType = "<%= returnData.requestedTest.type%>".split(',');
+var val=[0,0,0,0];
+for(i=0;i<label.length;i++){
+	for(j=0; j<requestedTestType.length;j++){
+		if(label[i]==requestedTestType[j]){
+			val[i]= requestedTestCor[j];
+		}
+	}
+}
+console.log(requestedTestCor);
+var line_arr=[<%= returnData.lineMarks %>],line_lab=[];
+
+for(i in line_arr){
+	j=parseInt(i)+1;
+	line_lab.push("test "+j);
+}
+
+// ==============================Line Chart==============================
+var lineVar = document.getElementById('lineCanvas').getContext('2d');
+	var lineData={
+		labels: line_lab,
+        datasets: [{
+            label: "All the Results",
+            backgroundColor: 'rgba(255, 99, 132, 0.0)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: line_arr,
+        }]
+	};
+	var options ={
+                        width:300,
+                        height:200,
+                        scaleShowGridLines: false,
+                        showScale: false,
+                        responsive: false,
+    					maintainAspectRatio: false,
+                        barShowStroke: false,
+                        scales: {
+						        yAxes: [{
+						            ticks: {
+						                beginAtZero: true
+						            }
+						        }]
+						    }
+                    };
+
+	var myLineChart = new Chart(lineVar, {
+    type: 'line',
+    data: lineData,
+    options: options
+});
+
+
+// ============================Bar and line chart========================
+var BarlineVar = document.getElementById('BarlineCanvas').getContext('2d');
+	var mixedChart = new Chart(BarlineVar, {
+	  type: 'bar',
+	  data: {
+	    datasets: [{
+	          label: 'Bar Dataset',
+	          data: [<%=returnData.typeCorrect%>],
+	          backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)'
+               
+            ]
+	        }, {
+	          label: 'Line Dataset',
+	          data: val,
+	          borderColor: 'rgb(255, 99, 132)',
+	          // Changes this dataset to become a line
+	          type: 'line'
+	        }],
+	    labels: label
+	  },
+	  options: options
+	});
+// ============================Bar Chart ====================================
+var BarVar = document.getElementById('BarCanvas').getContext('2d');
+	var BarChart = new Chart(BarVar, {
+	  type: 'bar',
+	  data: {
+	    datasets: [{
+	          label: 'Bar Dataset',
+	          data: [<%=returnData.range%>],
+	          backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)'
+               
+            ]
+	        }],
+	    labels: ['0-3', '3-7', '7-13', '13-20','20-25','25-30']
+	  },
+	  options: options
+	});
+
+// =========================Radar Chart=================================
+
+var RadarVar = document.getElementById('radarCanvas').getContext('2d');
+	var myRadarChart = new Chart(RadarVar, {
+	    type: 'radar',
+	    data: {
+	    datasets: [{
+                label: 'Correct Answers',
+	          		data: [<%= returnData.indTypeCorrect %>],
+                backgroundColor: 'rgba(255, 0, 0, 0.58)',
+                borderColor: 'red',
+                pointBackgroundColor: 'red',
+                
+            },
+            {
+                label: "number of Question",
+                data: [<%= returnData.indTypeCount %>],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'blue',
+                pointBackgroundColor: 'blue'
+            }
+            ],
+	    labels: label
+	  	},
+	    options: options
+	});
+
+
+
+</script>
