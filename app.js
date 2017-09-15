@@ -35,8 +35,9 @@ var indexRoutes      = require("./routes/index"),
 // db connectins and body parsing
 // =======================================
 mongoose.Promise = global.Promise;
-mongoose.connection.openUri("mongodb://localhost/GradBunker");     // local mongo db
-// mongoose.connect("mongodb://keith:amcec@ds113713.mlab.com:13713/gradbunker");     // local mongo db
+// mongoose.connection.openUri("mongodb://localhost/GradBunker");     // local mongo db
+mongoose.connection.openUri("mongodb://admin:learningpwd@35.154.187.67/cool_dbGradBunker");     // AWS mongo db
+
 
 app.set("view engine","ejs");
 app.use(express.static(path.join(__dirname, 'public')));
@@ -109,6 +110,8 @@ app.get("*",function(req, res) {            // default route
 // }
 
 //the listener functions that is used to establish the connection
-app.listen(process.env.PORT, process.env.IP, function(){
+process.env.PORT = 8080; //AWS 
+app.listen(process.env.PORT, function(){ //AWS
+// app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server has started!!!");
 });
