@@ -36,7 +36,7 @@ var indexRoutes      = require("./routes/index"),
 // =======================================
 mongoose.Promise = global.Promise;
 // mongoose.connection.openUri("mongodb://localhost/GradBunker");     // local mongo db
-mongoose.connection.openUri("mongodb://admin:learningpwd@35.154.187.67/cool_dbGradBunker");     // AWS mongo db
+mongoose.connection.openUri("mongodb://admin:learningpwd@35.154.187.67/GradBunker");     // AWS mongo db
 
 
 app.set("view engine","ejs");
