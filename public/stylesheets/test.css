@@ -1,6 +1,13 @@
 body {
     font-family: Open Sans;
 }
+.square{
+		background: url('/images/test.gif');
+		background-position: top left;
+        background-repeat: no-repeat;
+        padding-left: 10px;
+        padding-top: 1px;
+	}
 .resp{
     display: none;
 }

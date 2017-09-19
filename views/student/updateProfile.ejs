@@ -36,8 +36,8 @@
                             <option>ECE</option>
                             <option>EEE</option>
                             <option>ISE</option>
-                            <option>CE</option>
                             <option>ME</option>
+                            <option value="CE">Civil</option>
                         </select>
                         <label>Department</label>
                     </div>
@@ -109,13 +109,20 @@
                     
                     <!--Upload marks card-->
                     <div class="input-field col s12">
+                        <% if(student.tenthResult.reportLink.length>0) {
+                                reportName="Click to re-upload image"
+                            }else{
+                                reportName=""
+                            } %>
                         <div class="file-field input-field">
                         <div class="btn blue-grey">
                             <span>Browse</span>
-                            <input type="file" name="tenthCard">
+                            <input type="file" name="tenthCard" 
+                                accept="image/x-png,image/gif,image/jpeg">
                         </div>
                         <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text" placeholder="Upload 10th marks card">
+                            <input class="file-path validate" type="text" 
+                            placeholder="Upload 10th marks card" value="<%=reportName%>">
                         </div>
                         </div>
                     </div>
@@ -157,13 +164,20 @@
                     
                     <!--Upload marks card-->
                     <div class="input-field col s12" style="padding-bottom: 5%">
+                        <% if(student.twelfthResult.reportLink.length>0) {
+                                reportName="Click to re-upload image"
+                            }else{
+                                reportName=""
+                            } %>
                         <div class="file-field input-field">
                         <div class="btn blue-grey">
                             <span>Browse</span>
-                            <input type="file" name="twelfthCard">
+                            <input type="file" name="twelfthCard"
+                                accept="image/x-png,image/gif,image/jpeg">
                         </div>
                         <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text" placeholder="Upload 12th marks card">
+                            <input class="file-path validate" type="text" 
+                            placeholder="Upload 12th marks card" value="<%=reportName%>">
                         </div>
                         </div>
                     </div>
@@ -183,7 +197,7 @@
                     <div id="semResults">
                     <div class="forCount">
                         <% var id1,id2,id3,percent,len,reportName,path= []; %>
-                        <% for(var i = 1; i< student.semester;i++){ 
+                        <% for(var i = 1; i<= student.semester;i++){ 
                             id1 = "sem"+i;
                             id2 = "semPercentage"+i;
                             id3 = "semCard"+i;
@@ -191,7 +205,11 @@
                             if(i<=len){
                                 percent = student.semResults[i-1].Percentage;
                                 // path = student.semResults[i-1].reportLink.split('/');
-                                reportName = path[path.length-1] ;
+                                if(student.semResults[i-1].reportLink.length>0) {
+                                    reportName="Click to re-upload image"
+                                }else{
+                                    reportName=""
+                                }
                             }
                             else{
                                 percent = null;
@@ -212,10 +230,12 @@
                         <div class="input-field file-field col s8">
                             <div class="btn blue-grey">
                                 <span>Browse</span>
-                                <input type="file" name="<%= id3 %>">
+                                <input type="file" name="<%= id3 %>"
+                                    accept="image/x-png,image/gif,image/jpeg">
                             </div>
                             <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="Marks Sheet">
+                                <input class="file-path validate" type="text" 
+                                    placeholder="Marks Sheet(Image Only)" value="<%= reportName %>">
                                 <!--<label class="active">Marks Sheet</label>-->
                             </div>
                         </div>
@@ -244,7 +264,7 @@
                     <div class="forCount">
                     
                         <div class="input-field col s4">
-                            <input id="title1" name="title1" type="text" class="validate"  >
+                            <input id="title1" name="title1" type="text" class="validate" value=''>
                             <label class="active" for="title1">Title</label>
                         </div>
                         
@@ -252,10 +272,12 @@
                         <div class="input-field file-field col s8">
                             <div class="btn blue-grey">
                                 <span>Browse</span>
-                                <input type="file" name="title1Card">
+                                <input type="file" name="title1Card"
+                                    accept="image/x-png,image/gif,image/jpeg">
                             </div>
                             <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="Upload Certificate">
+                                <input class="file-path validate" type="text" 
+                                    placeholder="Upload Certificate(Image only)">
                             </div>
                         </div>
                     
@@ -266,14 +288,21 @@
                     <div class="input-field col s12">
                         <p style="color: grey">Resume</p>
                     </div>
+                    <% if(student.resumeLink.length>0) {
+                            reportName="Click to re-upload document"
+                        }else{
+                            reportName=""
+                        }
+                    %>
                     <div class="input-field col s12" style="padding-bottom: 5%">
                         <div class="file-field input-field">
                         <div class="btn blue-grey">
                             <span>Browse</span>
-                            <input type="file" name="resume">
+                            <input type="file" name="resume" accept="application/pdf, image/*">
                         </div>
                         <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text" placeholder="Upload your resume">
+                            <input class="file-path validate" type="text" 
+                                placeholder="Upload your resume(image or pdf)" value="<%= reportName %>">
                         </div>
                         </div>
                     </div>
@@ -281,7 +310,7 @@
                     
                     <div class="input-field col s12">
                         <button type="button" onclick="prev_step2()" class="waves-effect waves-light btn blue left">&lt; Previous</button>
-                        <button id="submit" name="submit" class="waves-effect waves-light btn green right">ADD  &gt;</button>
+                        <button id="submit" name="submit" class="waves-effect waves-light btn green right">UPDATE  &gt;</button>
                     </div>
                     </section>
 
@@ -291,6 +320,7 @@
     </div>
     
 <script type="text/javascript">
+    
     document.getElementById("second").style.display = "none";
     document.getElementById("third").style.display = "none";
     function next_step1() {
@@ -324,7 +354,7 @@
             var inputField = '<div class="forCount"> '+
                 '<div class="input-field col s4"> '+
                 '<input id="title'+lastInputField+'" name="title'+lastInputField+'" type="text" '+ 
-                'class="validate"  > <label class="active" for="title'+
+                'class="validate"  value=""> <label class="active" for="title'+
                 lastInputField+'">Title</label> </div> <div class="input-field file-field col s8"> '+
                 '<div class="btn blue-grey"> <span>Browse</span> <input type="file" name="title'+
                 lastInputField+'Card"> </div> <div class="file-path-wrapper"> '+

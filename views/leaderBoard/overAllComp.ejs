@@ -43,19 +43,19 @@ $(document).ready(function(){
             <div class="col s4 grey lighten-5">
             <img class="secondImage shadowed"  src="/images/2nd.png">
             <p class="caption2 "><%= board[1].author.firstName%> <%= board[1].author.lastName%><br>
-            1AM13CS069</p>
+            <%= board[1].author.usn %></p>
             </div>
       <% }if(board[0]){ %>      
             <div class="col s4 grey lighten-5">
             <img class="firstImage shadowed"  src="/images/1st.png">
             <p class="caption "><%= board[0].author.firstName%> <%= board[0].author.lastName%><br>
-            1AM13CS069</p>
+            <%= board[0].author.usn %></p>
             </div>
       <% }if(board[2]){ %>      
             <div class="col s4 grey lighten-5">
             <img class="thirdImage shadowed"  src="/images/3rd.png">
             <p class="caption3 "><%= board[2].author.firstName%> <%= board[2].author.lastName%><br>
-            1AM13CS069</p>
+            <%= board[2].author.usn %></p>
             </div>
       <% } %>      
   

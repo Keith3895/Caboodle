@@ -13,30 +13,31 @@ var functions = {
             if(testResult.type[i]== 'Quantitative aptitude')
                 xp+= parseInt(testResult.typeCorrect[i])*1.5;
             else if(testResult.type[i]== 'Logical Reasoning')
-                xp+= parseInt(testResult.typeCorrect[i])*1.5;
-            else if(testResult.type[i]== 'Verbal Reasoning')
                 xp+= parseInt(testResult.typeCorrect[i])*2;
+            else if(testResult.type[i]== 'Verbal Reasoning')
+                xp+= parseInt(testResult.typeCorrect[i])*1.5;
             else 
                 xp+= parseInt(testResult.typeCorrect[i])*3;
         }
         functions.CheckCons(req.user._id,testResult,function(response){
-            console.log(response);
+            // console.log(response);
             xp+= parseInt(response);
         });
         var BoardEntry =
-                        {
-                            author : req.user._id,
-                            marks: testResult.marks,
-                            xp : xp
-                        }
-                    ;
-                    LeaderBoard.findOne({'testId':testResult.id}, function(err,entry){
-                        if(err)
-                            console.log(err);
-                            entry.entry.push(BoardEntry);
-                            entry.save();
-                            functions.enterGlobal(BoardEntry);
-                    });
+            {
+                author : req.user._id,
+                marks: testResult.marks,
+                xp : xp
+            }
+        ;
+        LeaderBoard.findOne({'testId':testResult.id}, function(err,entry){
+            if(err)
+                console.log(err);
+            entry.entry.push(BoardEntry);
+            entry.save();
+            // console.log(BoardEntry)
+            functions.enterGlobal(BoardEntry);
+        });
                     
     },
     
@@ -80,6 +81,39 @@ var functions = {
                 Gentry.save();
             }
         });
+    },
+    studentSkiped: function(){
+        LeaderBoard.find({}).sort({'_id':-1}).limit(1).exec(function(err, entry) {
+        var found = false;
+        Student.find({},function(err, std) {
+            for(i=0;i<std.length;i++){
+                for(j=0;j<std[i].PlacementTestResults.length;j++){
+                    if(std[i].PlacementTestResults[j][0].id == entry[0].testId){
+                        found = true;
+                        break;
+                    }
+                    found = false;
+                }
+                // console.log(i+":"+found);
+                if(!found){
+                    var PlacementTestResults ={
+                        id:entry[0].testId,
+                        marks: -2,
+                        typeCount:0,
+                        typeCorrect:0
+                    };
+                    std[i].PlacementTestResults.push(PlacementTestResults);
+                    std[i].save();
+                    var datasent={
+                        user:{
+                            _id:std[i].author
+                        }};
+                    functions.addToLeaderBoard(PlacementTestResults,datasent);
+                }
+            }            
+        });
+    });
     }
+    
 };
 module.exports = functions;

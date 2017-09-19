@@ -14,7 +14,9 @@ var express             = require("express"),
     cookieParser        = require('cookie-parser'),
     flash               = require('connect-flash'),
     session             = require('express-session'),
+    sassMiddleware      = require('node-sass-middleware'),
     upload              = require('express-fileupload');
+    var logime          = require('log-timestamp');
 
 
 //****************************************************
@@ -36,11 +38,11 @@ var indexRoutes      = require("./routes/index"),
 // =======================================
 mongoose.Promise = global.Promise;
 // mongoose.connection.openUri("mongodb://localhost/GradBunker");     // local mongo db
-mongoose.connection.openUri("mongodb://admin:learningpwd@35.154.187.67/GradBunker");     // AWS mongo db
+mongoose.connection.openUri("mongodb://admin:learningpwd@13.126.66.202/GradBunker");     // AWS mongo db
 
 
 app.set("view engine","ejs");
-app.use(express.static(path.join(__dirname, 'public')));
+
 // app.use(upload());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -74,7 +76,16 @@ app.use(passport.session());
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+app.use(
+     sassMiddleware({
+         src: __dirname + '/node_modules/materialize-sass/sass', 
+         dest: __dirname + '/public/stylesheets',
+         prefix:  '/stylesheets',
+         debug: false,         
+     })
+  ); 
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next){
    res.locals.currentUser = req.user;
    res.locals.error = req.flash("error");
@@ -89,7 +100,7 @@ app.use(function(req, res, next){
 
 app.use("/", indexRoutes);
 app.use("/admin", adminRoutes);
-app.use("/placementHead",middleware.isPlacementHead, placementRoutes);
+app.use("/placementHead",/*middleware.isPlacementHead,*/ placementRoutes);
 app.use("/student",middleware.isStudent, studentRoutes);
 // app.use("/library",libraryRoutes);
 app.use("/lostNfound",lostNfoundRoutes);

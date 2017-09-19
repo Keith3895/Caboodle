@@ -164,9 +164,14 @@
     });
     var header = $('<h2>Question ' + (index + 1) + ': <span style="float:right">marks:'+questions[index].marks+'</span></h2>');
     qElement.append(header);
+    if(questions[index].compre){
+      qElement.append("<h3>Context:</h3>");
+      qElement.append(questions[index].compre);
+      qElement.append("<h3>Question:</h3>");
+    }
     if(/<img/.test(questions[index].question))
       $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
-      // $('#container').css({"padding":"0 25px 70% 10px"});
+    
     var question = $('<p>').append(questions[index].question);
     qElement.append(question);
     var radioButtons = createRadios(index);
@@ -394,34 +399,34 @@ function timer(){
 
 }
 
-window.onresize = function()
-{
-    if ((window.outerHeight - window.innerHeight) > 100)
-        alert('Docked inspector was opened forced submit');
-        var i=0;
-        var be = setInterval(function() {
-          i++;
-          beep();
-          beep();
-          if(i>5){
-            clearInterval(be);
-            submitTest();
-          }
-        }, 1000);
-}
-$(window).focus(function(ele) {
-            //do something
-            blurOn=false;
+// window.onresize = function()
+// {
+//     if ((window.outerHeight - window.innerHeight) > 100)
+//         alert('Docked inspector was opened forced submit');
+//         var i=0;
+//         var be = setInterval(function() {
+//           i++;
+//           beep();
+//           beep();
+//           if(i>5){
+//             clearInterval(be);
+//             submitTest();
+//           }
+//         }, 1000);
+// }
+// $(window).focus(function(ele) {
+//             //do something
+//             blurOn=false;
             
-        });
-        $(window).blur(function() {
-            //do something
-            console.log("blur");
-            beep();
+//         });
+//         $(window).blur(function() {
+//             //do something
+//             console.log("blur");
+//             beep();
              
-            if(!blurCheck && !blurOn)
-              submitTest();
-        });
+//             if(!blurCheck && !blurOn)
+//               submitTest();
+//         });
 
 
 

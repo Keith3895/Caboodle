@@ -1,8 +1,38 @@
 <% include ../partials/header.ejs %>
 <% include ../partials/navbar.ejs %>
 <style>
-    .inline span{
+    .inline span, .modal-content span{
        margin: 15px 15px;
+    }
+    [type="checkbox"]+label {
+        padding-left:25px;
+    }
+    #removeFile{
+        margin-top:20px;
+    }
+    #removeFile:hover{
+        cursor:pointer;
+    }
+    .irs-bar-edge,.irs-bar{
+    background:linear-gradient(to top,rgb(118, 123, 120) 0,rgb(59, 77, 105) 100%);
+    }
+    .irs-from, .irs-single, .irs-to{
+        background:linear-gradient(to top,rgb(118, 123, 120) 0,rgb(59, 77, 105) 100%);;
+    }
+    .browse:hover{
+        cursor: hand !important;
+    }
+    .file-field .btn{
+        background: linear-gradient(to bottom,rgb(118, 123, 120) 0,rgb(59, 77, 105) 100%) !important;
+    }
+    #btnSubmit{
+        background: #1b98a5;
+    }
+    .form-error{
+        color:red;
+    }
+    #package{
+        margin:0px !important;
     }
 </style>
 <link href="/stylesheets/admin_home.css" rel="stylesheet">
@@ -15,75 +45,86 @@
     <div class="row">
         <div class="col s12 m10 l10" style="margin-top:-70px;padding:0">
             <div class="card-panel row">
-                <h4 class="center">New Internship Update</h4>
-                <form action="/placementHead/addNewInternship" method="POST" enctype="multipart/form-data">
+                <h4 class="center">Internship Update</h4>
+                <form action="/placementHead/addNewInternship" method="POST" 
+                    enctype="multipart/form-data" id="form">
                     <div class="input-field col s6">
-                        <input name="cName" id="cName" type="text" class="validate">
-                        <label for="cName">Name of Company</label>
+                        <input name="cName" id="cName" type="text" data-validation="required">
+                        <label for="cName">Name of Company*</label>
                     </div>
                     <div class="input-field col s6" id="date">
-                        <input id="lastDate" name="lastDate" type="text" class="validate">
-                        <label for="lastDate">Last Date to Apply</label>
+                        <input id="lastDate" name="lastDate" type="text" data-validation="required">
+                        <label for="lastDate">Last Date to Apply*</label>
                     </div>
                     
                     <div class="input-field col s12 inline" style="margin-top:-20; ">
-                        <p>Qualification/Degree</p>
-                        <input type="checkbox" class="filled-in" id="be" name="qualification" value="BE" />
+                        <p>Qualification/Degree*</p>
+                        <input type="checkbox" class="filled-in" id="be" name="qualification" value="BE" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="be">BE</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="me" name="qualification" value="ME" />
+                         <input type="checkbox" class="filled-in" id="me" name="qualification" value="ME" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="me">ME</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="bca" name="qualification" value="BCA" />
+                         <input type="checkbox" class="filled-in" id="bca" name="qualification" value="BCA" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="bca">BCA</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="mca" name="qualification" value="MCA" />
+                         <input type="checkbox" class="filled-in" id="mca" name="qualification" value="MCA" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="mca">MCA</label>
                     </div>
                     
                     <div class="input-field col s12 inline" style="padding-bottom: 3%">
-                        <p>Branches Allowed</p>
-                        <input type="checkbox" class="filled-in" id="cse" name="department" value="CSE"/>
+                        <p>Branches Allowed*</p>
+                        <input type="checkbox" class="filled-in" id="cse" name="department" value="CSE" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="cse">CSE</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="ise" name="department" value="ISE"/>
+                         <input type="checkbox" class="filled-in" id="ise" name="department" value="ISE" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="ise">ISE</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="ece" name="department" value="ECE"/>
+                         <input type="checkbox" class="filled-in" id="ece" name="department" value="ECE" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="ece">ECE</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="mech" name="department" value="ME"/>
+                         <input type="checkbox" class="filled-in" id="mech" name="department" value="ME" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="mech">ME</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="eee" name="department" value="EEE"/>
+                         <input type="checkbox" class="filled-in" id="eee" name="department" value="EEE" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
                          <label for="eee">EEE</label>
                          <span></span>
-                         <input type="checkbox" class="filled-in" id="ce" name="department" value="CE"/>
-                         <label for="mech">CE</label>
+                         <input type="checkbox" class="filled-in" id="ce" name="department" value="CE" 
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                         <label for="mech">Civil</label>
                     </div> 
                     <div class="input-field col s6">
-                        <input id="package" name="package" type="text" class="validate">
-                        <label for="package">Package</label>
+                        <input id="package" name="package" type="text" data-validation="required">
+                        <label for="package">Package*</label>
                     </div> 
                     <div class="input-field col s6">
-                        <input id="skills" name="skills" type="text" class="validate">
-                        <label for="skills">Skills Required</label>
+                        <input id="skills" name="skills" type="text" data-validation="required">
+                        <label for="skills">Skills Required*</label>
                     </div> 
                     <div class="input-field col s6">
-                        <input id="designation" name="designation" type="text" class="validate">
-                        <label for="designation">Job Title</label>
+                        <input id="designation" name="designation" type="text" data-validation="required">
+                        <label for="designation">Job Title*</label>
                     </div> 
                     <div class="input-field col s6">
-                        <input id="duration" name="duration" type="text" class="validate">
-                        <label for="duration">Internship Duration</label>
+                        <input id="duration" name="duration" type="text" data-validation="required">
+                        <label for="duration">Internship Duration*</label>
                     </div> 
                     <div class="input-field col s6">
-                        <input id="interviewLocation" name="interviewLocation" type="text" class="validate">
-                        <label for="interviewLocation">Interview Location</label>
+                        <input id="interviewLocation" name="interviewLocation" type="text" data-validation="required">
+                        <label for="interviewLocation">Interview Location*</label>
                     </div> 
                     <div class="input-field col s6">
-                        <input id="internLocation" name="internLocation" type="text" class="validate">
-                        <label for="internLocation">Internship Location</label>
+                        <input id="internLocation" name="internLocation" type="text" data-validation="required">
+                        <label for="internLocation">Internship Location*</label>
                     </div>
                     <div class="input-field col s12">
                         <label for="tenth">Tenth:</label>
@@ -100,30 +141,91 @@
                         <input type="text" name="engg" id="engg">
                     </div>
                     <div class="input-field col s12">
-                        <textarea id="internDescription" name="internDescription" class="materialize-textarea"></textarea>
-                        <label for="internDescription">Job Description</label>
+                        <textarea id="internDescription" name="internDescription" 
+                            class="materialize-textarea" data-validation="required"></textarea>
+                        <label for="internDescription">Job Description*</label>
                     </div>
-                    <div class="input-field col s12">
-                        <div class="file-field input-field">
+                    <div class="input-field col s11 browse">
+                        <div class="file-field input-field" style="margin:0;margin-bottom:20px;">
                           <div class="btn">
-                            <span>Browse</span>
-                            <input type="file" name="docs[]" id="docs[]" multiple>
+                            <span ><i class="fa fa-upload" aria-hidden="true"></i> Upload files</span>
+                            <input class="fileIn" type="file" name="docs[]" id="docs[]" multiple>
                           </div>
                           <div class="file-path-wrapper">
                             <input class="file-path validate" type="text" placeholder="Upload relevant documents(if any)">
                           </div>
                         </div>
                     </div>
-                    <button class="btn waves-effect waves-light right blue" 
-                            id="btnSubmit" type="submit" name="action">Add
+                    <div class="col s1" id="removeFile"><span>
+                        <i style="font-size: 36px;" class="material-icons grey-text">delete</i>
+                    </span></div>
+                    <a class="btn waves-effect waves-light right modal-trigger" href="#" 
+                        id="btnSubmit" onclick="test('#form')">Select Semesters
                         <i class="material-icons right">send</i>
-                    </button>
+                    </a>
+                    <div id="modal1" class="modal">
+            <div class="modal-content">
+              <h4>Send Email To?</h4>
+              <div>
+              <label>Select semesters you want to send the email to</label><br><br>
+              <input type="checkbox" class="filled-in" id="sem1" name="semesters" value=1 />
+                <label for="sem1">I</label><span></span>
+                <input type="checkbox" class="filled-in" id="sem2" name="semesters" value=2 />
+                <label for="sem2">II</label><span></span>
+                <input type="checkbox" class="filled-in" id="sem3" name="semesters" value=3 />
+                <label for="sem3">III</label><span></span>
+                <input type="checkbox" class="filled-in" id="sem4" name="semesters" value=4 />
+                <label for="sem4">IV</label><span></span>
+                <input type="checkbox" class="filled-in" id="sem5" name="semesters" value=5 />
+                <label for="sem5">V</label><span></span>
+                <input type="checkbox" class="filled-in" id="sem6" name="semesters" value=6 />
+                <label for="sem6">VI</label><span></span>
+                <input type="checkbox" class="filled-in" id="sem7" name="semesters" value=7 />
+                <label for="sem7">VII</label><span></span>
+                <input type="checkbox" class="filled-in" id="sem8" name="semesters" value=8 />
+                <label for="sem8">VIII</label><span></span>
+                <button type="button" class="allSems btn">All Sems</button>
+              </div>
+            </div>
+            <div style="padding-top:20px;">
+                      <label>Select departments you want to send the email to*</label><br><br>
+                      <input type="checkbox" class="filled-in" id="dep1" name="sendTodepartment" value="CSE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep1">CSE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep2" name="sendTodepartment" value="ISE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep2">ISE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep3" name="sendTodepartment" value="ECE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep3">ECE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep4" name="sendTodepartment" value="ME"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep4">ME</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep5" name="sendTodepartment" value="EEE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep5">EEE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep6" name="sendTodepartment" value="CE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep6">Civil</label><span></span>
+                        <button type="button" class="allDept btn">All Departments</button>
+                      </div>
+                    
+                    <div class="modal-footer">
+                      <buttom class="modal-action waves-effect waves-green btn-flat green"
+                            id="submit">Send Email</button>
+                    </div>
+          </div>
                 </form>
             </div>
+            
         </div>
     </div>
     
     <script>
+     $(document).ready(function(){
+        // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+        $('.modal').modal();
+      });
         $('#lastDate').datetimepicker({
           timepicker: false,
             format: "d-m-Y"
@@ -134,19 +236,41 @@
             from: 50,
             hide_min_max: true,
         });
+        
+        var myConf = {},
+        myLang = {};
+        myConf = $.extend($.formUtils.defaultConfig(), myConf)
+        function test(formGroupID) {
+            var valid = $(formGroupID).validateForm(myLang, myConf);
+            if( valid ) {
+                $('#modal1').modal('open');
+            } else {
+                alert("Missing fields! Please ensure required fields are filled")
+            }
+        }
     </script>
     <script>
-        $("#btnSubmit").click(function(e){
-			if( ($("input[name=qualification]:checked").length == 0) || ($("input[name=department]:checked").length == 0)){
-				$("input[name=qualification]:first").attr("required", "required");
-				$("input[name=department]:first").attr("required", "required");
-				alert("Please fill in the empty fields.");
-			}else{
-				$("input[name=qualification]").removeAttr("required");	
-				$("input[name=department]").removeAttr("required");	
-				$("form").submit();
-			}			
+		$("#submit").click(function(e){
+		    $("form").submit();
+		});
+		$("#removeFile").click(function(e){
+		    $('.fileIn').val("");
+		    $('.file-path').val("");
 		});
     </script>
-    
+    <script>
+        $.validate({
+            scrollToTopOnError : true
+        });
+        var clicked = false;
+        $(".allSems").on("click", function() {
+          $("input[name='semesters']").prop("checked", !clicked);
+          clicked = !clicked;
+        });
+        var clicked1 = false;
+        $(".allDept").on("click", function() {
+          $("input[name='sendTodepartment']").prop("checked", !clicked1);
+          clicked1 = !clicked1;
+        });
+    </script>
 <% include ../partials/footer.ejs %>

@@ -3,6 +3,17 @@
 <link href="/stylesheets/admin_home.css" rel="stylesheet">
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
 <script src= "/js/admin_home.js" type="text/javascript"></script>
+<style>
+    .modal-content span{
+       margin: 15px 15px;
+    }
+    .form-error{
+        color:red;
+    }
+    #btnSubmit{
+        background: #1b98a5;
+    }
+</style>
 <% include ./sidenav.ejs %>
     <div class="row">
         <div class="col s12 m8 l8 offset-l2" >
@@ -14,12 +25,103 @@
                         <label for="reminder">Reminder</label>
                     </div>
                 
-                    <button class="btn waves-effect waves-light right blue" type="submit" name="action">Remind
+                    <div class="btn waves-effect waves-light right blue modal-trigger" 
+                            id="btnSubmit" >Select Semesters
                         <i class="material-icons right">send</i>
-                    </button>
+                    </div>
+                    <div id="modal1" class="modal">
+                    <div class="modal-content">
+                      <h4>Send Email To?</h4>
+                      <div>
+                      <label>Select semesters you want to send the email to*</label><br><br>
+                      <input type="checkbox" class="filled-in" id="sem1" name="semesters" value=1
+                        data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem1">I</label><span></span>
+                        <input type="checkbox" class="filled-in" id="sem2" name="semesters" value=2
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem2">II</label><span></span>
+                        <input type="checkbox" class="filled-in" id="sem3" name="semesters" value=3
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem3">III</label><span></span>
+                        <input type="checkbox" class="filled-in" id="sem4" name="semesters" value=4
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem4">IV</label><span></span>
+                        <input type="checkbox" class="filled-in" id="sem5" name="semesters" value=5
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem5">V</label><span></span>
+                        <input type="checkbox" class="filled-in" id="sem6" name="semesters" value=6
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem6">VI</label><span></span>
+                        <input type="checkbox" class="filled-in" id="sem7" name="semesters" value=7
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem7">VII</label><span></span>
+                        <input type="checkbox" class="filled-in" id="sem8" name="semesters" value=8
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="sem8">VIII</label><span></span>
+                        <button type="button" class="allSems btn">All Sems</button>
+                      </div>
+                      <div style="padding-top:20px;">
+                      <label>Select departments you want to send the email to*</label><br><br>
+                      <input type="checkbox" class="filled-in" id="dep1" name="sendTodepartment" value="CSE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep1">CSE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep2" name="sendTodepartment" value="ISE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep2">ISE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep3" name="sendTodepartment" value="ECE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep3">ECE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep4" name="sendTodepartment" value="ME"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep4">ME</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep5" name="sendTodepartment" value="EEE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep5">EEE</label><span></span>
+                        <input type="checkbox" class="filled-in" id="dep6" name="sendTodepartment" value="CE"
+                            data-validation="checkbox_group" data-validation-qty="min1" />
+                        <label for="dep6">Civil</label><span></span>
+                        <button type="button" class="allDept btn">All Departments</button>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <buttom class="modal-action waves-effect waves-green btn-flat green"
+                            id="submit">Send Email</button>
+                    </div>
+                  </div>
                 </form>
             </div>
         </div>
     </div>
-    
+
+<script>
+        $(document).ready(function(){
+        // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+            $('.modal').modal();
+         });
+        $("#btnSubmit").click(function(e){
+			if(!$("#reminder").val()){
+				alert("Please enter some content.");
+			}else{
+				$('#modal1').modal('open');
+			}			
+		});
+		$("#submit").click(function(e){
+		    $("form").submit();
+		});
+    </script>
+    <script>
+        $.validate({
+            scrollToTopOnError : true
+        });
+        var clicked = false;
+        $(".allSems").on("click", function() {
+          $("input[name='semesters']").prop("checked", !clicked);
+          clicked = !clicked;
+        });
+        var clicked1 = false;
+        $(".allDept").on("click", function() {
+          $("input[name='sendTodepartment']").prop("checked", !clicked1);
+          clicked1 = !clicked1;
+        });
+    </script>
 <% include ../partials/footer.ejs %>

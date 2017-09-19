@@ -12,21 +12,21 @@ var nodemailer = require('nodemailer');
 var ejs = require('ejs');
 var smtpTransport = require('nodemailer-smtp-transport');
 var ses = require('nodemailer-ses-transport');
-
+var http = require('http');
+var urlencode = require('urlencode');
 var mkdirp = require('mkdirp');
 var aSync = require('async');
 var testAnalysisHead = require("./externalFunction/testAnalysisHead");
-// var transporter = nodemailer.createTransport({
-//     service: 'Gmail',
-//     host: "smtp.gmail.com",
-//     auth: {
-//         user: 'bkm.blore.c9@gmail.com', // Your email id
-//         pass: 'cloudnine' // Your password
-//     }
-// });
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    host: "smtp.gmail.com",
+    auth: {
+        user: 'bkm.blore.c9@gmail.com', // Your email id
+        pass: 'cloudnine' // Your password
+    }
+});
 
 // ===================================================
-//  mohan i want this to work 
 
 // var transporter = nodemailer.createTransport(smtpTransport({
 //     service: 'SES',
@@ -39,12 +39,37 @@ var testAnalysisHead = require("./externalFunction/testAnalysisHead");
 //     }
 // }));
 
-var transporter = nodemailer.createTransport(ses({
-    accessKeyId: 'AKIAIBR46HUWC6DXQKCQ',
-    secretAccessKey: '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'
-}));
+// var transporter = nodemailer.createTransport(ses({
+//     accessKeyId: 'AKIAIBR46HUWC6DXQKCQ',
+//     secretAccessKey: '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'
+// }));
 
-
+router.get("/sms",function(req,res){
+    console.log("In text")
+    // Messages can only be sent between 9am to 9pm
+    var msg=urlencode("Hello! This is a test");
+    var number='+917892650591';
+    var username='bkm.blore@gmail.com';
+    var hash='e4e4a3e59ffa2ab4a6ed9bf7052f759d16140164d5c1b1a3d37cc7746ab67d9b';
+    var sender='txtlcl';
+    var data='username='+username+'&hash='+hash+'&sender='+sender+'&numbers='+number+'&message='+msg;
+    var options = {
+        host: 'api.textlocal.in',
+        path: '/send?'+data
+    };
+    var callback = function(response) {
+        var str = '';
+        //another chunk of data has been recieved, so append it to `str`
+        response.on('data', function (chunk) {
+            str += chunk;
+        });
+        //the whole response has been recieved, so we just print it out here
+        response.on('end', function () {
+            console.log(str);
+        });
+    }
+    http.request(options, callback).end();
+});
 
 var aws = require('aws-sdk');
 aws.config.loadFromPath('awscredentials.json');
@@ -133,7 +158,8 @@ router.post("/addStudent", middleware.isPlacementHead, function(req, res){
         var newStudent = new Student({
             author: user._id,
             semester: req.body.sem,
-            USN: usn.toUpperCase()
+            USN: usn.toUpperCase(),
+            department: req.body.department
         })
         Student.create(newStudent,function(err,student){
             if(err){
@@ -163,10 +189,9 @@ router.post("/addStudent", middleware.isPlacementHead, function(req, res){
                 };
                 var studentMailOptions = {
                     from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
-                    to: 'bkm.blore@gmail.com, '+user.email, // list of receivers
                     subject: 'Welcome to GradBunker', // Subject line
                     html: studentHtmlMail //, // plaintext body
-                };
+                };x
                 
                 transporter.sendMail(mailOptions, function(error, info){
                     if(error){
@@ -194,29 +219,152 @@ router.post("/addStudent", middleware.isPlacementHead, function(req, res){
 
 
 router.get("/addNewPlacement",function(req,res){
-    res.render("placement/addNewPlacement");
+    res.render("placement/addNewPlacement",{update:'none'});
+});
+
+
+router.get("/updatePlacement/:id",function(req,res){
+    Placement.findOne({'_id':req.params.id},function(err, record) {
+    if(err)
+        console.log(err);
+        // console.log(record);
+    res.render("placement/addNewPlacement",{update:record});
+    });
+    
+});
+router.post("/updatePlacement/:id",function(req,res){
+    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
+    var qualification = req.body.qualification;
+    var sems=[],deps=[];
+    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
+    var department = req.body.department;
+    department = (typeof department === 'string') ? department : department.join(", ");
+    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
+    (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
+    var emails,students;
+    Student.find({ semester: { $in: sems } , department: { $in: deps }}).populate('author').exec(function(err,records){
+        if(err) console.log(err);
+        else{
+            records.forEach(function(record){
+                // res.send(records);
+                emails = emails + ', '+ record.author.email;
+            })
+        }
+    })
+    // console.log()(typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
+    var mailAttachments = [];
+    var length = req.files.docs.length;
+    var urls=[],count = 1;
+    function f1(){
+        if(length>0 && req.files.docs[0].name!=''){
+            function uploader(i){
+                var imageFile = req.files.docs[i],
+                    fileExtension1 = imageFile.name.split(".");
+                var fileExtension = fileExtension1[fileExtension1.length - 1]
+                var filename = Date.now()+'image'+(i+1)+'.'+fileExtension;
+                var stream = fs.createReadStream(imageFile.path);
+                var params = {ACL: "public-read", Bucket: 'gradbunker', Key: 'PlacementUploads/'+filename,
+                    Body: stream
+                };
+                s3.upload(params, function(err, data) {
+                    if(err) console.log(err);
+                    else{
+                        var newAttachment = {
+                            filename: filename,
+                            path: data.Location
+                        }
+                        mailAttachments.push(newAttachment);
+                        urls.push(data.Location);
+                        if(count===length) f2();
+                        else{
+                            count = count + 1;
+                            i = i + 1;
+                            uploader(i);
+                        }
+                  }
+                });
+            }
+            uploader(0);
+        }else{
+            f2();
+        }
+    }
+    function f2(){
+        Placement.findOne({_id:req.params.id},function(err,placement){
+            if(err) console.log(err);
+            else{
+                placement.author= req.user._id,
+                placement.cName= req.body.cName,
+            	placement.Package= req.body.package,
+            	placement.jobLocation= req.body.jobLocation,
+            	placement.qualification= qualification,
+            	placement.department= department,
+            	placement.skills= req.body.skills,
+            	placement.designation= req.body.designation,
+            	placement.driveLocation= req.body.driveLocation,
+            	placement.date= req.body.driveDate,
+            	placement.eligibility= eligibility,
+            	placement.jobDescription= req.body.jobDescription, 
+            	placement.doc_links= urls
+            	placement.save(function(){
+            	    var html;
+                    var mailOptions;
+                    ejs.renderFile(template,{placement: placement}, function(err, html){
+                        if (err) console.log(err);
+                        else{
+                            mailOptions = {
+                                from: 'GradBunker <bkm.blore.c9@gmail.com>', // sender address
+                                to: 'bkm.blore@gmail.com '+emails, // list of receivers
+                                subject: placement.cName+'- ALERT! Placement Info Updated', // Subject line
+                                html: html, //, // plaintext body
+                                attachments: mailAttachments
+                            };
+                        }
+                    });
+                    
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if(error){
+                            console.log(error);
+                        }
+                        else{
+                            console.log('Message sent: congo!!!!!');
+                            req.flash("success","Updated Placement Info");
+                            res.redirect("/placementHead/list");
+                            // callback(null,"It works");
+                        };
+                    });
+            	})
+            }
+        })
+    }
+    f1();
 });
 
 router.post("/addNewPlacement",function(req,res){
     var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
     var qualification = req.body.qualification;
+    var sems=[],deps=[];
     qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
     var department = req.body.department;
     department = (typeof department === 'string') ? department : department.join(", ");
+    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
+    (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
     var emails,students;
-    Student.find({}).populate('author').exec(function(err,records){
+    Student.find({ semester: { $in: sems } , department: { $in: deps }}).populate('author').exec(function(err,records){
         if(err) console.log(err);
         else{
             records.forEach(function(record){
+                // res.send(records);
                 emails = emails + ', '+ record.author.email;
             })
         }
     })
+    // console.log()(typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
     var mailAttachments = [];
     var length = req.files.docs.length;
     var urls=[],count = 1;
     function f1(){
-        if(length>0){
+        if(length>0 && req.files.docs[0].name!=''){
             function uploader(i){
                 var imageFile = req.files.docs[i],
                     fileExtension1 = imageFile.name.split(".");
@@ -315,12 +463,14 @@ router.get("/addNewInternship",function(req,res){
 
 router.post("/addNewInternship",function(req,res){
     var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
+    var sems = [];
     var qualification = req.body.qualification;
     qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
     var department = req.body.department;
     department = (typeof department === 'string') ? department : department.join(", ");
+    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
     var emails,students;
-    Student.find({}).populate('author').exec(function(err,records){
+    Student.find({ semester: { $in: sems } }).populate('author').exec(function(err,records){
         if(err) console.log(err);
         else{
             records.forEach(function(record){
@@ -401,7 +551,7 @@ router.post("/addNewInternship",function(req,res){
                 else{
                     mailOptions = {
                         from: 'GradBunker <bkm.blore.c9@gmail.com>', // sender address
-                        to: 'bkm.blore@gmail.com ', // list of receivers
+                        to: 'bkm.blore@gmail.com '+emails, // list of receivers
                         subject: newIntern.cName+'- New Internship Update', // Subject line
                         html: html, //, // plaintext body
                         attachments: mailAttachments
@@ -555,20 +705,22 @@ router.get("/sendReminder",function(req,res){
 });
 
 router.post("/sendReminder",function(req,res){
+    var sems=[];
+    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
     var StudentIDs ='bkm.blore@gmail.com';
-    StudentIDs +=',keith30895@gmail.com,mkb.viru4@gmail.com';
+    // StudentIDs +=',keith30895@gmail.com,mkb.viru4@gmail.com';
     var update=req.body.reminder;
         
-    Student.find({ $or: [ {'semester':8}, {'semester':7}]})
+    Student.find({ semester: { $in: sems }})
     .populate('author').exec(function (err, students) {
         if(err){
              req.flash('error',"No matching Records found to send mail!")
         } 
         else{
-            // students.forEach(function(student){
-            //     StudentIDs = StudentIDs+', '+student.author.email;
-            //     console.log("Mails: ",StudentIDs);
-            // });
+            students.forEach(function(student){
+                StudentIDs = StudentIDs+', '+student.author.email;
+                console.log("Mails: ",StudentIDs);
+            });
             var mailOptions = {
                 from: 'AMC Engineering College <keith@keithfranklin.xyz>', // sender address
                 to: StudentIDs, // list of receivers
@@ -601,9 +753,12 @@ router.get('/viewStats',function(req,res){
 });
 router.get('/getAnalysis',function(req,res){
     LeaderBoard.find({}).sort({'_id':-1}).limit(1).exec(function(err,br){
-        Student.findOne({'author': br[0].entry[0].author},function(err,student){
+        // if(br[0].entry){
+            Student.findOne({'author': br[0].entry[0].author},function(err,student){
             testAnalysisHead(req,student.PlacementTestResults[student.PlacementTestResults.length - 1][0],res);
         });
+        // }
+        
     });
 });
 

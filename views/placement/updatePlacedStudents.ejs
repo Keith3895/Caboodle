@@ -11,18 +11,18 @@
 </style>
 <div class="row">
     
-    <div class="col m12" style="margin-top:-70px;padding:0">
-        <h4 class="center"><%= company.cName %> Registrations</h4>
+    <div class="col s12 m10 offset-m1" style="margin-top:-70px;padding:0">
+        <h4 class="center" style="margin-top:30px;"><%= company.cName %> Registrations</h4>
         <form action="/placementHead/updatePlacementStats/<%= company._id %>" method="post">
             <input type="text" style="display:none" name="noOfStudents" value=<%= students.length %>>
-    <table class="striped" >
-        <thead class="centered">
+    <table class="striped centered " >
+        <thead>
             <tr>
-                <th>Sl No.</th>
-                <th>USN</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Placed? <button class="btn waves-effect waves-light green" type="submit" name="action">
+                <th style="width: 5% ">Sl No.</th>
+                <th style="width: 15% ">USN</th>
+                <th style="width: 25% ">Name</th>
+                <th style="width: 25% " >Email</th>
+                <th >Placed? <button class="btn waves-effect waves-light green" type="submit" name="action">
                                 Update
                             </button>
                 </th>

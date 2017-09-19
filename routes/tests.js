@@ -60,23 +60,25 @@ router.get('/questions',middleware.isLoggedIn,function(req,res){
     Questions.find({},function(err, questionsSend) {
         req.session.timestamp = questionsSend[0].timestamp;    
         timestamp = questionsSend[0].timestamp;
+        var last = questionsSend[5];
+        last.comprehension = "bla bla bla bla";
+        console.log(last);
+        questionsSend.push(last);
+        
         res.send(questionsSend);
     });
 });
 
 router.get('/refreshQuestions',middleware.isAdmin,function(req,res){
+
+
+    testExternalFuncs.studentSkiped();
     Questions.remove({},function(err,stat) {
         console.log('removed');
         // console.log(stat);
     });
     refreshQuestions();
     req.session.timestamp=timestamp;
-    
-    
-    
-    
-    
-    
     res.redirect('/test');
 });
 router.post('/getAnalysis',function(req,res){
@@ -113,6 +115,17 @@ router.get('/status',function(req, res) {
                 var total = std.length;
                 res.send({Submit:Submit,total:total,questionset:questionset});
             });
+            
+            // entry=entry[0];
+            // var newEnt;
+            // for(i=0;i<entry.entry.length;i++){
+            //     if(entry.entry[i].marks==-2)
+            //         newEnt = entry.entry[i];
+            // }
+            // entry.entry=newEnt;
+            // entry.save();
+            
+            
         });
     
 });

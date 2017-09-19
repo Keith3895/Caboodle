@@ -30,7 +30,7 @@
 .zoomInDown {
   animation-name: zoomInDown;
   animation-delay: .0s;
-  animation-duration: .6s;
+  animation-duration: .3s;
 }
 @keyframes bounceInDown {
   from, 60%, 75%, 90%, to {
@@ -78,6 +78,7 @@
 .logo1{
     width: 65%;
     height 100%;
+    transition:.5s ease;
 }
 .brand-logo{
     width:100px;
@@ -123,11 +124,11 @@
 	<nav style="  background :#3b4446;">
 		<div class="nav-wrapper">
       		<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-			<a href="/" class="brand-logo center zoomInDown " style="left: 44%;height: 65px;">
+			<a href="/" class="brand-logo center zoomInDown " style="height: 65px;">
 			    <!--<span class="logo-text" id="span1">Grad</span>-->
 			    <!--<img class="logo1" src="/images/GBlogo.png">-->
+			    <img class="logo1" src="/images/GBK.png">
 			    <!--<span class="logo-text" id="span2">Bunker</span>-->
-			    <span>[RMS-goes here]</span>
 			    </a>
 			<ul id="nav-mobile" class="left hide-on-med-and-down">
         		<!--<li class="bounceInDown"><a href="/library">Library <i class="fa fa-book" aria-hidden="true"></i></a></li>-->
@@ -147,9 +148,6 @@
                         <!--<li><a href="#">< currentUser. %></a></li>-->
                         <li><a href="/logout">Logout</a></li>
                     <% } %>
-				<!--<li><a href="#">Sign up <i class="fa fa-user-plus"></i></a></li>-->
-				<!-- Dropdown Trigger -->
-				<!--<li><a class="dropdown-button" href="#" data-activates="dropdown2">Login <i class="fa fa-user"></i><i class="material-icons right">arrow_drop_down</i></a></li>-->
 			</ul>
 			<ul class="side-nav" id="mobile-demo">
 	        	<!--<li><a href="#">Library</a></li>-->
@@ -178,6 +176,17 @@
 		$(".button-collapse").sideNav();
 	</script>
 	<script>
+	
+	$(window).scroll(function() {
+	  if ($(this).scrollTop() >= 30) {
+	    $('.logo1').css({'height':'62px','width':'68px'});
+	    $('.logo1').attr("src","/images/GBWhite.png");
+	  }else{
+	      $('.logo1').attr("src","/images/GBK.png");
+	        $('.logo1').css({'height':'80px','width':'80px'});
+	    
+	  }
+	});
 		$('.dropdown-button').dropdown({
 			constrainWidth: false, // Does not change width of dropdown to that of the activator
 			hover: true, // Activate on hover

@@ -19,6 +19,15 @@ var pdf = require('html-pdf');
 var conversion = require("phantom-html-to-pdf")();
 const template = './views/result/resultPdf.ejs';
 var randomstring = require("randomstring");
+var aws = require('aws-sdk');
+aws.config.loadFromPath('awscredentials.json');
+var s3 = new aws.S3();
+var s3Bucket = new aws.S3( { params: {Bucket: 'gradbunker'} } )
+var S3FS = require('s3fs'),
+    fs = require('fs'),
+    multiparty = require('connect-multiparty'),
+    multipartyMiddleware = multiparty();
+router.use(multipartyMiddleware); 
 var transporter = nodemailer.createTransport({
                 service: 'Gmail',
                 host: "smtp.gmail.com",
@@ -29,7 +38,7 @@ var transporter = nodemailer.createTransport({
         });
 //root route
 
-//******For updating DOCS******
+//******For updating any info in any DOCS change stuff and use it******
     // Student.find({}).populate('author').exec(function(err,docs){
     //     res.send(docs);
     //     docs.forEach(function(doc){
@@ -45,6 +54,31 @@ var transporter = nodemailer.createTransport({
     //     })
          
     // });
+    
+router.get("/upload",function(req,res){
+    res.render("upload");
+})
+
+router.post("/upload",function(req,res){
+    var url;
+    var imageFile = req.files.image,
+        fileExtension1 = imageFile.name.split(".");
+    var fileExtension = fileExtension1[fileExtension1.length - 1]
+    var filename = 'image'+Date.now()+'.'+fileExtension;
+    var stream = fs.createReadStream(imageFile.path);
+    var params = {ACL: "public-read", Bucket: 'gradbunker', Key: 'testImages/'+filename,
+        Body: stream
+    };
+    s3.upload(params, function(err, data) {
+        if(err)
+            console.log(err);
+        else{
+            url=data.Location;
+            var obj= { link: url }
+            res.send(JSON.stringify(obj));
+        }
+    });
+})
 
 router.get("/",function(req,res){          // the index page
     req.session.redirectTo=null;
@@ -438,8 +472,8 @@ router.get("/login", function(req, res){
 
 //handling login logic
 router.post("/login", function(req, res, next){
-    console.log("got one!");
-    console.log(req.body);
+    // console.log("got one!");
+    // console.log(req.body);
     if(req.params.id=='test')
         req.params.id='student';
     passport.authenticate('local', function(err, user, info) {
@@ -462,40 +496,26 @@ router.post("/login", function(req, res, next){
     })(req, res, next);
 });
 
-router.post("/login/app/:id", function(req, res, next){
-    // bodyEles= Object.keys(req.body)[0].split(',');
-    // email =bodyEles[0].substr(9,bodyEles[0].length);
-    // email = email.substring(1, email.length-1);
-    // password=bodyEles[1].substr(11,bodyEles[0].length);
-    // password=password.substring(1, password.length-2);
-    // req.body={email:email,password:password};
+router.post("/login/app/", function(req, res, next){
+    
     console.log(req.body);
     passport.authenticate('local', function(err, user, info) {
-            
         if (err) { return next(err); }
-        // if (!user) { 
-        //     req.flash("error","Invalid Credentials");
-        //     res.redirect('/login/'+req.params.id); 
-        // }
-        console.log("userType :"+user);
-        // console.log("");
-        if(user.userType===req.params.id){
-            console.log("got one! "+req.params.id);
+            // console.log("got one! "+user);
+            console.log("got one mobile");
+        if(user.userType=='placementHead'){
             req.logIn(user, function(err) {
-              if (err) { return next(err); }
-            //   redirectTo = req.session.redirectTo ? req.session.redirectTo : '/' + req.params.id;
-            //   delete req.session.returnTo;
-            //   console.log(redirectTo);
-            //   return res.redirect(redirectTo);
+              if (err) { 
+                  res.send(['no']);
+                  return next(err);
+              }
             return res.send(['yes']);
             });
-        }
-        else{ 
-            res.send(["no"]);
-            // req.flash("error","Invalid Credentials");
-            // res.redirect('/login/'+req.params.id); 
+        }else{
+            res.send(['no']);
         }
     })(req, res, next);
+    
 });
 
 router.get("/changePassword",function(req,res){

@@ -1,40 +1,44 @@
 <% include ../partials/header.ejs %>
-<title>GradBunker - Add Placement Head</title>
+<title>GradBunker - Add Student</title>
 <% include ../partials/navbar.ejs %>
-
+<style>
+  select{
+    border: 1px solid rgba(39, 29, 33, 0.48);
+  }
+</style>
 <div class="row">
     <div class="col s12 m10 offset-m1 l4 offset-l4">
       <div class="card-panel">
         <h4 class="center">Add Student</h4>
         <div class="row">
-    <form class="col s12" action="/admin/addStudent" method="POST" id="SignUpForm">
-      <div class="row">
-        <div class="input-field col s6">
+    <form class="col s12 " action="/admin/addStudent" method="POST" id="SignUpForm">
+      
+        <div class="input-field col m6 s12">
           <input id="firstName" name="firstName" type="text" class="validate">
           <label for="firstName">First Name</label>
         </div>
-        <div class="input-field col s6">
+        <div class="input-field col m6 s12">
           <input id="lastName" name="lastName" type="text" class="validate">
           <label for="lastName">Last Name</label>
         </div>
-      </div>
-      <div class="row">
-      <div class="input-field col s6">
+      
+      
+      <div class="input-field col s12">
         <input id="email" name="email" type="email" class="validate">
         <label for="email">Email</label>
       </div>
-      <div class="input-field col s6">
-        <select id="gender" name="gender">
+      <div class="input-field col m6 s12">
+        <select class="browser-default" id="gender" name="gender">
           <option value="" disabled selected>Gender</option>
           <option>Male</option>
           <option>Female</option>
         </select>
-        <label>Student's Gender</label>
+        <!--<label>Student's Gender</label>-->
       </div>
-    </div>
-    <div class="row">
-      <div class="input-field col s6">
-        <select id="sem" name="sem">
+    
+    
+      <div class="input-field col m6 s12">
+        <select class="browser-default" id="sem" name="sem">
           <option value="" disabled selected>Select Semester</option>
           <option>1</option>
           <option>2</option>
@@ -45,20 +49,31 @@
           <option>7</option>
           <option>8</option>
         </select>
-        <label>Semester</label>
+        <!--<label>Semester</label>-->
       </div>
-      <div class="input-field col s6">
+      <div class="input-field col m6 s12">
         <input id="usn" name="usn" type="text" class="validate">
         <label for="usn">USN</label>
       </div>
+      <div class="input-field col m6 s12">
+        <select class="browser-default" name="department" id="department" required>
+            <option value="" disabled selected>Select Department</option>
+            <option value="CSE">Computer Science</option>
+            <option value="ISE">Information Science</option>
+            <option value="ECE">Electronics & Communication</option>
+            <option value="ME">Mechanical</option>
+            <option value="EEE">Electrical</option>
+            <option value="CE">Civil</option>
+        </select>
     </div>
-    <div class="row">
+    
+    
         <div class="input-field col s12">
           <button class="btn waves-effect waves-light right" type="submit" name="action">Add
             <i class="material-icons right">send</i>
           </button>
         </div>
-      </div>
+      
     </form>
   </div>
       </div>

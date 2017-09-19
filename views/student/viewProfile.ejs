@@ -15,6 +15,14 @@
                         href="<%= student.resumeLink%>" target="_blank">
                             <i class="material-icons left">file_download</i>RESUME</a>
                     </div>
+                    <% var semTotal=0,noOfSems=0;
+                        student.semResults.forEach(function(sem){ 
+                            if(sem.Percentage!=null){
+                                noOfSems = noOfSems + 1;
+                            }
+                            semTotal = semTotal + sem.Percentage;
+                        })
+                    %>
                     <div style="padding-top: 30px">
                         <h5 class="blue-text">PERSONAL INFORMATION</h5>
                         <table>
@@ -31,7 +39,7 @@
                                 &nbsp;&nbsp;&nbsp;<%= student.gender %></td>
                                 <td class="space"></td>
                                 <td class="border_bottom">Department: 
-                                &nbsp;&nbsp;&nbsp;CSE</td> 
+                                &nbsp;&nbsp;&nbsp;<%= student.department %></td> 
                             </tr>
                             <tr >
                                 <td class="border_bottom" width="45%">DOB: 
@@ -44,8 +52,14 @@
                                 <td class="border_bottom" width="45%">Phone: 
                                 &nbsp;&nbsp;&nbsp;&nbsp;+91 <%= student.mobile1 %></td>
                                 <td class="space"></td>
+                                <% var semAggregate = semTotal/noOfSems;
+                                    if(semAggregate==0){ semAggregate="NA" }
+                                    else{
+                                    semAggregate = Math.round(semAggregate * 100) / 100;
+                                    }
+                                %>
                                 <td class="border_bottom">Aggregate: &nbsp;&nbsp;&nbsp;&nbsp;
-                                &nbsp;&nbsp;78%</td> 
+                                &nbsp;&nbsp;<%= semAggregate %>%</td> 
                             </tr>
                             <tr >
                                 <td class="border_bottom" width="45%">Email: 
@@ -65,6 +79,7 @@
                                 <td class="border_bottom" width="48%">
                                     <h5 class="blue-text">10TH RESULT DETAILS</h5>
                                     <div class="card horizontal">
+                                        <%if(student.tenthResult.reportLink){%>
                                         <div class="card-image">
                                             <% if(/.pdf/i.test(student.tenthResult.reportLink)){ %>
                                             <embed  class="activator" name="plugin" src="<%= student.tenthResult.reportLink%>" type="application/pdf" width="100%" height="207">
@@ -72,16 +87,23 @@
                                             <img src="<%= student.tenthResult.reportLink%>">
                                             <% } %>
                                         </div>
+                                        <% } %>
                                         <div class="card-stacked">
                                             <div class="card-content">
                                                 <p>Board: <%= student.tenthResult.board %></p>
                                                 <p>Result: <%= student.tenthResult.Percentage %> %</p>
                                                 <p>Year of Passing: <%= student.tenthResult.yearPassed %></p>
                                             </div>
+                                            <%if(student.tenthResult.reportLink){%>
                                             <div class="card-action">
-                                                <a href="/student/viewFile?link=<%= student.tenthResult.reportLink%>" target="_blank">Open</a>
+                                                <%  var filename = student.tenthResult.reportLink.split("/");
+                                                    filename = filename[filename.length - 1] %>
+                                                <a target="_blank"
+                                                    href="/student/viewFile?link=<%=student.USN%>/<%=filename%>">
+                                                    Open</a>
                                                 <a href="<%= student.tenthResult.reportLink%>">Download</a>
                                             </div>
+                                            <% }%>
                                         </div>
                                     </div>
                                 </td>
@@ -89,6 +111,7 @@
                                 <td class="border_bottom">
                                     <h5 class="blue-text">12TH RESULT DETAILS</h5>
                                     <div class="card horizontal">
+                                        <%if(student.twelfthResult.reportLink){ %>
                                         <div class="card-image">
                                             <% if(/.pdf/i.test(student.twelfthResult.reportLink) ){ %>
                                                 <embed  class="activator" name="plugin" src="<%= student.twelfthResult.reportLink%>" type="application/pdf" width="100%" height="207">
@@ -96,43 +119,66 @@
                                                 <img src="<%= student.twelfthResult.reportLink%>">
                                             <% } %>
                                         </div>
-                                        
+                                        <% }%>
                                         <div class="card-stacked">
                                             <div class="card-content">
                                                 <p>Board: <%= student.twelfthResult.board %></p>
                                                 <p>Result: <%= student.twelfthResult.Percentage %> %</p>
                                                 <p>Year of Passing: <%= student.twelfthResult.yearPassed %></p>
                                             </div>
+                                            <%if(student.twelfthResult.reportLink){ %>
                                             <div class="card-action">
-                                                <a target="_blank" href="/student/viewFile?link=<%= student.twelfthResult.reportLink%>">Open</a>
+                                                <%  var filename = student.twelfthResult.reportLink.split("/");
+                                                    filename = filename[filename.length - 1] %>
+                                                <a target="_blank" 
+                                                    href="/student/viewFile?link=<%=student.USN%>/<%=filename%>">
+                                                    Open</a>
                                                 <a href="<%= student.twelfthResult.reportLink%>" download>Download</a>
                                             </div>
+                                            <% }%>
                                         </div>
                                     </div>
                                 </td> 
                             </tr>
                         </table>
                     </div>
+                    <style>
+                        .ste{
+                            margin-right:8px !important;
+                        }
+                    </style>
                     <div style="padding-top:30px; float:left;border-bottom:1px solid #eeeeee;">
                         <h5 class="blue-text">SEMESTER RESULTS</h5>
-                        <% student.semResults.forEach(function(item,index){ %>
-                            <div class="card col s12 m2" style="margin:10px">
+                        <% student.semResults.forEach(function(item,index){ %> 
+                        <% if(index==4 || index == 0){%>
+                             <div class='col m12'>
+                                 <% }%>
+                            <div class="card col s6 m3" style="padding:10px; border: 0.5px solid grey">
                                 <div class="card-image">
-                                    <% if(/.pdf/i.test(item.reportLink)){ %>
+                                    <% if(/.pdf/i.test(item.reportLink)){  %>
                                         <embed  class="activator" name="plugin" src="<%= item.reportLink%>" type="application/pdf" width="100%" height="300px">
-                                    <% } else {%>
-                                        <img src="<%= item.reportLink%>">
-                                    <% } %>
+                                    <% } else if(/.jpg/i.test(item.reportLink)) {%>
+                                        <img src="<%= item.reportLink%>" style="min-height:305px;">
+                                    <% }else{ %>
+                                    <div style="padding:150px"></div>
+                                    <% }%>
                                     <span class="card-title" style="color:black;">Sem: <%= item.sem%> <br> Result: <%= item.Percentage %>%</span>
                                 </div>
                                 <div class="card-action" style="padding: 5px 5px 5px 5px">
-                                    <a href="/student/viewFile?link=<%= item.reportLink%>" target="_blank">
+                                    <% var filename = item.reportLink.split("/");
+                                                    filename = filename[filename.length - 1] %>
+                                    <a href="/student/viewFile?link=<%=student.USN%>/<%=filename%>" target="_blank">
                                         <i class="material-icons">remove_red_eye</i></a>
                                     <a href="<%= item.reportLink%>" download style="margin-right:0" class="right blue-text">
                                         <i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
+                            <% if(index==3){%>
+                                 </div>
+                             <% }%>
                         <% }); %>
+                        </div>
+                        
                         
                     </div>
                     <div style="padding-top:30px; float:left;">
@@ -148,7 +194,9 @@
                                     <span class="card-title" style="color:black;"><%= item.description%></span>
                                 </div>
                                 <div class="card-action">
-                                    <a href="/student/viewFile?link=<%= item.docLink%>" target="_blank">Open</a>
+                                    <% var filename = item.docLink.split("/");
+                                                    filename = filename[filename.length - 1] %>
+                                    <a href="/student/viewFile?link=<%=student.USN%>/<%=filename%>" target="_blank">Open</a>
                                     <a href="<%= item.docLink%>" download>Download</a>
                                 </div>
                             </div>
@@ -204,6 +252,6 @@
         });
     });
   });
-  
+  $('a[href=""]').remove();
   </script>
 <% include ../partials/footer.ejs %>

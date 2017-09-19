@@ -19,12 +19,20 @@
   .card .card-content p {
       margin: 2px !important;
   }
-  .card-content{
-      padding:24px !important;
-      height:245px;
-      
-      overflow:scroll;
+  .card{
+      box-shadow: 10px 10px 25px 0 #607D8B !important;
+      transition: all .3s ease;
   }
+  .card:hover{
+      cursor: pointer;
+      box-shadow: 2px 2px 5px 0 #607D8B !important;
+  }
+  /*.card-content{*/
+  /*    padding:24px !important;*/
+  /*    height:245px;*/
+      
+  /*    overflow:scroll;*/
+  /*}*/
   
   /*.modal { */
   /*    width: 65% !important ; */
@@ -359,7 +367,7 @@
     <div class="modal-content">
       <h4><%= internship.cName %></h4>
       <p><strong>No. of Applied: </strong><%= internship.appliedStudents.length %></p>
-      <p><strong>No. of Selected Students: </strong><%= comp.selectedInterns.length %></p>
+      <p><strong>No. of Selected Students: </strong><%= internship.selectedInterns.length %></p>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>

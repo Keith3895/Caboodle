@@ -13,6 +13,7 @@
   .card-content{
       padding:15px !important;
   }
+  
 </style>
 <div class="row" style="margin-top:40px;">
 <div class="col m12" style="margin-top:-70px;">
@@ -72,6 +73,7 @@
             <div class="card-action">
                 <a href="/placementHead/viewRegisteredStudents/<%= comp._id %>" >View Registrations</a>
                 <a href="<%= myhref %>" >More Info</a>
+                <a href="/placementHead/updatePlacement/<%= comp._id %>" >Update</a>
             </div>
         </div>
     </div>
@@ -338,7 +340,7 @@
     <div class="modal-content">
       <h4><%= internship.cName %></h4>
       <p><strong>No. of Registrations: </strong><%= internship.appliedStudents.length %></p>
-      <p><strong>No. of students placed: </strong><%= comp.selectedInterns.length %></p>
+      <p><strong>No. of students placed: </strong><%= internship.selectedInterns.length %></p>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>

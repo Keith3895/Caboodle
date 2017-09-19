@@ -4,7 +4,8 @@
 	    <title>GradBunker</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">	
         <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+        <link href="/stylesheets/materialize.css" rel='stylesheet'>  
+        <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/jquery.datetimepicker.min.css" />
         <link href='https://fonts.googleapis.com/css?family=Shadows+Into+Light|Architects+Daughter|Oswald:400,700' rel='stylesheet' type='text/css'>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -15,7 +16,10 @@
         <%include ./script.ejs%>
     </head>
     <style>
-       
+       body{
+		font-family: 'Didact Gothic', sans-serif;
+        background:whitesmoke;
+       }
     #body{
         min-height:85vh;
     }
@@ -39,6 +43,7 @@
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
         transition: all 0.3s ease;
+        z-index:10000;
     }
     #return-to-top i {
         color: #fff;

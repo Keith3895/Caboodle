@@ -351,18 +351,8 @@ router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
         var newStudent = new Student({
             author: user._id,
             semester: req.body.sem,
-        //     department: '',
-        // 	placements: null,
-        // 	gender: '',
-        // 	DOB: '',
-        // 	mobile1: null,
-        // 	address: '',
-        // 	tenthResult: {},
-        // 	twelfthResult: {},
-        // 	semResults: [{}],
-        // 	semAggregate: null,
-        // 	resumeLink: '',
-        // 	certifications: [{}]
+            USN: usn.toUpperCase(),
+            department: req.body.department
         })
         Student.create(newStudent,function(err,student){
             if(err){
