@@ -2,10 +2,21 @@
 <html>
 <head>
 	<title>Get Links</title>
+		<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+</script>
+
+<script
+  src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+  integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+  crossorigin="anonymous">
+</script>
 </head>
 <body>
     <h4>Upload images to get links</h4>
-    <form enctype="multipart/form-data" action="/upload" method="post">
+    <form enctype="multipart/form-data" action="/upload" method="post" id="uploadForm">
         <div>
             <input type="file" name="image" />
             <p>
@@ -16,4 +27,26 @@
         </div>
     </form>
 </body>
+<script>
+$(document).ready(function() {
+
+ $('#uploadForm').submit(function() {
+     $("#status").empty().text("File is uploading...");
+
+    $(this).ajaxSubmit({
+
+        error: function(xhr) {
+                status('Error: ' + xhr.status);
+        },
+
+        success: function(data) {
+        	var obj = JSON.parse(data);
+    		var url = obj.link;
+            $("#status").text(url);
+        }
+   });
+
+  return false;
+  });   
+</script>
 </html>

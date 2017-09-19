@@ -61,12 +61,12 @@ router.get("/upload",function(req,res){
 
 router.post("/upload",function(req,res){
     var url;
-    var imageFile = req.files.image,
-        fileExtension1 = imageFile.name.split(".");
-    var fileExtension = fileExtension1[fileExtension1.length - 1]
-    var filename = 'image'+Date.now()+'.'+fileExtension;
+    var imageFile = req.files.image;
+    //     fileExtension1 = imageFile.originalFilename.split(".");
+    // var fileExtension = fileExtension1[fileExtension1.length - 1]
+    var filename = imageFile.originalFilename;
     var stream = fs.createReadStream(imageFile.path);
-    var params = {ACL: "public-read", Bucket: 'gradbunker', Key: 'testImages/'+filename,
+    var params = {ACL: "public-read", Bucket: 'gradbunker', Key: 'publicImages/'+filename,
         Body: stream
     };
     s3.upload(params, function(err, data) {

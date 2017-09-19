@@ -106,7 +106,7 @@
             $( document ).ready(function() {
                 $("#ajax").fadeOut(200, function() {
                     $("#bodyC").fadeIn(500,function(){
-                        if(window.location.href == "https://erpdontdelete-mkb95.c9users.io/"){
+                        if(window.location.href == "https://erpdontdelete-mkb95.c9users.io/" || window.location.href.split('/')[3]==''){
                             $('body').animate({ scrollTop: 20 , scrollDown: 20}, 400);
                             Materialize.scrollFire(options);    
                         }
