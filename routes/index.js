@@ -29,7 +29,8 @@ var transporter = nodemailer.createTransport({
                     pass: 'cloudnine' // Your password
         }
 });
-
+var homeurl = "http://gradbunker.keithfranklin.xyz:8080";
+// var homeurl = "https://erpdontdelete-mkb95.c9users.io";
 // var transporter = nodemailer.createTransport(ses({
 //     accessKeyId: 'process.env.MailerKeyid',
 //     secretAccessKey: 'process.env.MailerPsd'
@@ -110,7 +111,7 @@ router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
                 var htmlMail = '<div> <p> Hello ADMIN, </p>'+
                 '<p> This is a mail from GradBunker.  </p> <p> You added a new Student '+
                 user.firstName+'. If you did not add the student, '+
-                '<a href="https://erpdontdelete-mkb95.c9users.io/admin/delete/'+user._id+
+                '<a href="'+homeurl+'/admin/delete/'+user._id+
                 '">click here</a> to delete the user account</p>'+
                 '<p> If not, Please ignore this mail</p><p> Regards, </p>'+
                 '<p> GradBunker</p></div>';
@@ -118,7 +119,7 @@ router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
                 var studentHtmlMail = '<div> <p> Hello '+user.firstName+', </p>'+
                 '<p> This is a mail from GradBunker.  </p><p> Welcome! You are registered on GradBunker.'+
                 ' Kindly update your profile. </p>'+
-                '<p> <a href="https://erpdontdelete-mkb95.c9users.io/student/updateProfile">Click here</a> to update your profile.</p><p> Regards, '+
+                '<p> <a href="'+homeurl+'/student/updateProfile">Click here</a> to update your profile.</p><p> Regards, '+
                 '</p><p> GradBunker</p></div>';
                 var mailOptions = {
                     from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
@@ -412,7 +413,7 @@ router.post("/forgotPassword",function(req,res){
                var htmlMail = '<div> <p> Hello '+user.firstName+', </p>'+
                 '<p> This is a mail from GradBunker.  </p> <p> Copy the verification code is mentioned below: </p>'+
                 '<p><b> '+req.session.verCode+ '</b></p><p> '+
-                '<p> Or, <a href="https://erpdontdelete-mkb95.c9users.io/resetPassword/'+req.session.verCode+
+                '<p> Or, <a href="'+homeurl+'/resetPassword/'+req.session.verCode+
                 '">click here</a> to reset your password!</p>'+
                 '<p> If you did not forget your password, Please ignore this mail</p><p> Regards, </p>'+
                 '<p> GradBunker</p></div>';
@@ -525,7 +526,7 @@ router.post("/register", function(req, res){
         var text = 'Hello '+user.firstName+
                     ',\n This is a mail from GradBunker.\n '+
                     ' Kindly click the following link to reset password!\n'+
-                    ' Link: https://erpdontdelete-mkb95.c9users.io/verify'+
+                    ' Link: '+homeurl+'/verify'+
                     '?authToken=' + user.authToken+
                     '\n If you did not register, please ignore this email';
         var mailOptions = {

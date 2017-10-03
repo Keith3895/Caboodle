@@ -28,6 +28,9 @@ router.use(multipartyMiddleware);
 var urls1 = [];
 var resultAnalysis = require("./externalFunction/resultAnalysis");
 require('dotenv').config();
+var homeurl = "http://gradbunker.keithfranklin.xyz:8080";
+// var homeurl = "https://erpdontdelete-mkb95.c9users.io";
+
 var has = function(container, value) {
 	var returnValue = false;
 	var pos = container.indexOf(value);
@@ -721,7 +724,7 @@ router.post("/addPlacementHead", middleware.isAdmin, function(req, res){
                     '   You added a new Placement Head ' + user.firstName+
                     '. If you did not add the Placement Head, click the '+
                     'following link to delete the account: '+
-                    'https://erpdontdelete-mkb95.c9users.io/delete/'+
+                    ''+homeurl+'/delete/'+
                     user._id+'  \n'+
                     '   Else Ignore this mail';
         var mailOptions = {
