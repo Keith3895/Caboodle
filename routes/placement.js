@@ -183,7 +183,6 @@ router.get("/addNewPlacement",function(req,res){
 });
 
 router.post("/addNewPlacement",async function(req,res){
-    // console.log(req.body);
     var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
     var qualification = req.body.qualification;
     var sems=[],deps=[];
@@ -268,6 +267,7 @@ router.post("/addNewPlacement",async function(req,res){
     })
     };
     fileUploader(0,req.files.docs,'PlacementUploads/',length,mailAttachments,filePaths);
+    
 });
 
 
