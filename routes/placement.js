@@ -182,7 +182,8 @@ router.get("/addNewPlacement",function(req,res){
     res.render("placement/addNewPlacement",{update:'none'});
 });
 
-router.post("/addNewPlacement",async function(req,res){
+router.post("/addNewPlacement",function(req,res){
+    // console.log(req.body);
     var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
     var qualification = req.body.qualification;
     var sems=[],deps=[];
@@ -192,7 +193,7 @@ router.post("/addNewPlacement",async function(req,res){
     (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
     (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
     var emails='',students;
-    await Student.find({ semester: { $in: sems } , department: { $in: deps }}).populate('author').exec(function(err,records){
+     Student.find({ semester: { $in: sems } , department: { $in: deps }}).populate('author').exec(function(err,records){
         if(err) console.log(err);
         else{
             console.log()
@@ -267,7 +268,6 @@ router.post("/addNewPlacement",async function(req,res){
     })
     };
     fileUploader(0,req.files.docs,'PlacementUploads/',length,mailAttachments,filePaths);
-    
 });
 
 

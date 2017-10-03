@@ -707,7 +707,8 @@ router.post("/addPlacementHead", middleware.isAdmin, function(req, res){
         email: req.body.email,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        userType: "placementHead"
+        userType: "placementHead",
+        usn:"placementHead"
     });
     User.register(newUser, 'amcec', function(err, user){
         if(err){
@@ -735,7 +736,7 @@ router.post("/addPlacementHead", middleware.isAdmin, function(req, res){
             }
             else{
                 console.log('Message sent: congo!!!!!');
-                res.redirect("/admin/verify?authToken="+user.authToken)
+                res.redirect("/verify?authToken="+user.authToken)
             };
         });
     });
