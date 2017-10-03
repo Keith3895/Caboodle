@@ -5,8 +5,8 @@ var LeaderBoard = require("../../models/leaderboard");
 
 module.exports = function (req,requestedTest,res){
     var returnData;
-    var types=['Quantitative aptitude','Logical Reasoning','Verbal Reasoning','Puzzles'];
-    var lineMarks=[],typeCorrect=[0,0,0,0],indTypeCorrect=[0,0,0,0],indTypeCount=[0,0,0,0],range=[0,0,0,0,0,0];
+    var types=['Quantitative aptitude','Logical Reasoning','Verbal Ability','Puzzles','Comprehension','Data Interpretation'];
+    var lineMarks=[],typeCorrect=[0,0,0,0,0,0],indTypeCorrect=[0,0,0,0,0,0],indTypeCount=[0,0,0,0,0,0],range=[0,0,0,0,0,0];
     function one(){
         Student.findOne({'author':req.user._id},function(err,Student){
             var testResults = Student.PlacementTestResults;
@@ -65,17 +65,17 @@ module.exports = function (req,requestedTest,res){
         
         for(i in entry.entry){
             entry.entry[i].marks = parseInt(entry.entry[i].marks);
-            if(entry.entry[i].marks>=0 && entry.entry[i].marks<=3)
+            if(entry.entry[i].marks>=0 && entry.entry[i].marks<=7)
                 range[0]++;
-            else if(entry.entry[i].marks>3 && entry.entry[i].marks<=7)
+            else if(entry.entry[i].marks>7 && entry.entry[i].marks<=15)
                 range[1]++;
-            else if(entry.entry[i].marks>7 && entry.entry[i].marks<=13)
+            else if(entry.entry[i].marks>15 && entry.entry[i].marks<=24)
                 range[2]++;
-            else if(entry.entry[i].marks>13 && entry.entry[i].marks<=20)
+            else if(entry.entry[i].marks>24 && entry.entry[i].marks<=32)
                 range[3]++;
-            else if(entry.entry[i].marks>20 && entry.entry[i].marks<=25)
+            else if(entry.entry[i].marks>32 && entry.entry[i].marks<=39)
                 range[4]++;
-            else if(entry.entry[i].marks>25 && entry.entry[i].marks<=30)
+            else if(entry.entry[i].marks>39)
                 range[5]++;   
         }
         // for(i in range)

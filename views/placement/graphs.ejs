@@ -1,0 +1,196 @@
+
+<style type="text/css">
+	.charts{
+		float: left;
+		margin: 5px 30px;
+	}
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box; }
+@media (min-width: 400px) {
+  .container {
+    width: 85%;
+    padding: 0; }
+}
+
+/* For devices larger than 550px */
+@media (min-width: 550px) {
+  .container {
+    width: 80%; }
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+<div class="container">
+<div class="charts">
+		<canvas id="lineCanvas" width="400px" height="400px"></canvas>
+	</div>
+	<div class="charts">
+		<canvas id="BarCanvas" width="400px" height="400px"></canvas>
+	</div>
+	<div class="charts">
+		<canvas id="radarCanvas" width="400px" height="400px"></canvas>
+	</div>
+</div>
+<script>
+
+    var has = function(container, value) {
+                	var returnValue = false;
+                	var pos = container.indexOf(value);
+                	if (pos >= 0) {
+                		returnValue = true;
+                	}
+                	return returnValue;
+                };
+                
+    $.ajax({
+        method: "GET",
+        url: "/placementHead/placementStats",
+        // data: Score,
+        success: function(data){
+            // console.log(data);
+            lineGraph(data['1']);
+            BarGraph(data['2']);
+            Radar(data['3']);
+            
+        }
+    });
+    function lineGraph(data){
+        var dataset= [];
+            var companies=[];
+            for(i in data){
+                dataset.push({
+                    label: ""+i,
+                    backgroundColor: 'rgba('+Math.floor(Math.random() * 255)+', 99, 132, 0.0)',
+                    borderColor: 'rgba('+Math.floor(Math.random() * 255)+','+Math.floor(Math.random() * 255)+', '+Math.floor(Math.random() * 255)+',0.6)',
+                    data: data[''+i],
+                });    
+
+                for(j=0;j<data[''+i].length;j++){
+                    if(!has(companies,data[''+i][j].Cname))
+                        companies.push(data[''+i][j].Cname);
+                }
+                
+            }
+            var lineVar = document.getElementById('lineCanvas').getContext('2d');
+        	var lineData={
+        		labels: companies,
+                datasets: dataset
+        	};
+        	var options ={
+                                scaleShowGridLines: false,
+                                showScale: false,
+                                responsive: false,
+            					maintainAspectRatio: false,
+                                barShowStroke: false,
+                                scales: {
+        						        yAxes: [{
+        						            ticks: {
+        						                beginAtZero: true
+        						            }
+        						        }],
+        						        xAxes: [{
+        						            ticks: {
+        						                beginAtZero: true
+        						            }
+        						        }]
+        						    }
+                            };
+        
+        	var myLineChart = new Chart(lineVar, {
+            type: 'line',
+            data: lineData,
+            options: options
+        });
+            
+    }
+    
+    function BarGraph(data){
+        var BarVar = document.getElementById('BarCanvas').getContext('2d');
+        console.log(BarVar);
+	        var BarChart = new Chart(BarVar, {
+        	  type: 'bar',
+        	  data: {
+        	    datasets: [{
+        	          label: 'Bar Dataset',
+        	          data: [data.placedCount,data.numberOfStudents-data.placedCount],
+        	          backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                    ]
+        	        }],
+        	    labels: ['Placed', 'Un-Placed']
+        	  },
+        	  options: {
+        	  	xAxes: [{
+                        ticks: {
+                            min: 0 // Edit the value according to what you need
+                        }
+                    }],
+        	  	yAxes: [{
+                        stacked: true
+                    }],
+                legend: {
+                    display: true,
+                    labels: {
+                        fontColor: 'rgb(255, 99, 132)'
+                    }
+                }
+        	  }
+        	});
+    }
+    function Radar(data){
+        var placedStdDept=[],unplaced=[],department=[];
+            for(i in data.placed ){
+                placedStdDept.push(data.placed[i]);
+                unplaced.push(data.count[i]);
+                    department.push(''+i);
+                
+                    
+            }
+            console.log(department);
+            var RadarVar = document.getElementById('radarCanvas').getContext('2d');
+            console.log(RadarVar);
+        	var myRadarChart = new Chart(RadarVar, {
+        	    type: 'radar',
+        	    data: {
+        	    datasets: [{
+                        label: 'Placed Department wise',
+        	          	data: placedStdDept,
+                        backgroundColor: 'rgba(255, 0, 0, 0.58)',
+                        borderColor: 'red',
+                        pointBackgroundColor: 'red',
+                        
+                    },
+                    {
+                        label: "Unplaced Student",
+                        data: unplaced,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'blue',
+                        pointBackgroundColor: 'blue'
+                    }
+                    ],
+        	    labels: department
+        	  	},
+        	    options: {
+                    scaleOverlay : false,
+                    scaleOverride : true,
+                    scaleSteps : 5,
+                    scaleStepWidth : 2,
+                    scaleStartValue : 0
+        	    }
+        	});
+    }
+    
+    
+    
+    
+    
+    
+        
+</script>

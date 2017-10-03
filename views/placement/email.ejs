@@ -1,7 +1,8 @@
 <div style="background:rgba(0,0,0,0.05); width:100%; max-width:900px;
         font-family: Tahoma, Geneva, sans-serif;">
     <div >
-        <img style="width: 100%; height:35%; " src="http://bsidm.com/wp-content/uploads/2016/10/asm-csit-banner-placement.jpg">
+        <img style="width: 100%; height:35%; " 
+        src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/placement_email.jpg">
     </div>
     <div>
         <div style="border-bottom: 1px solid grey; text-align:center;">
@@ -10,6 +11,7 @@
                 <h3><%= placement.driveLocation %> on <%= placement.date %></h3>
         </div>
         <div style="font-size: 1.3em;text-align:left;margin:0 5% 0 5%">
+                <p><strong>Last Date To Register: </strong> <%= placement.time %></p>
                 <p><strong>CTC/Package: </strong> <%= placement.Package %></p>
                 <p><strong>Job Role: </strong> <%= placement.designation %></p>
                 <p><strong>Skills: </strong> <%= placement.skills %></p>
@@ -20,9 +22,9 @@
                 <p><strong>Description: </strong></p>
                 <p style="white-space: pre-line"><%= placement.jobDescription %></p>
         </div>
-        <div style=" float:left;font-size: 1.3em;text-align:left;margin:0 5% 0 5%;width:100%;">
+        <div style=" float:left;font-size: 1.3em;text-align:left;margin:0 5%;width:100%;">
             <p><strong><a href="https://erpdontdelete-mkb95.c9users.io/student/registerPlacement/<%= placement._id %>">
-                Click here to Register!</a></strong></p>
+                Click here to Register!</a> Last Date: <span style="color:red"><%= placement.time %></span></strong></p>
         </div>
         <div style="margin-left:5%;text-align:left;">
             <p style="font-size: 1.3em;">  Regards,</p>

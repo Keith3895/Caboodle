@@ -1,0 +1,49 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<% include ./sidenav.ejs %>
+
+
+
+<div class='row'>
+    <table>
+        <thead>
+            <tr>
+                <th>Sl. No</th>
+                <th>company</th>
+                <th>Package</th>
+                <th>drive Location</th>
+                <th>Placement status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(i=1;i<=student.registeredPlacements.length;i++){%>
+                <tr>
+                    <td><%=i%></td>
+                    <td><%=student.registeredPlacements[i-1].cName%></td>
+                    <td><%=student.registeredPlacements[i-1].Package%></td>
+                    <td><%=student.registeredPlacements[i-1].driveLocation%></td>
+                    <td>
+                        
+                        <%
+                        var has = function(container, value) {
+                            	var returnValue = false;
+                            	var pos = container.indexOf(value);
+                            	if (pos >= 0) {
+                            		returnValue = true;
+                            	}
+                            	return returnValue;
+                            };
+                        if(has(student.selectedPlacements,student.registeredPlacements[i-1]._id)){%>
+                            <i class="fa fa-check" aria-hidden="true"></i>&ndash;Placed
+                        <% }else{ %>
+
+                        <% } %>
+                    </td>
+                </tr>
+            <% } %>
+            
+        </tbody>
+    </table>
+</div>
+
+<% include ../partials/footer.ejs %>

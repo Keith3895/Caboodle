@@ -40,6 +40,8 @@
     }
     .card-placement{
     	background-color: #7bbfd2;
+    	margin:5px 50px 7px 18px !important;
+    	height: 90px;
     }
     
     .cst_color{
@@ -50,6 +52,7 @@
     	height: 400px;
     }
     .hvr-float-shadow {
+      cursor:pointer;
   display: inline-block;
   vertical-align: middle;
   -webkit-transform: translateZ(0);
@@ -97,8 +100,15 @@
         margin:0 5px 0 0;
     }
     
-    
-    
+    .side-nav.fixed{
+        top:64px;
+    }
+    .collapsible-body{
+      background-color: rgba(255, 255, 255, 0) !important;
+    }
+    .collapsible-body li a{
+      background-color: rgba(97, 97, 111, 0.21) !important;
+    }
     @media screen 
   and (min-device-width: 1200px) 
   and (max-device-width: 1600px) 
@@ -120,6 +130,9 @@
   .row{
     	margin-left:1px;
     } 
+    .side-nav.fixed{
+        top:56px;
+    }
 }
     /*@media screen and (max-width: 800px){*/
     /*  .row{*/

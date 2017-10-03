@@ -12,7 +12,7 @@
 <div class="row">
     
     <div class="col m12" style="margin-top:-70px;padding:0">
-        <h4 class="center"><%= company.cName %> Registrations</h4>
+        <h4 class="center">Students Placed In <%= company.cName %></h4>
         <form action="/placementHead/updatePlacementStats/<%= company._id %>" method="post">
             <input type="text" style="display:none" name="noOfStudents" value=<%= students.length %>>
     <table class="striped" >

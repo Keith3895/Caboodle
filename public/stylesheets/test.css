@@ -1,13 +1,52 @@
+
+#subNav{
+  width: 100%;
+  display: inline-block;
+}
+#subNav .button{
+  float: left;
+}
+.subButton button{
+  float: left; 
+  width: 20px;
+  padding: 1.2% 2%;
+  position: relative;
+  float: left;
+  background-color: #9694a2;
+  color: black;
+  margin: 5px 2px 0 2px;
+  border-radius: 30px;
+  border:1px solid transparent;
+}
+.subButton button.active{
+  background-color: white;
+}
+.Sub-Button{
+  border: 1px solid #0DFF92;
+    border-radius: 20px;
+    width: 20px;
+    padding: .8% 2.5%;
+    position: relative;
+    float: left;
+    background-color: #9694a2;
+    color: black;
+    margin: 2px 2px 0 2px;
+
+}
+.Sub-Button a{
+  text-decoration: none;
+  
+}
 body {
     font-family: Open Sans;
 }
 .square{
-		background: url('/images/test.gif');
-		background-position: top left;
+    background: url('/images/test.gif');
+    background-position: top left;
         background-repeat: no-repeat;
         padding-left: 10px;
         padding-top: 1px;
-	}
+  }
 .resp{
     display: none;
 }
@@ -54,8 +93,8 @@ h1 {
     height: auto;
 }
 .button {
-        border: 1px solid #0DFF92;
-    border-radius: 22px;
+    border: 1px solid #0DFF92;
+    border-radius: 30px;
     width: 40px;
     padding: 1% 5%;
     position: relative;
@@ -113,9 +152,11 @@ div.buttonContainer{
 }
 div.buttonContainer button{
     float: left;
-    padding: 15px 20px;
+    padding: 15px 15px;
     color: white;
     /*background: #333175;*/
+    border-radius: 30px;
+    margin: 2px;
     border: 1px solid black;
     width: 20%;
 }
@@ -222,6 +263,15 @@ input[type=radio]:checked ~ label{
 }
 .questionType3{
     background-color: #EE4266;
+}
+.questionType4{
+    background-color: #EEa266;
+}
+.questionType5{
+    background-color: #aE4266;
+}
+.questionType6{
+    background-color: #aE42a6;
 }
 .marked{
     /*background-color: #333175 !important;*/

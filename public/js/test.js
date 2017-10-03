@@ -7,18 +7,25 @@
   var Score={},GTypes=[];
   var questions = [];
   var stoppedTimer=false,blurCheck=false,blurOn=false;
+  var questionCounter = 0,subindex=0; //Tracks question number
+  var selections = [],selectionsSub={}; //Array containing user choices
+  var quiz = $('#quiz'); //Quiz div object
   $.ajax({
     method: "GET",
     url: "/test/questions",
     success: function(data){
-        questions=data;
+      console.log(data);
+        questions=data.questions;
         questions = shuffle(questions);
+        for(i=0;i<data.context.length;i++){
+          questions.push(data.context[i]);
+          selectionsSub[data.context[i].type]=[];
+        }
         var tempTypes=[];
         for(i=0;i<questions.length;i++)
           tempTypes.push(questions[i].type);
         $.unique(tempTypes);
         questions = category(questions,tempTypes);
-        console.log(questions);
         timer();
         NavButtonCreate(tempTypes);
         displayNext();
@@ -28,9 +35,9 @@
   function category(array,tempTypes){
     var typeSort = {};
     $.unique(tempTypes);
-        console.log(tempTypes);
+        // console.log(tempTypes);
         GTypes=tempTypes;
-// 	console.log(tempTypes);
+//  console.log(tempTypes);
     for(i in tempTypes){
       typeSort[tempTypes[i]]=[];
     }
@@ -65,9 +72,7 @@
   return array;
 }
   
-  var questionCounter = 0; //Tracks question number
-  var selections = []; //Array containing user choices
-  var quiz = $('#quiz'); //Quiz div object
+  
   function NavButtonCreate(tempTypes){
     for(i=1;i<=questions.length;i++){
       for(j in tempTypes){
@@ -111,17 +116,47 @@
     choose();
     
     // If no user selection, progress is stopped
-    if (isNaN(selections[questionCounter])) {
-      // alert('Please make a selection!');
-      questionCounter++;
-      displayNext();
-      $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
-    } else {
-      questionCounter++;
-      displayNext();
-      $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
-    }
+    if(questions[questionCounter].context && selectionsSub[questions[questionCounter].type][subindex])
+      selections[questionCounter]= +'0';
+    questionCounter++;
+    subindex=0;
+    displayNext();
+    $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
+
+
   });
+
+
+
+
+  $('#nextSub').on('click', function (e) {
+    e.preventDefault();
+    
+    // Suspend click listener during fade animation
+    if(quiz.is(':animated')) {        
+      return false;
+    }
+    choose();
+      subindex++;
+      displayNext();
+      $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
+  });
+  $('#prevSub').on('click', function (e) {
+    e.preventDefault();
+    
+    // Suspend click listener during fade animation
+    if(quiz.is(':animated')) {        
+      return false;
+    }
+    choose();
+      subindex--;
+      displayNext();
+      $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
+  });
+
+
+
+
   
   // Click handler for the 'prev' button
   $('#prev').on('click', function (e) {
@@ -131,21 +166,12 @@
       return false;
     }
     choose();
-    questionCounter--;
-    displayNext();
-  });
-  
-  // Click handler for the 'Start Over' button
-  $('#start').on('click', function (e) {
-    e.preventDefault();
     
-    if(quiz.is(':animated')) {
-      return false;
-    }
-    questionCounter = 0;
-    selections = [];
+    if(questions[questionCounter].context && selectionsSub[questions[questionCounter].type][subindex])
+      selections[questionCounter]= +'0';
+    questionCounter--;
+    subindex=0;
     displayNext();
-    $('#start').hide();
   });
   
   // Animates buttons on hover
@@ -155,29 +181,73 @@
   $('.button').on('mouseleave', function () {
     $(this).removeClass('active');
   });
-  
+  function subFn(){
+    var str="";
+    for(i=1;i<=questions[questionCounter].questions.length;i++){
+      str+="<button class='subButtons'>"+i+"</button>";
+    }
+    $('.subButton').html(str);
+      $('.subButtons').on('click',function(){
+        gotopageSub($(this).html());
+      });
+  }
+  function gotopageSub(sub){
+      choose();
+      // if(questions[questionCounter].context && selectionsSub[questions[questionCounter].type][subindex])
+      // selections[questionCounter]= +'0';
+      subindex = sub-1;
+      displayNext();
+  }
   // Creates and returns the div that contains the questions and 
   // the answer selections
-  function createQuestionElement(index) {
+  function createQuestionElement(index,subindex) {
     var qElement = $('<div>', {
       id: 'question'
     });
     var header = $('<h2>Question ' + (index + 1) + ': <span style="float:right">marks:'+questions[index].marks+'</span></h2>');
-    qElement.append(header);
-    if(questions[index].compre){
+      qElement.append(header);
+    if(!questions[index].context){
+      
+      if(/<img/.test(questions[index].question))
+        $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
+      var question = $('<p>').append(questions[index].question);
+      qElement.append(question);
+      var radioButtons = createRadios(index);
+      qElement.append(radioButtons);
+      $('#subNav').hide();
+      return qElement;
+    }else{
+      $('#subNav').show();
+      subFn();
       qElement.append("<h3>Context:</h3>");
-      qElement.append(questions[index].compre);
-      qElement.append("<h3>Question:</h3>");
+      qElement.append("'"+questions[index].context+"'");
+      qElement.append("<h3> Question  "+(index + 1)+"."+parseInt(subindex+1)+":</h3>");
+      console.log(subindex);
+      var question = $('<p>').append(questions[index].questions[subindex].question);
+      qElement.append(question);
+      var radioButtons = createRadiosSub(index,subindex);
+      qElement.append(radioButtons);
+      return qElement;
     }
-    if(/<img/.test(questions[index].question))
-      $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
     
-    var question = $('<p>').append(questions[index].question);
-    qElement.append(question);
-    var radioButtons = createRadios(index);
-    qElement.append(radioButtons);
-    return qElement;
   }
+
+  function createRadiosSub(index,subindex) {
+    var radioList = $('<ul>');
+    var item;
+    var input = '';
+    for (var i = 0; i < questions[index].questions[subindex].choices.length; i++) {
+      item = $('<li>');
+      input = '<input type="radio" name="answer" value=' + i + ' id="for'+i+'"  />';
+      input += "<label for='for"+i+"' >"+questions[index].questions[subindex].choices[i]+"</label> <div class='check'></div>";
+      item.append(input);
+      radioList.append(item);
+      $('#container').css({"padding":"0 25px calc(70% - "+$("ul li label").height()+") 10px"});
+    }
+    return radioList;
+
+  }
+
   
   // Creates a list of the answer choices as radio inputs
   function createRadios(index) {
@@ -206,7 +276,10 @@
   
   // Reads the user selection and pushes the value to an array
   function choose() {
-    selections[questionCounter] = +$('input[name="answer"]:checked').val();
+    if(questions[questionCounter].context)
+      selectionsSub[questions[questionCounter].type][subindex] = +$('input[name="answer"]:checked').val();
+    else 
+      selections[questionCounter] = +$('input[name="answer"]:checked').val();
   }
   
   // Displays next requested element
@@ -215,11 +288,14 @@
     $('.current').removeClass('current');
     var st = $('.buttonContainer button').siblings();
     for(i=0;i<st.length;i++){
-      if(questionCounter== st[i].innerHTML-1)
+      if(questionCounter== st[i].innerHTML-1){
         $(st[i]).addClass('current');
+      }
       if (!(isNaN(selections[i]))) 
         $(st[i]).addClass('marked');
     }
+
+    
     
 
 
@@ -227,23 +303,58 @@
       $('#question').remove();
       
       if(questionCounter < questions.length){
-        var nextQuestion = createQuestionElement(questionCounter);
-        quiz.append(nextQuestion).fadeIn();
-        if (!(isNaN(selections[questionCounter]))) {
-          $('input[value='+selections[questionCounter]+']').prop('checked', true);
+        if(questions[questionCounter].context){
+          if(subindex<questions[questionCounter].questions.length){
+            var nextQuestion = createQuestionElement(questionCounter,subindex);
+            $('.active').removeClass('active');
+            var stSub = $('.subButtons');
+            console.log(stSub);
+            for(i=0;i<stSub.length;i++){
+              if(subindex== stSub[i].innerHTML-1){
+                $(stSub[i]).addClass('active');
+              }
+              if (!(isNaN(selectionsSub[questions[questionCounter].type][i]))) 
+                $(stSub[i]).addClass('marked');
+            }
+            quiz.append(nextQuestion).fadeIn();
+            console.log(selectionsSub[questions[questionCounter].type][subindex]);
+            if (!(isNaN(selectionsSub[questions[questionCounter].type][subindex])))
+              $('input[value='+selectionsSub[questions[questionCounter].type][subindex]+']').prop('checked', true);
+            
+
+            if(subindex>=1){
+              $('#prevSub').show();
+              $('#nextSub').show();
+            } else if(subindex === 0){
+              
+              $('#prevSub').hide();
+              $('#nextSub').show();
+            }
+            if(subindex==questions[questionCounter].questions.length-1)
+              $('#nextSub').hide();
+          }
+        }else{
+          var nextQuestion = createQuestionElement(questionCounter,subindex);
+          subindex=0;
         }
-        // Controls display of 'prev' button
-        if(questionCounter>=1){
-          $('#prev').show();
-          $('#next').show();
-        } else if(questionCounter === 0){
           
-          $('#prev').hide();
-          $('#next').show();
-        }
-        if(questionCounter == questions.length-1){
-          $('#next').hide();
-        }
+          quiz.append(nextQuestion).fadeIn();
+          if (!(isNaN(selections[questionCounter]))) {
+            $('input[value='+selections[questionCounter]+']').prop('checked', true);
+          }
+          // Controls display of 'prev' button
+          if(questionCounter>=1){
+            $('#prev').show();
+            $('#next').show();
+          } else if(questionCounter === 0){
+            
+            $('#prev').hide();
+            $('#next').show();
+          }
+          if(questionCounter == questions.length-1){
+            $('#next').hide();
+          }
+        
       }else {
         var scoreElem = displayScore();
         quiz.append(scoreElem).fadeIn();
@@ -266,6 +377,7 @@
     $('#prev').hide();
     $('#next').hide();
     $('#demo').hide();
+    $('.subButton').hide();
     $('#submitTest').hide();
     $('.buttonContainer').hide();
     $('#container').css({"padding":"0 25px 10% 10px"});
@@ -293,18 +405,42 @@
     for(i in questions)
         for(j in Types)
             if(Types[j] == questions[i].type)
-                typeCount[Types[j]]++;   
+                typeCount[Types[j]]++;  
+
+
     for (var i = 0; i < selections.length; i++) {
-      if (questions[i].choices[selections[i]] == questions[i].correctAnswer) {
-        numCorrect++;
-        markScored+=parseInt(questions[i].marks);
-        for(j in Types){
-            if(Types[j]==questions[i].type)
-                typeCorrect[Types[j]]++;   
-            
+      if(!questions[i].context){
+        if (questions[i].choices[selections[i]] == questions[i].correctAnswer) {
+          numCorrect++;
+          // check context
+          markScored+=parseInt(questions[i].marks);
+          for(j in Types){
+              if(Types[j]==questions[i].type)
+                  typeCorrect[Types[j]]++;   
+              
+          }
+        }
+      }else if(questions[i].questions.length>0){
+        var subMarks=0;
+        if(selectionsSub[questions[i].type])
+          for( k=0;k< selectionsSub[questions[i].type].length;k++){
+            var selected =selectionsSub[questions[i].type][k];
+            if(questions[i].questions[k].choices[selected]==questions[i].questions[k].correctAnswer){
+              subMarks+=parseInt(questions[i].questions[k].marks);
+            }
+          }
+          console.log(subMarks);
+        if(subMarks>0){
+          numCorrect++;
+          markScored+=subMarks;
+          for(j in Types){
+              if(Types[j]==questions[i].type)
+                  typeCorrect[Types[j]]++;   
+            }
         }
       }
     }
+
     score.append('You got ' + numCorrect + ' questions out of ' +
                  questions.length + ' right!!!');
     str = "<div>You got:<br>";
@@ -342,6 +478,9 @@
   }
   function gotopage(num){
       choose();
+      subindex=0;
+      if(questions[questionCounter].context && selectionsSub[questions[questionCounter].type][subindex])
+      selections[questionCounter]= +'0';
       questionCounter = num-1;
       displayNext();
   }

@@ -24,14 +24,27 @@
       background: none;
       width: 5%;
     }
+    .flaticon-c-test-result-interface-symbol-with-text-lines:before{
+        margin-left:12px !important;
+    }
+    .active .fa-chevron-down{
+        display:none;
+    }
+    .fa.fa-chevron-up{
+        display:none;   
+    }
+    .active .fa.fa-chevron-up{
+        display:block;
+        
+    }
 </style>
 	<ul id="slide-out1" class="side-nav fixed collapsible" data-collapsible="accordion">
       	<li class="logo">
-      		<a id="logo-container" href="/" class="brand-logo">
-      		Student
+      		<a href="/student" >
+      		<i style="font-size:24px;" class="fa fa-home" aria-hidden="true"></i> Home
             </a>
         </li>
-        <li><a href="/placements">
+        <li><a href="/student/viewPlacements">
             <i class="material-icons left" style='margin-left: -4px;margin-right: 10px;'>work</i> 
         View Placements
             </a></li>
@@ -49,7 +62,10 @@
         <li>
             <div class="collapsible-header waves-effect">
                 <i class="flaticon-c-test-result-interface-symbol-with-text-lines"></i>
-                Placements Traing Test
+                Placements Traing
+                <i class="fa fa-chevron-down" aria-hidden="true" style="float:right;font-size: 12px;"></i>
+                <i class="fa fa-chevron-up" aria-hidden="true" style="float:right;font-size: 12px;"></i>
+                
             </div>
               <div class="collapsible-body">
                 <ul>

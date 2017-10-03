@@ -13,8 +13,36 @@
   .card-content{
       padding:15px !important;
   }
+  .card-action .fa{
+    font-size: .9em;
+    margin-right: 7px;
+  }
+  .dontDisplay{
+      visibility: hidden;
+  }
   
 </style>
+<% 
+    var has = function(container, value) {
+    	var returnValue = false;
+    	var pos = container.indexOf(value);
+    	if (pos >= 0) {
+    		returnValue = true;
+    	}
+    	return returnValue;
+    }
+%>
+<!-- Modal Structure -->
+  <div id="modalDelete" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Delete Record?</h4>
+      <p>You will not be able to undo this operation. Click 'YES' if you still want to delete.</p>
+    </div>
+    <div class="modal-footer">
+        <a onclick="f2('no')" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+        <a href="" onclick="f2('yes')" class="modal-action modal-close waves-effect waves-green btn-flat">Yes</a>
+    </div>
+  </div>
 <div class="row" style="margin-top:40px;">
 <div class="col m12" style="margin-top:-70px;">
       <ul class="tabs fixed" style="overflow:hidden;">
@@ -22,16 +50,23 @@
         <li class="tab col s3"><a href="#completed">Completed Placements</a></li>
         <li class="tab col s3"><a href="#upcomingInt">Available Internships</a></li>
         <li class="tab col s3"><a href="#completedInt">Completed Internships</a></li>
+        <li class="indicator" style="width:25%;left: 0px;"></li>
       </ul>
     </div>
    <div id="upcoming">
     <div class="row" style="margin-left: 1%">
+        
    <% company.forEach(function(comp,i) {
    var pDate= comp.date.split("-");
     if((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0]))){ %>
     <div class="col s12 m4">
         <div class="card  teal darken-1  z-depth-3">
-            <div class="card-content white-text">
+           <% 
+                var myhref="#modal"+i;
+                var href_id= "modal"+i; 
+            %>
+            <a href="<%= myhref %>">
+            <div class="card-content white-text" >
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
                     <%= comp.cName %>
@@ -66,14 +101,14 @@
                     </p>
                 </div>
             </div>
-            <% 
-                var myhref="#modal"+i;
-                var href_id= "modal"+i; 
-            %>
+            </a>
             <div class="card-action">
-                <a href="/placementHead/viewRegisteredStudents/<%= comp._id %>" >View Registrations</a>
-                <a href="<%= myhref %>" >More Info</a>
-                <a href="/placementHead/updatePlacement/<%= comp._id %>" >Update</a>
+                <a href="/placementHead/registeredStudents/<%= comp._id %>" ><i class="fa fa-eye" aria-hidden="true"></i>View Registrations</a>
+                <a href="<%= myhref %>" ><i class="fa fa-info-circle" aria-hidden="true"></i>More Info</a><br>
+                <a href="/placementHead/updatePlacement/<%= comp._id %>" >
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Info</a>
+                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" onclick="f1('<%= comp._id %>')">
+                        <i class="material-icons delete">delete</i></a>
             </div>
         </div>
     </div>
@@ -88,7 +123,8 @@
       <p><strong>Role: </strong><%= comp.designation %></p>
       <p><strong>Skills Required: </strong><%= comp.skills %></p>
       <p><strong>Job Location: </strong><%= comp.jobLocation %></p>
-      <p><strong>Description: </strong><%= comp.jobDescription %></p>
+      <p><strong>Description: </strong></p>
+      <p><%= comp.jobDescription %></p>
    
     </div>
     <div class="modal-footer">
@@ -105,6 +141,11 @@
         if(!((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0])))){ %>
     <div class="col s12 m4">
         <div class="card  teal darken-3  z-depth-3">
+            <% 
+                var myhref="#modal"+i;
+                var href_id= "modal"+i; 
+            %>
+            <a href="<%= myhref %>">
             <div class="card-content white-text">
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
@@ -140,16 +181,22 @@
                     </p>
                 </div>
             </div>
-            <% 
-                var myhref="#modal"+i;
-                var href_id= "modal"+i; 
+            </a>
+            <%  
                 var myhref1="#modalA"+i;
                 var href_id1= "modalA"+i; 
             %>
             <div class="card-action">
-                <a href="<%= myhref1 %>" >Stats</a>
-                <a href="<%= myhref %>" >More Info</a><br>
-                <a href="/placementHead/updatePlacementStats/<%= comp._id %>" style="font-size:12px" >Update / Edit Placement stats</a>
+                <a href="<%= myhref1 %>" style="margin-right:70px;" >
+                    <i class="fa fa-tasks" aria-hidden="true"></i>Stats</a>
+                <a href="<%= myhref %>" ><i class="fa fa-info-circle" aria-hidden="true"></i>More Info</a><br>
+                <a href="/placementHead/updatePlacementStats/<%= comp._id %>" style="margin-right:40px;">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>Edit stats</a>
+                <span style="width:20px;"></span>
+                <a href="/placementHead/updatePlacement/<%= comp._id %>" >
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Info</a>
+                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" onclick="f1('<%= comp._id %>')">
+                        <i class="material-icons delete">delete</i></a>
             </div>
         </div>
     </div>
@@ -164,7 +211,8 @@
       <p><strong>Role: </strong><%= comp.designation %></p>
       <p><strong>Skills Required: </strong><%= comp.skills %></p>
       <p><strong>Job Location: </strong><%= comp.jobLocation %></p>
-      <p><strong>Description: </strong><%= comp.jobDescription %></p>
+      <p><strong>Description: </strong></p>
+      <p><%= comp.jobDescription %></p>
       
     </div>
     <div class="modal-footer">
@@ -177,7 +225,35 @@
     <div class="modal-content">
       <h4><%= comp.cName %></h4>
       <p><strong>No. of Registrations: </strong><%= comp.registeredStudents.length %></p>
-      <p><strong>No. of students placed: </strong><%= comp.placedStudents.length %></p>
+      <p><strong>No. of students placed: </strong><%= comp.selectedStudents.length %></p>
+      <% if(comp.selectedStudents!==undefined && comp.selectedStudents.length > 0){ %>
+      <table class="striped centered">
+        <thead>
+            <h4 class="center">Placed Students</h4>
+          <tr>
+              <th>Sl. No.</th>
+              <th>USN</th>
+              <th>Name</th>
+              <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% var i = 1;
+            comp.registeredStudents.forEach(function(student){ 
+            if(has(comp.selectedStudents,student._id)){ %>
+            <tr>
+                <td><%= i %></td>
+                <td><%=student.USN%></td>
+                <td><%=student.author.firstName%> <%=student.author.lastName%></td>
+                <td><%=student.author.email%></td>
+            </tr>
+            <% i= i+1; 
+            } }) %>
+        </tbody>
+      </table>
+    <% } else{ %>
+        <h5 class="center">No Student(s) Placed</h5>
+    <% } %>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>
@@ -196,6 +272,11 @@
     if((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0]))){ %>
     <div class="col s12 m4">
         <div class="card  teal darken-2  z-depth-3">
+            <% 
+                var myhref="#modalInt"+i;
+                var href_id= "modalInt"+i; 
+            %>
+            <a href="<%= myhref %>">
             <div class="card-content white-text">
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
@@ -231,13 +312,14 @@
                     </p>
                 </div>
             </div>
-            <% 
-                var myhref="#modalInt"+i;
-                var href_id= "modalInt"+i; 
-            %>
+            </a>
             <div class="card-action">
-                <a href="/placementHead/viewRegisteredStudents/<%= internship._id %>" >View Registrations</a>
-                <a href=<%= myhref %> >More Info</a>
+                <a href="/placementHead/registeredStudents/<%= internship._id %>" ><i class="fa fa-eye" aria-hidden="true"></i>View Registrations</a>
+                <a href=<%= myhref %> ><i class="fa fa-info-circle" aria-hidden="true"></i>More Info</a><br>
+                <a href="/placementHead/updateInternship/<%= internship._id %>" >
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i></i>Edit Info</a>
+                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" 
+                    onclick="f1('<%= internship._id %>')"><i class="material-icons delete">delete</i></a>
             </div>
         </div>
     </div>
@@ -252,8 +334,8 @@
       <p><strong>Role: </strong><%= internship.designation %></p>
       <p><strong>Skills Required: </strong><%= internship.skills %></p>
       <p><strong>Internship Location: </strong><%= internship.internLocation %></p>
-      <p><strong>Description: </strong><%= internship.internDescription %></p>
-   
+      <p><strong>Description: </strong></p>
+      <p><%= internship.internDescription %></p>
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -269,6 +351,11 @@
         if(!((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0])))){ %>
     <div class="col s12 m4">
         <div class="card  teal darken-3  z-depth-3">
+            <% 
+                var myhref="#modalInt"+i;
+                var href_id= "modalInt"+i; 
+            %>
+            <a href="<%= myhref %>">
             <div class="card-content white-text">
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
@@ -304,15 +391,21 @@
                     </p>
                 </div>
             </div>
+            </a>
             <% 
-                var myhref="#modalInt"+i;
-                var href_id= "modalInt"+i; 
                 var myhref1="#modalAInt"+i;
                 var href_id1= "modalAInt"+i; 
             %>
             <div class="card-action">
-                <a href="<%= myhref1 %>" >Stats</a>
-                <a href="<%= myhref %>" >More Info</a>
+                <a href="<%= myhref1 %>" style="margin-right:70px;">
+                    <i class="fa fa-tasks" aria-hidden="true"></i>Stats</a>
+                <a href="<%= myhref %>" ><i class="fa fa-info-circle" aria-hidden="true"></i>More Info</a><br>
+                <a href="/placementHead/updateInternshipStats/<%= internship._id %>" style="margin-right:40px;">
+                    <i class="fa fa-pencil" aria-hidden="true" ></i>Edit stats</a>
+                <a href="/placementHead/updateInternship/<%= internship._id %>" >
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Info</a>
+                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" 
+                    onclick="f1('<%= internship._id %>')"><i class="material-icons delete">delete</i></a>
             </div>
         </div>
     </div>
@@ -327,8 +420,8 @@
       <p><strong>Role: </strong><%= internship.designation %></p>
       <p><strong>Skills Required: </strong><%= internship.skills %></p>
       <p><strong>Internship Location: </strong><%= internship.internLocation %></p>
-      <p><strong>Description: </strong><%= internship.internDescription %></p>
-      
+      <p><strong>Description: </strong></p>
+      <p><%= internship.internDescription %></p>
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -339,8 +432,36 @@
   <div id="<%= href_id1 %>" class="modal">
     <div class="modal-content">
       <h4><%= internship.cName %></h4>
-      <p><strong>No. of Registrations: </strong><%= internship.appliedStudents.length %></p>
-      <p><strong>No. of students placed: </strong><%= internship.selectedInterns.length %></p>
+      <p><strong>No. of Students who Applied: </strong><%= internship.registeredStudents.length %></p>
+      <p><strong>No. of Selected Students: </strong><%= internship.selectedStudents.length %></p>
+      <% if(internship.selectedStudents!==undefined && internship.selectedStudents.length > 0){ %>
+      <table class="striped centered">
+        <thead>
+            <h4 class="center">Placed Students</h4>
+          <tr>
+              <th>Sl. No.</th>
+              <th>USN</th>
+              <th>Name</th>
+              <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% var i = 1;
+            internship.registeredStudents.forEach(function(student){ 
+            if(has(internship.selectedStudents,student._id)){ %>
+            <tr>
+                <td><%= i %></td>
+                <td><%=student.USN%></td>
+                <td><%=student.author.firstName%> <%=student.author.lastName%></td>
+                <td><%=student.author.email%></td>
+            </tr>
+            <% i= i+1; 
+            } }) %>
+        </tbody>
+      </table>
+    <% } else{ %>
+        <h5 class="center">No Student(s) Placed</h5>
+    <% } %>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>
@@ -356,5 +477,30 @@
     // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
     $('.modal').modal();
   });
+  $('.card').hover(function () {
+       $(this).find('.del').toggleClass("dontDisplay");
+    })
+  function info(href_id){
+      $(href_id).modal();
+  }
+ 
+    function f1(compId){
+        company_id=compId;
+    }
+    function f2(approval){
+        console.log("f2");
+        if(approval==='yes'){
+            console.log("Delete")
+            $.ajax({
+                url: "/placementHead/placements/"+company_id,
+                method: "DELETE",
+                success: function() {
+                    location.href = "https://erpdontdelete-mkb95.c9users.io/placementHead/placements";
+                }
+            })
+        }else{
+            console.log("Dont Delete")
+        }
+    }
 </script>
 <% include ../partials/footer.ejs %>

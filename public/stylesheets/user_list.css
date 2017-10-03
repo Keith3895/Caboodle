@@ -4,7 +4,7 @@
 	
 
 .cntr{
-    margin: 0px 1px -6px 41px;
+    margin: 0px 5px 6px 41px;
 }
 .cntr .cntr-innr {
   display: table-cell;
@@ -84,7 +84,7 @@
             color: white;
     }
     .delete{
-        background: red;
+        background: #eaeaea;
         padding: 7px;
         margin: 0px;
         transition: background-color .3s;
@@ -94,7 +94,7 @@
         font-size: 35px;
     }
     .delete:hover{
-        background-color: #a73636;
+        background-color: #8a8989;
     }
     .edit{
         background: #eaeaea;
@@ -103,6 +103,15 @@
         transition: background-color .3s;   
         opacity: 0;
         font-size: 35px
+    }
+    td a{
+        color: #039be5;
+    }
+    td a[href='#modal1']{
+        color:red ;
+    }
+    td a[href='#modal1']:hover{
+        color:white;
     }
     .edit:hover{
         background-color: #8a8989;   
@@ -122,7 +131,7 @@
         /*animation-delay: 2s;*/
     }
     @keyframes show{
-        from{font-size: 20px}
+        from{font-size: 34px}
         to{font-size: 35px}
     }
     .side-nav .collapsible-header, .side-nav.fixed .collapsible-header{

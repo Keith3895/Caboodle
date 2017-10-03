@@ -65,7 +65,9 @@
         color: #fff;
         top: 5px;
     }
-    
+    #return-to-top .fa.fa-chevron-up{
+        display:block;
+    }
 
     </style>
     <!--<img src="/images/ajax-loader.gif" id="ajax" style="display">-->
@@ -94,8 +96,10 @@
                 </script>
             <% } %>
             <% if(popup && popup.length>0){ %>
-            <script type="text/javascript">
-                $( document ).ready(function() {$('#login').click();});</script>
+                <script>
+                    Materialize.toast('<%= popup %>', 120000);
+                </script>
+                
             <% } %>
         </div>
         <div style="display:none;" id="bodyC">
@@ -106,26 +110,27 @@
             $( document ).ready(function() {
                 $("#ajax").fadeOut(200, function() {
                     $("#bodyC").fadeIn(500,function(){
-                        if(window.location.href == "https://erpdontdelete-mkb95.c9users.io/" || window.location.href.split('/')[3]==''){
-                            $('body').animate({ scrollTop: 20 , scrollDown: 20}, 400);
+                        if(window.location.href.split('/')[3]==''|| window.location.href.split('/')[3]=='#'){
+                            $('body,html').animate({
+                        scrollTop : 20                       
+                    }, 500);
                             Materialize.scrollFire(options);    
                         }
                         
                     });        
                 });
-                // $('#ajax').css({'display':'none'});
-                // $('body').css({'display':'block'});    
+                    
                 $(window).scroll(function() {
-                    if ($(this).scrollTop() >= 50) {        // If page is scrolled more than 50px
-                        $('#return-to-top').fadeIn(200);    // Fade in the arrow
+                    if ($(this).scrollTop() >= 50) {        
+                        $('#return-to-top').fadeIn(200);    
                     } else {
-                        $('#return-to-top').fadeOut(200);   // Else fade out the arrow
+                        $('#return-to-top').fadeOut(200);   
                     }
                 });
                 
-                $('#return-to-top').click(function() {      // When arrow is clicked
+                $('#return-to-top').click(function() {      
                     $('body,html').animate({
-                        scrollTop : 0                       // Scroll to top of body
+                        scrollTop : 0                       
                     }, 500);
                 });
             });

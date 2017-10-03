@@ -8,6 +8,9 @@
     padding: 23% 0px;
     text-align: center;
       }
+      table.marks tr th{
+        display:table-cell;
+      }
     </style>
     
     <div class="row ">
@@ -51,27 +54,34 @@
                   
                 <%for(i=1;i<=testResult.length && i<=3;i++){%>
                   <div id="test<%= i%>">
-                      <h5>Marks Scored: <%= testResult[testResult.length- i][0].marks%></h5>
+                      <h5>Marks Scored: <%= testResult[testResult.length- i][0].marks%> 
+                        <%if( testResult[testResult.length- i][0].marks ==-2){%>
+                          ,you have not take the test.
+                          </h5>
+                        <% }else { %>
+                      </h5>
                       <div>
-                          <table>
+                          <table class='marks'>
                               <thead>
                                   <tr>
                                       <th>Types</th>
-                                      <th>number Correct</th>
                                       <th>number of questions</th>
+                                      <th>number Correct</th>
                                   </tr>
                               </thead>
                               <tbody>
+                                
                                   <%for(j in testResult[testResult.length-i][0].type){%>
                                   <tr>
                                       <th><%= testResult[testResult.length-i][0].type[j]%></div></th>
-                                      <td class="text-center"><%= testResult[testResult.length-i][0].typeCorrect[j]%></td>
                                       <td class="text-center"><%= testResult[testResult.length-i][0].typeCount[j]%></td>
+                                      <td class="text-center"><%= testResult[testResult.length-i][0].typeCorrect[j]%></td>
                                   </tr>
                                   <% } %>
                               </tbody>
                           </table>
                       </div>
+                      <% } %>
                   </div>
                   <% }%>
                   

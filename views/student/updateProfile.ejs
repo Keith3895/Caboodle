@@ -1,12 +1,16 @@
 <% include ../partials/header.ejs %>
 <% include ../partials/navbar.ejs %>
 <% include ./sidenav.ejs %>
-
+<style>
+     .form-error{
+        color:red;
+    }
+</style>
     <div class="row">
         <div class="col s12 m10 l10">
             <div class="card-panel row">
                 <h4 class="center">Update Your Profile</h4>
-                <form  method="POST" enctype="multipart/form-data" action="/student/updateProfile">
+                <form  method="POST" enctype="multipart/form-data" action="/student/updateProfile" id="form">
                     <section id="first">
                     <h6 class="center">Personal Info</h6>
                     <div class="input-field col s6">
@@ -22,7 +26,12 @@
                         <label for="usn">USN</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="placementNumber" name="placementNumber" type="text" class="validate" value="<%= student.placements %>">
+                        <% if(student.selectedPlacements){  %>
+                            <input id="placementNumber" name="placementNumber" type="text" 
+                            value="<%= student.selectedPlacements.length %>" readonly>
+                        <% } else{ %>
+                            <input id="placementNumber" name="placementNumber" type="text" value="0" readonly>
+                        <% } %>
                         <label for="placementNumber">Number of Placements</label>
                     </div>
                     <div class="input-field col s6">
@@ -30,24 +39,17 @@
                         <label for="sem">Semester</label>
                     </div>
                     <div class="input-field col s6">
-                        <select id="department" name="department">
-                            <option value="<%= student.department %>" readonly selected><%= student.department %></option>
-                            <option>CSE</option>
-                            <option>ECE</option>
-                            <option>EEE</option>
-                            <option>ISE</option>
-                            <option>ME</option>
-                            <option value="CE">Civil</option>
-                        </select>
+                        <input type="text" id="department" name="department" value="<%= student.department %>" readonly >
                         <label>Department</label>
                     </div>
                     <div class="input-field col s6" id="date">
-                        <input data-toggle="datepicker" id="dob" name="dob" type="text" class="validate" value="<%= student.DOB %>">
+                        <input id="dob" name="dob" type="text" class="validate" 
+                        value="<%= student.DOB %>" style="margin-bottom:0">
                         <label for="dob">Date of Birth</label>
                     </div>
                     <div class="input-field col s6">
                         <select id="gender" name="gender" >
-                            <option readonly value="<%= student.gender %>" selected><%= student.gender %></option>
+                            <option readonly value="<%= student.author.gender %>" selected><%= student.author.gender %></option>
                             <option>Male</option>
                             <option>Female</option>
                         </select>
@@ -58,15 +60,17 @@
                         <label for="email">Email</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="phone" name="phone" type="tel" class="validate" value="<%= student.mobile1 %>">
-                        <label for="phone">Phone number</label>
+                        <input id="phone" name="phone" type="tel" value="<%= student.mobile1 %>"
+                        data-validation="custom" data-validation-regexp="^\d{10}$"
+                        data-validation-error-msg="Enter a valid 10 digit number">
+                        <label for="phone">Phone number*</label>
                     </div>
                     <div class="input-field col s12">
                         <textarea id="address" name="address" class="materialize-textarea" ><%= student.address %></textarea>
                         <label for="address">Address</label>
                     </div>
                     <div class="input-field">
-                        <button type="button" onclick="next_step1()" class="waves-effect waves-light btn blue right">Next  &gt;</button>
+                        <button type="button" onclick="test('#form')" class="waves-effect waves-light btn blue right">Next  &gt;</button>
                     </div>
                     </section>
                     
@@ -77,7 +81,7 @@
                         <p style="color: grey">10th Result Details</p>
                     </div>
                     <div class="input-field col s4">
-                        <select id="tenthBoard" name="tenthBoard" >
+                        <select id="tenthBoard" name="tenthBoard" data-validation="required">
                           <option readonly value="<%= student.tenthResult.board %>" selected><%= student.tenthResult.board %></option>
                           <option>SSLC</option>
                           <option>CBSE</option>
@@ -89,14 +93,16 @@
                     
                     <!--Percentage-->
                     <div class="input-field col s4">
-                      <input id="tenthPercentage" name="tenthPercentage" type="text" class="validate"  value="<%= student.tenthResult.Percentage %>">
-                      <label class="active" for="tenthPercentage">Percentage</label>
+                      <input id="tenthPercentage" name="tenthPercentage" type="text" value="<%= student.tenthResult.Percentage %>"
+                      data-validation="number" data-validation-allowing="range[0.0;100.0],float"
+                      data-validation-error-msg="Enter valid %. Ex: '99.99', '90'">
+                      <label class="active" for="tenthPercentage">Percentage*</label>
                     </div>
                     
                     <!--Year of Passing-->
                     <div>
                     <div class="input-field col s4">
-                      <select id="tenthPassYear" name="tenthPassYear" >
+                      <select id="tenthPassYear" name="tenthPassYear" data-validation="required">
                           <% var dt = new Date();
                              var year = dt.getFullYear() %>
                           <option value="<%= student.tenthResult.yearPassed %>" readonly selected><%= student.tenthResult.yearPassed %></option>
@@ -109,7 +115,7 @@
                     
                     <!--Upload marks card-->
                     <div class="input-field col s12">
-                        <% if(student.tenthResult.reportLink.length>0) {
+                        <% if(student.tenthResult.reportLink){ 
                                 reportName="Click to re-upload image"
                             }else{
                                 reportName=""
@@ -122,7 +128,7 @@
                         </div>
                         <div class="file-path-wrapper">
                             <input class="file-path validate" type="text" 
-                            placeholder="Upload 10th marks card" value="<%=reportName%>">
+                            placeholder="Upload 10th marks card(Image Only)" value="<%=reportName%>" >
                         </div>
                         </div>
                     </div>
@@ -133,7 +139,7 @@
                         <p style="color: grey">12th Result Details</p>
                     </div>
                     <div class="input-field col s4">
-                        <select id="twelfthBoard" name="twelfthBoard" >
+                        <select id="twelfthBoard" name="twelfthBoard" data-validation="required">
                           <option readonly value="<%= student.twelfthResult.board %>" selected><%= student.twelfthResult.board %></option>
                           <option>PU</option>
                           <option>CBSE</option>
@@ -145,13 +151,15 @@
                     
                     <!--Percentage-->
                     <div class="input-field col s4">
-                      <input id="twelfthPercentage" name="twelfthPercentage" type="text" class="validate" value="<%= student.twelfthResult.Percentage %>" >
-                      <label class="active" for="twelfthPercentage">Percentage</label>
+                      <input id="twelfthPercentage" name="twelfthPercentage" type="text" value="<%= student.twelfthResult.Percentage %>" 
+                      data-validation="number" data-validation-allowing="range[0.0;100.0],float"
+                      data-validation-error-msg="Enter valid %. Ex: '99.99', '90'">
+                      <label class="active" for="twelfthPercentage">Percentage*</label>
                     </div>
                     
                     <!--Year of Passing-->
                     <div class="input-field col s4">
-                      <select id="twelfthPassYear" name="twelfthPassYear" >
+                      <select id="twelfthPassYear" name="twelfthPassYear" data-validation="required">
                           <% var dt = new Date();
                              var year = dt.getFullYear() %>
                           <option readonly value="<%= student.twelfthResult.yearPassed %>" selected><%= student.twelfthResult.yearPassed %></option>
@@ -164,7 +172,7 @@
                     
                     <!--Upload marks card-->
                     <div class="input-field col s12" style="padding-bottom: 5%">
-                        <% if(student.twelfthResult.reportLink.length>0) {
+                        <% if(student.twelfthResult.reportLink) {
                                 reportName="Click to re-upload image"
                             }else{
                                 reportName=""
@@ -177,14 +185,14 @@
                         </div>
                         <div class="file-path-wrapper">
                             <input class="file-path validate" type="text" 
-                            placeholder="Upload 12th marks card" value="<%=reportName%>">
+                            placeholder="Upload 12th marks card(Image Only)" value="<%=reportName%>">
                         </div>
                         </div>
                     </div>
                     
                     <div>
                         <button type="button" onclick="prev_step1()" class="waves-effect waves-light btn blue left">&lt; Previous</button>
-                        <button type="button" onclick="next_step2()" class="waves-effect waves-light btn blue right">Next  &gt;</button>
+                        <button type="button" onclick="test2('#form')" class="waves-effect waves-light btn blue right">Next  &gt;</button>
                     </div>
                     </section>
 
@@ -205,7 +213,7 @@
                             if(i<=len){
                                 percent = student.semResults[i-1].Percentage;
                                 // path = student.semResults[i-1].reportLink.split('/');
-                                if(student.semResults[i-1].reportLink.length>0) {
+                                if(student.semResults[i-1] && student.semResults[i-1].reportLink.length>0) {
                                     reportName="Click to re-upload image"
                                 }else{
                                     reportName=""
@@ -222,7 +230,7 @@
                     
                     <!--Percentage-->
                         <div class="input-field col s2">
-                          <input id="<%= id2 %>" name="<%= id2 %>" type="text" class="validate"  value="<%= percent %>">
+                          <input id="<%= id2 %>" name="<%= id2 %>" type="text" value="<%= percent %>">
                           <label class="active" for="<%= id2 %>">Percentage</label>
                         </div>
                         
@@ -257,7 +265,7 @@
                         }
                     %>
                     <div class="input-field col s12">
-                        <input id="titles" name="titles" type="text" class="validate" value="<%= allcerts %>" >
+                        <input id="titles" name="titles" type="text" value="<%= allcerts %>" readonly>
                         <label class="active" for="titles">Certifications Submitted</label>
                     </div>
                     <div id="certifications">
@@ -288,7 +296,7 @@
                     <div class="input-field col s12">
                         <p style="color: grey">Resume</p>
                     </div>
-                    <% if(student.resumeLink.length>0) {
+                    <% if(student.resumeLink) {
                             reportName="Click to re-upload document"
                         }else{
                             reportName=""
@@ -320,7 +328,12 @@
     </div>
     
 <script type="text/javascript">
-    
+    $('#dob').datetimepicker({
+        timepicker: false,
+        format: "d-m-Y",
+        mask:true,
+        maxDate: '+1970/01/02'
+    });
     document.getElementById("second").style.display = "none";
     document.getElementById("third").style.display = "none";
     function next_step1() {
@@ -342,7 +355,28 @@
         document.getElementById("third").style.display = "none";
         document.getElementById("second").style.display = "block";
     }
-    
+    $.validate({
+        scrollToTopOnError : true
+    });
+    var myConf = {},
+    myLang = {};
+    myConf = $.extend($.formUtils.defaultConfig(), myConf)
+    function test(formGroupID) {
+        var valid = $(formGroupID).validateForm(myLang, myConf);
+        if( valid ) {
+            next_step1();
+        } else {
+            alert("Missing fields! Please ensure required fields are filled")
+        }
+    }
+    function test2(formGroupID) {
+        var valid = $(formGroupID).validateForm(myLang, myConf);
+        if( valid ) {
+            next_step2();
+        } else {
+            alert("Missing fields! Please ensure required fields are filled")
+        }
+    }
     
     $(document).on("focus",'#certifications > div:last', function(){
         var allGood=true;
@@ -357,8 +391,8 @@
                 'class="validate"  value=""> <label class="active" for="title'+
                 lastInputField+'">Title</label> </div> <div class="input-field file-field col s8"> '+
                 '<div class="btn blue-grey"> <span>Browse</span> <input type="file" name="title'+
-                lastInputField+'Card"> </div> <div class="file-path-wrapper"> '+
-                '<input class="file-path validate" type="text" placeholder="Upload Certificate"> '+
+                lastInputField+'Card" accept="image/x-png,image/gif,image/jpeg"> </div> <div class="file-path-wrapper"> '+
+                '<input class="file-path validate" type="text" placeholder="Upload Certificate(Image Only)"> '+
                 ' </div> </div> </div>'
             $(inputField).appendTo("#certifications");
         }

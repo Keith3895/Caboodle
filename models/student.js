@@ -7,7 +7,6 @@ var StudentSchema = new mongoose.Schema({
 	},
 	USN: { type : String , unique : true, required : true, dropDups: true },
 	department: String,
-	placements: Number,
 	gender: String,
 	books:[{bookID: {
 	     type: mongoose.Schema.Types.ObjectId,
@@ -26,7 +25,23 @@ var StudentSchema = new mongoose.Schema({
 	certifications: [{description: String, docLink: String}],
 	registeredPlacements: [{
 	     type: mongoose.Schema.Types.ObjectId,
-	     ref: "placement"
+	     ref: "placement",
+	     unique : true
+	}],
+	selectedPlacements: [{
+	     type: mongoose.Schema.Types.ObjectId,
+	     ref: "placement",
+	     unique : true
+	}],
+	registeredInternships: [{
+	     type: mongoose.Schema.Types.ObjectId,
+	     ref: "internship",
+	     unique : true
+	}],
+	selectedInternships:[{
+	     type: mongoose.Schema.Types.ObjectId,
+	     ref: "internship",
+	     unique : true
 	}]
 });
 

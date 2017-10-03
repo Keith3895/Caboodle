@@ -24,8 +24,14 @@
       transition: all .3s ease;
   }
   .card:hover{
-      cursor: pointer;
+      /*cursor: pointer;*/
       box-shadow: 2px 2px 5px 0 #607D8B !important;
+  }
+  .modal strong{
+      font-size:1.3em;
+  }
+  .modal p{
+      font-size:1.1em;
   }
   /*.card-content{*/
   /*    padding:24px !important;*/
@@ -43,81 +49,98 @@
   /*    height: 35% !important ; */
   /*}*/
 </style>
+<% 
+    var has = function(container, value) {
+    	var returnValue = false;
+    	var pos = container.indexOf(value);
+    	if (pos >= 0) {
+    		returnValue = true;
+    	}
+    	return returnValue;
+    }
+%>
 
 <div class="row" >
     <div class="col s12" >
       <ul class="tabs fixed" style="overflow:hidden">
-        <li class="tab col s3"><a href="#upcoming">Upcoming Placements</a></li>
-        <li class="tab col s3"><a href="#completed">Completed Placements</a></li>
-        <li class="tab col s3"><a href="#upcomingInt">Available Internships</a></li>
-        <li class="tab col s3"><a href="#completedInt">Completed Internships</a></li>
+        <li class="tab col s3"><a name="tab" class="active" href="#upcoming">Upcoming Placements</a></li>
+        <li class="tab col s3"><a name="tab" href="#completed">Completed Placements</a></li>
+        <li class="tab col s3"><a name="tab" href="#upcomingInt">Available Internships</a></li>
+        <li class="tab col s3"><a name="tab" href="#completedInt">Completed Internships</a></li>
+        <li class="indicator" style="width:25%;left: 0px;"></li>
       </ul>
     </div>
    <div id="upcoming">
     <div class="row" style="margin-left: 2%">
-   <% company.forEach(function(el,i) {
-   var pDate= company[i].date.split("-");
+   <% company.forEach(function(comp,i) {
+   var pDate= comp.date.split("-");
     if((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0]))){ %>
     <div class="col s12 m4 l4">
         <div class="card  teal darken-1 z-depth-3">
+            <% 
+                var myhref="#modal"+i;
+                var href_id= "modal"+i; 
+            %>
+            <a href="<%= myhref %>">
             <div class="card-content white-text">
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
-                    <%= company[i].cName %>
+                    <%= comp.cName %>
                 </span>
                 <span class="date">
                     <i class="fa fa-calendar-o" aria-hidden="true" style="font-size: .7em"></i>
                     
                     <span>
-                        <%= company[i].date %></span>
+                        <%= comp.date %></span>
                 </span>
                 <p class="divider"></p>
                 <div class="details">
                     <p>
                         <i class="fa fa-money" aria-hidden="true"></i> 
-                        Package  : <%= company[i].Package %>
+                        Package  : <%= comp.Package %>
                     </p>
                     <p>
                         <i class="fa fa-map-marker" aria-hidden="true" style="margin-right: 7px;"></i> 
-                        Location  : <%= company[i].jobLocation %>
+                        Location  : <%= comp.jobLocation %>
                     </p>
                     <p>
                         <i class="fa fa-compass" aria-hidden="true"></i> 
-                        Drive-location : <%= company[i].driveLocation %>
+                        Drive-location : <%= comp.driveLocation %>
                     </p>
                     <p>
                         <i class="fa fa-cogs" aria-hidden="true"></i>
-                        Skills : <%= company[i].skills %>
+                        Skills : <%= comp.skills %>
                     </p>
                     <p>
                         <i class="fa fa-wrench" aria-hidden="true"></i>
-                        Designation :  <%= company[i].designation %>
+                        Designation :  <%= comp.designation %>
                     </p>
                 </div>
             </div>
+            </a>
             <% 
                 var myhref="#modal"+i;
                 var href_id= "modal"+i; 
             %>
             <div class="card-action">
-                <a href="/student/registerPlacement/<%= company[i]._id %>" >Register</a>
+                <a href="/student/registerPlacement/<%= comp._id %>" >Register</a>
                 <a href=<%= myhref %> >More Info</a>
             </div>
         </div>
     </div>
     <!-- Modal Structure -->
-  <div id=<%= href_id %> class="modal modal-fixed-footer">
+  <div id="<%= href_id %>" class="modal modal-fixed-footer">
     <div class="modal-content">
-      <h3 class="center"><%= company[i].cName %></h3>
+      <h3 class="center"><%= comp.cName %></h3>
       <h6 class="center">Placement Drive at</h6>
-      <h5 class="center"><%= company[i].driveLocation %> on <%= company[i].date %></h5>
+      <h5 class="center"><%= comp.driveLocation %> on <%= comp.date %></h5>
       <div class="divider"></div>
-      <p><strong>Package: </strong><%= company[i].Package %></p>
-      <p><strong>Role: </strong><%= company[i].designation %></p>
-      <p><strong>Skills Required: </strong><%= company[i].skills %></p>
-      <p><strong>Job Location: </strong><%= company[i].jobLocation %></p>
+      <p><strong>Package: </strong><%= comp.Package %></p>
+      <p><strong>Role: </strong><%= comp.designation %></p>
+      <p><strong>Skills Required: </strong><%= comp.skills %></p>
+      <p><strong>Job Location: </strong><%= comp.jobLocation %></p>
       <p><strong>Description: </strong></p>
-      
+      <p><%= comp.jobDescription %></p>
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -128,49 +151,53 @@
     </div>
     <div id="completed">
         <div class="row" style="margin-left: 2%">
-   <% company.forEach(function(el,i) {
-       var pDate= company[i].date.split("-");
+   <% company.forEach(function(comp,i) {
+       var pDate= comp.date.split("-");
         if(!((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0])))){ %>
     <div class="col s12 m4 l4" >
         <div class="card  teal  darken-3 z-depth-3">
+            <% 
+                var myhref="#modal"+i;
+                var href_id= "modal"+i; 
+            %>
+            <a href="<%= myhref %>">
             <div class="card-content white-text">
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
-                    <%= company[i].cName %>
+                    <%= comp.cName %>
                 </span>
                 <span class="date">
                     <i class="fa fa-calendar-o" aria-hidden="true" style="font-size: .7em"></i>
                     
                     <span>
-                        <%= company[i].date %></span>
+                        <%= comp.date %></span>
                 </span>
                 <p class="divider"></p>
                 <div class="details">
                     <p>
                         <i class="fa fa-money" aria-hidden="true"></i> 
-                        Package  : <%= company[i].Package %>
+                        Package  : <%= comp.Package %>
                     </p>
                     <p>
                         <i class="fa fa-map-marker" aria-hidden="true" style="margin-right: 7px;"></i> 
-                        Location  : <%= company[i].jobLocation %>
+                        Location  : <%= comp.jobLocation %>
                     </p>
                     <p>
                         <i class="fa fa-compass" aria-hidden="true"></i> 
-                        Drive-location : <%= company[i].driveLocation %>
+                        Drive-location : <%= comp.driveLocation %>
                     </p>
                     <p>
                         <i class="fa fa-cogs" aria-hidden="true"></i>
-                        Skills : <%= company[i].skills %>
+                        Skills : <%= comp.skills %>
                     </p>
                     <p>
                         <i class="fa fa-wrench" aria-hidden="true"></i>
-                        Dept :  <%= company[i].designation %>
+                        Dept :  <%= comp.designation %>
                     </p>
                 </div>
             </div>
+            </a>
             <% 
-                var myhref="#modal"+i;
-                var href_id= "modal"+i; 
                 var myhref1="#modalA"+i;
                 var href_id1= "modalA"+i; 
             %>
@@ -183,17 +210,17 @@
     <!-- Modal Structure -->
   <div id="<%= href_id %>" class="modal modal-fixed-footer">
     <div class="modal-content">
-      <h3 class="center"><%= company[i].cName %></h3>
+      <h3 class="center"><%= comp.cName %></h3>
       <h5 class="center">Placement Drive Completed at</h5>
-      <h5 class="center"><%= company[i].driveLocation %> on <%= company[i].date %></h5>
+      <h5 class="center"><%= comp.driveLocation %> on <%= comp.date %></h5>
       <div class="divider"></div>
-      <p><strong>Package: </strong><%= company[i].Package %></p>
-      <p><strong>Role: </strong><%= company[i].designation %></p>
-      <p><strong>Skills Required: </strong><%= company[i].skills %></p>
-      <p><strong>Job Location: </strong><%= company[i].jobLocation %></p>
+      <p><strong>Package: </strong><%= comp.Package %></p>
+      <p><strong>Role: </strong><%= comp.designation %></p>
+      <p><strong>Skills Required: </strong><%= comp.skills %></p>
+      <p><strong>Job Location: </strong><%= comp.jobLocation %></p>
       <p><strong>Description: </strong></p>
     
-        <%= company[i].jobDescription%>
+       <p><%= comp.jobDescription%></p> 
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -203,9 +230,37 @@
   <!-- Modal Structure -->
   <div id="<%= href_id1 %>" class="modal">
     <div class="modal-content">
-      <h4><%= company[i].cName %></h4>
-      <p><strong>No. of Registrations: </strong><%= company[i].registeredStudents.length %></p>
-      <p><strong>No. of students placed: </strong><%= company[i].placedStudents.length %></p>
+      <h4><%= comp.cName %></h4>
+      <p><strong>No. of Registrations: </strong><%= comp.registeredStudents.length %></p>
+      <p><strong>No. of students placed: </strong><%= comp.selectedStudents.length %></p>
+       <% if(comp.selectedStudents!==undefined && comp.selectedStudents.length > 0){ %>
+      <table class="striped centered">
+        <thead>
+            <h4 class="center">Placed Students</h4>
+          <tr>
+              <th>Sl. No.</th>
+              <th>USN</th>
+              <th>Name</th>
+              <th>Department</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% var j = 1;
+            comp.registeredStudents.forEach(function(student){ 
+            if(has(comp.selectedStudents,student._id)){ %>
+            <tr>
+                <td><%= j %></td>
+                <td><%=student.USN%></td>
+                <td><%=student.author.firstName%> <%=student.author.lastName%></td>
+                <td><%=student.department%></td>
+            </tr>
+            <% j= j+1; 
+            } }) %>
+        </tbody>
+      </table>
+    <% } else{ %>
+        <h5 class="center">No Student(s) Placed</h5>
+    <% } %>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>
@@ -224,6 +279,11 @@
     if((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0]))){ %>
     <div class="col s12 m4">
         <div class="card  teal darken-2  z-depth-3">
+            <% 
+                var myhref="#modalInt"+i;
+                var href_id= "modalInt"+i; 
+            %>
+            <a href="<%= myhref %>">
             <div class="card-content white-text">
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
@@ -259,17 +319,15 @@
                     </p>
                 </div>
             </div>
-            <% 
-                var myhref="#modalInt"+i;
-                var href_id= "modalInt"+i; 
-            %>
+            </a>
             <div class="card-action">
+                <a href="/student/registerPlacement/<%= internship._id %>" >APPLY</a>
                 <a href=<%= myhref %> >More Info</a>
             </div>
         </div>
     </div>
     <!-- Modal Structure -->
-  <div id=<%= href_id %> class="modal modal-fixed-footer">
+  <div id="<%= href_id %>" class="modal modal-fixed-footer">
     <div class="modal-content">
       <h3 class="center"><%= internship.cName %></h3>
       <h6 class="center">Interview at</h6>
@@ -279,8 +337,8 @@
       <p><strong>Role: </strong><%= internship.designation %></p>
       <p><strong>Skills Required: </strong><%= internship.skills %></p>
       <p><strong>Internship Location: </strong><%= internship.internLocation %></p>
-      <p><strong>Description: </strong><%= internship.internDescription %></p>
-   
+      <p><strong>Description: </strong></p>
+       <p><%= internship.internDescription %></p>
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -296,6 +354,11 @@
         if(!((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0])))){ %>
     <div class="col s12 m4">
         <div class="card  teal darken-3  z-depth-3">
+             <% 
+                var myhref="#modalInt"+i;
+                var href_id= "modalInt"+i; 
+            %>
+            <a href="<%= myhref %>">
             <div class="card-content white-text">
                 <span class="card-title">
                     <i class="fa fa-building" aria-hidden="true" style="font-size: .7em"></i>
@@ -331,9 +394,8 @@
                     </p>
                 </div>
             </div>
+            </a>
             <% 
-                var myhref="#modalInt"+i;
-                var href_id= "modalInt"+i; 
                 var myhref1="#modalAInt"+i;
                 var href_id1= "modalAInt"+i; 
             %>
@@ -354,8 +416,8 @@
       <p><strong>Role: </strong><%= internship.designation %></p>
       <p><strong>Skills Required: </strong><%= internship.skills %></p>
       <p><strong>Internship Location: </strong><%= internship.internLocation %></p>
-      <p><strong>Description: </strong><%= internship.internDescription %></p>
-      
+      <p><strong>Description: </strong></p>
+      <p><%= internship.internDescription %></p>
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -366,8 +428,36 @@
   <div id="<%= href_id1 %>" class="modal">
     <div class="modal-content">
       <h4><%= internship.cName %></h4>
-      <p><strong>No. of Applied: </strong><%= internship.appliedStudents.length %></p>
-      <p><strong>No. of Selected Students: </strong><%= internship.selectedInterns.length %></p>
+      <p><strong>No. of Students who Applied: </strong><%= internship.registeredStudents.length %></p>
+      <p><strong>No. of Selected Students: </strong><%= internship.selectedStudents.length %></p>
+      <% if(internship.selectedStudents!==undefined && internship.selectedStudents.length > 0){ %>
+      <table class="striped centered">
+        <thead>
+            <h4 class="center">Placed Students</h4>
+          <tr>
+              <th>Sl. No.</th>
+              <th>USN</th>
+              <th>Name</th>
+              <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% var i = 1;
+            internship.registeredStudents.forEach(function(student){ 
+            if(has(internship.selectedStudents,student._id)){ %>
+            <tr>
+                <td><%= i %></td>
+                <td><%=student.USN%></td>
+                <td><%=student.author.firstName%> <%=student.author.lastName%></td>
+                <td><%=student.author.email%></td>
+            </tr>
+            <% i= i+1; 
+            } }) %>
+        </tbody>
+      </table>
+    <% } else{ %>
+        <h5 class="center">No Student(s) Placed</h5>
+    <% } %>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>
@@ -382,6 +472,18 @@
     // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
     $('.modal').modal();
   });
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+        $('a[name="tab"]').on('click', function(e) {
+            localStorage.setItem('activeTab', $(e.target).attr('href'));
+        });
+        var activeTab = localStorage.getItem('activeTab');
+        if(activeTab){
+            console.log(activeTab)
+            $('ul.tabs').tabs('select_tab', activeTab);
+        }
+    });
 </script>
 <% include ../partials/footer.ejs %>
 

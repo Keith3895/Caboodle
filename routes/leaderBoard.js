@@ -19,28 +19,17 @@ router.get('/test',function(req,res){
         path:'entry.author',
         model: 'User'
     }).exec(function(err,br){
-        // console.log(br[0].entry[br[0].entry.length-1]);
-        req.session.timestamp = br.testId;
-        board = br[0];
-        board.entry.sort(function(a,b){
-            return b.xp-a.xp;
-        });
-        res.render('leaderBoard/testLeadBoardComp',{board:board});
+        if(br[0]){
+            req.session.timestamp = br.testId;
+            board = br[0];
+            board.entry.sort(function(a,b){
+                return b.xp-a.xp;
+            });
+            res.render('leaderBoard/testLeadBoardComp',{board:board});
+        }
         // res.send(board); 
     });
-    // console.log(req.session.timestamp);
-    // if(req.session.timestamp)
-    // LeaderBoard.findOne({'testId':req.session.timestamp}).populate({
-    //     path:'entry.author',
-    //     model: 'User'
-    // }).exec(function(err,board){
-    //     board.entry.sort(function(a,b){
-    //         return b.xp-a.xp;
-    //     });
-    //     // console.log(board)
-    //     res.render('leaderBoard/testLeadBoardComp',{board:board});
-    //     // res.send(board);
-    // });
+    
 });
 
 router.get('/overall',function(req, res) {

@@ -18,10 +18,10 @@ body{
   	  list-style-type: circle !important;
   	}
   	.placementDisc,.leaderDisc{
-  		padding: 4% 2%;
-  		font-size: 1.3em;
-  		text-align: left;
-  		margin-left:150px;
+  		  padding: 4% 0%;
+        font-size: 1.3em;
+        text-align: left;
+        margin-left: 100px;
   	}
   	.placementDisc ul li,.leaderDisc ul li{
   	   opacity:0;
@@ -60,7 +60,7 @@ body{
 
 
 .animated {
-  animation-duration: 1.5s;
+  animation-duration: 1s;
   animation-fill-mode: both;
 }
 

@@ -10,10 +10,12 @@ var Student = require("../models/student");
 var LeaderBoard = require("../models/leaderboard");
 var GlobalLeaderBoard = require("../models/globalLeaderBoard");
 var Questions = require("../models/question");
+var Context = require("../models/context");
 var resultAnalysis = require("./externalFunction/placementTestAnalysis");
 var testExternalFuncs = require("./externalFunction/testExternalFuncs");
 // var page=require('webpage').create();
 var phantom = require('phantom');
+
     var dataRecieved,questionset=0,timestamp;
 function refreshQuestions(){
     http.get("https://external-api-keithfranklin.c9users.io/random/25", function(resp) {
@@ -44,15 +46,42 @@ function refreshQuestions(){
     .on('error', function(e) {
     	console.log("Got error: " + e.message);
     });
+    
+    http.get("https://external-api-keithfranklin.c9users.io/comp/get", function(resp) {
+    	var body = ''; 
+    	resp.on('data', function(data){
+    		body += data;
+    	});
+    	resp.on('end', function() {
+    		var parsed = JSON.parse(body);
+    // 		console.log(parsed);
+    		var dataRecievedC= parsed;
+            for(i=0;i<dataRecievedC.length;i++){
+                // dataRecievedC[i].timestamp= timestamp;
+                Context.create(dataRecievedC[i],function(err, questionEnter) {
+                   if(err)
+                    console.log(err);
+                });
+            }
+    	});
+    })
+    .on('error', function(e) {
+    	console.log("Got error: " + e.message);
+    });
 }
     
 router.get('/',middleware.isLoggedIn,function(req,res){
     req.session.cookie.maxAge = (50*60*1000);
+    req.session.test = true;
     res.render('tests/preTest');
 });
 router.get('/testEnv',middleware.isLoggedIn,function(req, res) {
-    req.session.cookie.maxAge = (50*60*1000);
-    res.render('tests/tests',{questionset:questionset});
+    if(req.session.test){
+        req.session.cookie.maxAge = (50*60*1000);
+        res.render('tests/tests',{questionset:questionset});
+    }
+    else
+        res.send('no access');
 });
 
 router.get('/questions',middleware.isLoggedIn,function(req,res){
@@ -60,19 +89,18 @@ router.get('/questions',middleware.isLoggedIn,function(req,res){
     Questions.find({},function(err, questionsSend) {
         req.session.timestamp = questionsSend[0].timestamp;    
         timestamp = questionsSend[0].timestamp;
-        var last = questionsSend[5];
-        last.comprehension = "bla bla bla bla";
-        console.log(last);
-        questionsSend.push(last);
+        Context.find({},function(err, context) {
+            res.send({
+                questions: questionsSend,
+                context:context
+            });    
+        });
         
-        res.send(questionsSend);
     });
+    
 });
 
 router.get('/refreshQuestions',middleware.isAdmin,function(req,res){
-
-
-    testExternalFuncs.studentSkiped();
     Questions.remove({},function(err,stat) {
         console.log('removed');
         // console.log(stat);
@@ -81,7 +109,12 @@ router.get('/refreshQuestions',middleware.isAdmin,function(req,res){
     req.session.timestamp=timestamp;
     res.redirect('/test');
 });
-router.post('/getAnalysis',function(req,res){
+router.get('/negSkip',middleware.isAdmin,function(req, res) {
+    testExternalFuncs.studentSkiped();
+    res.redirect('/leader');
+});
+router.post('/getAnalysis',middleware.isLoggedIn,function(req,res){
+    
     var PlacementTestResults ={
         id:req.session.timestamp,
         marks: req.body.marks,
@@ -135,7 +168,13 @@ router.get('/removeResults',middleware.isAdmin,function(req, res) {
             std[i].PlacementTestResults=[];
             std[i].save();
         }
-        res.send(std);
+        LeaderBoard.remove({},function(err, List) {
+            GlobalLeaderBoard.remove({},function(err, List) {
+                res.send(std);        
+            });    
+        });
+        
+        
     });
 });
 router.get('/student',function(req, res) {

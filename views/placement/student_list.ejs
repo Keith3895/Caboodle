@@ -4,7 +4,16 @@
 <link rel="stylesheet" href="/stylesheets/user_list.css">
 <link href="/stylesheets/admin_home.css" rel="stylesheet">
 <% include ./sidenav.ejs %>
-
+<style>
+    #myTable_filter{
+        display:none;
+    }
+    select{
+        border:1px solid grey;
+        width: 20%;
+        display: inline-block !important;
+    }
+</style>
 <!-- Modal Structure -->
   <div id="modal1" class="modal bottom-sheet">
     <div class="modal-content">
@@ -17,26 +26,53 @@
     </div>
   </div>
 
-<div class="row">
-    <div class="cntr">
-	<div class="cntr-innr">
-	<div id="searchform">
-	    <div>
-		  <label class="search-label" for="inpt_search">
-		  		<input type="text" id="myInput" class="autocomplete">
-			</label>
-	    </div>
-	</div>
-
-	</div>
+<div class="row ">
+    <div style="margin:20px;">
+        <h4 class="center">Student List</h4>
+    
     </div>
-    <table id='myTable' class="highlight centered">
+    <div class="col s12">
+        <div class="cntr col s12 m6">
+        	<div class="cntr-innr">
+            	<div id="searchform">
+            	    <div>
+            		  <label class="search-label" for="inpt_search">
+            		  		<input type="text" id="myInput" class="autocomplete">
+            			</label>
+            	    </div>
+            	</div>
+        	</div>
+    	</div>
+        <select class="browser-default col s6 m2" id="sem" name="sem">
+          <option value="" disabled selected>Select Semester</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+        </select>
+        <select class="browser-default col s6 m2" id="dept" name="dept">
+          <option value="" disabled selected>Select Department</option>
+          <option>CSE</option>
+          <option>ISE</option>
+          <option>ECE</option>
+          <option>EEE</option>
+          <option>ME</option>
+          <option>Civil</option>
+        </select>
+    </div>
+    <div class="col s12 responsive-table">
+    <table id='myTable' class="highlight centered  ">
         <thead>
           <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
+              <th>Name</th>
               <th>User Type</th>
+              <th>Email</th>
               <th>Semester</th>
+              <th>Department</th>
               <th></th>
           </tr>
         </thead>
@@ -44,20 +80,22 @@
         <tbody>
             <% list.forEach(function(el, index){ %>
           <tr>
-            <td><%= el.author.firstName %></td>
-            <td><%= el.author.lastName %></td>
+            <td><%= el.author.firstName %> <%= el.author.lastName %></td>
             <td><%= el.USN %></td>
+            <td><%= el.author.email %></td>
             <td><%= el.semester %></td>
+            <td><%= el.department %></td>
             <td style="padding: 0px"> 
                 <a href="#modal1" onclick="f1('<%= el.USN %>','<%= el.author._id %>')"><i class="material-icons delete">delete</i></a>
-                <a href=""><i class="material-icons edit">mode_edit</i></a>
+                <a href="/updateStudent/<%=el.author._id%>"><i class="material-icons edit">mode_edit</i></a>
             </td>
           </tr>
           <% }); %>
         </tbody>
     </table>    
+    </div>
 </div>
-
+</div>
 <script>
     $(document).ready(function(){
         var usn='',userID='';
@@ -70,13 +108,11 @@
   function f2(approval){
     if(approval==='yes'){
         $.ajax({
-            method: "POST",
-            url: "/placementHead/students/delete",
+            method: "DELETE",
+            url: "/admin/students",
             data: {"USN": usn,"userID":userID},
             success: function() {
-            // if(/* check if it is ok */) {
-                location.reload();
-            // }
+                location.href = "https://erpdontdelete-mkb95.c9users.io/placementHead/students"
             }
         })
     }
@@ -101,8 +137,22 @@
             //do something
             $(this).parent().removeClass('active');
         });
-        
+        var table = $('#myTable').DataTable({
+            "pageLength": 100,
+            "paging":   false,
+            "ordering": true,
+            "info":     false,
+            destroy: true
+        })
+        $('#sem').on( 'keyup change', function () {
+            table.columns(3).search(this.value).draw();
+        });
+        $('#dept').on( 'keyup change', function () {
+            table.columns(4).search(this.value).draw();
+        });
     });
+    
+    
 </script>
 
 

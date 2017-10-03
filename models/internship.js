@@ -18,8 +18,14 @@ var InternshipSchema = new mongoose.Schema({
 	    type: mongoose.Schema.Types.ObjectId,
 	    ref: "User"
 	},
-	appliedStudents: [String],
-	selectedInterns: [String]
+	registeredStudents: [{
+	    type: mongoose.Schema.Types.ObjectId,
+	    ref: "User"
+	}],
+	selectedStudents: [{
+	    type: mongoose.Schema.Types.ObjectId,
+	    ref: "User"
+	}]
 });
 
 module.exports = mongoose.model("internship", InternshipSchema);

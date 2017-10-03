@@ -4,6 +4,7 @@ var passport = require("passport");
 var User = require("../models/user");
 var VTUmarks = require("../models/vtuMarks");
 var Placement = require("../models/placement");
+var Internship = require("../models/internship");
 var Student = require("../models/student");
 var LeaderBoard = require("../models/leaderboard");
 var middleware = require("../middleware");
@@ -11,6 +12,7 @@ var nodemailer = require('nodemailer');
 var mkdirp = require('mkdirp');
 var ejs = require('ejs');
 var smtpTransport = require('nodemailer-smtp-transport');
+var ses = require('nodemailer-ses-transport');
 var multer = require('multer');
 var aws = require('aws-sdk');
 aws.config.loadFromPath('awscredentials.json');
@@ -23,7 +25,28 @@ var S3FS = require('s3fs'),
     
 var resultAnalysis = require("./externalFunction/placementTestAnalysis");
 router.use(multipartyMiddleware);
+require('dotenv').config();
+// var transporter = nodemailer.createTransport(ses({
+//     accessKeyId: 'process.env.MailerKeyid',
+//     secretAccessKey: 'process.env.MailerPsd'
+// }));
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    host: "smtp.gmail.com",
+    auth: {
+        user: 'bkm.blore.c9@gmail.com', // Your email id
+        pass: 'cloudnine' // Your password
+    }
+});
 
+var has = function(container, value) {
+	var returnValue = false;
+	var pos = container.indexOf(value);
+	if (pos >= 0) {
+		returnValue = true;
+	}
+	return returnValue;
+}
 
 router.get("/",function(req,res){
     Student.findOne({'author':req.user._id}).populate('author').exec(function(err,student){
@@ -45,63 +68,65 @@ router.get("/mobile/:id",function(req,res){
 });
 
 
-
-
-
 // 
-router.get("/registerPlacement/:id",function(req,res){
+router.get("/registerPlacement/:id",middleware.isStudent,function(req,res){
     var currentUser = req.user;
-    if(currentUser){
-        if(currentUser.userType==="student"){
-            f1();
-        }else{
-            req.flash("error","Sorry! You are not a student!");
-            res.redirect("/"+currentUser.userType);
-        }
-    }
-    else{
-        Placement.findOne({'_id':req.params.id},function(err,record){
-            if(err) console.log(err);
-            else{
-                req.flash("success","Alert! You must be a student to do this!")
-                res.render("student/registerPlacement",{record: record}); 
-            }
-        })    
-    }
-    
-    function f1(){
-        Placement.findOne({'_id':req.params.id},function(err,record){
+    Placement.findOne({'_id':req.params.id},function(err,record){
         if(err) console.log(err);
         else{
-            Student.findOne({'author':currentUser._id},function(err1,student) {
-                if(err1) console.log(err1);
-                else{
-                    record.registeredStudents.push(student.USN);
-                    record.save();
-                    student.registeredPlacements.push(record._id);
-                    student.save();
-                    console.log("Successful registration")
-                    req.flash("success","You are successfully registered!");
-                    res.redirect("/student");
-                }
-            })
+            if(record!==null){
+                Student.findOne({'author':currentUser._id},function(err1,student) {
+                    if(err1) console.log(err1);
+                    else{
+                        if(!has(record.registeredStudents,student._id)){
+                            record.registeredStudents.push(student._id);
+                            record.save();
+                            student.registeredPlacements.push(record._id);
+                            student.save();
+                            console.log("Successful registration")
+                            req.flash("success","You are successfully registered!");
+                            res.redirect("/student/viewPlacements");
+                        }else{
+                            console.log("Already registered")
+                            req.flash("error","You are already registered!");
+                            res.redirect("/student/viewPlacements");
+                        }
+                    }
+                })
+            }else{
+                console.log("No such placement exists");
+            }
         }
     })
-    }
+    Internship.findOne({'_id':req.params.id},function(err,record){
+        if(err) console.log(err);
+        else{
+            if(record!==null){
+                Student.findOne({'author':currentUser._id},function(err1,student) {
+                    if(err1) console.log(err1);
+                    else{
+                        if(!record.registeredStudents.includes(student._id)){
+                            record.registeredStudents.push(student._id);
+                            record.save();
+                            student.registeredInternships.push(record._id);
+                            student.save();
+                            console.log("Successful registration")
+                            req.flash("success","You successfully applied!");
+                            res.redirect("/student");
+                        }else{
+                            console.log("Already registered")
+                            req.flash("error","You are already registered!");
+                            res.redirect("/student");
+                        }
+                    }
+                })
+            }else{
+                console.log("No such internship exists");
+            }
+        }
+    })
 });
 
-router.post("/registerPlacement/:id",function(req,res,next){
-    passport.authenticate('local', function(err, user, info) {
-        if (err) { return next(err); }
-        req.logIn(user, function(err) {
-            if (err) { return next(err); }
-            else{
-                // req.flash("success","You are successfully registered!");
-                res.redirect("/student/registerPlacement/"+req.params.id);
-            }
-        });
-    })(req, res, next);
-});
 
 router.get("/updateProfile",function(req,res){
     var currentUser = req.user;
@@ -115,6 +140,7 @@ router.get("/updateProfile",function(req,res){
 
 router.post("/updateProfile",function(req,res){
     var body=req.files,filePath={},noOfFiles=0;
+    var semTotal=0,noOfSems=0,semAggregate;
     for(var prop in body){
         noOfFiles++;
         filePath[prop]='';
@@ -175,21 +201,22 @@ router.post("/updateProfile",function(req,res){
         if(total===noOfFiles) textUploader();
     }
     function pathUploader(){
-        console.log("reportlinkLen: ",student.tenthResult.reportLink.length);
-        if(filePath['tenthCard']=='' && student.tenthResult.reportLink.length>=5){  
+        // console.log("reportlinkLen: ",student.tenthResult.reportLink.length);
+        if(filePath['tenthCard']=='' && student.tenthResult.reportLink && student.tenthResult.reportLink.length>=5){  
             filePath['tenthCard']=student.tenthResult.reportLink;
             counter();
         }else{ counter(); }
-        if(filePath['twelfthCard']=='' && student.twelfthResult.reportLink.length>=5){  
+        if(filePath['twelfthCard']=='' && student.twelfthResult.reportLink && student.twelfthResult.reportLink.length>=5){  
             filePath['twelfthCard']=student.twelfthResult.reportLink;
             counter();
         }else{ counter(); }
-        if(filePath['resume']=='' && student.resumeLink.length>=5){  
+        if(filePath['resume']=='' && student.resumeLink && student.resumeLink.length>=5){  
             filePath['resume']=student.resumeLink;
             counter();
         }else{counter();}
         for(var j=1;j<=studentSemester;j++){
-            if(filePath['semCard'+j]=='' && student.semResults[j-1].reportLink.length>=5){  
+            if(filePath['semCard'+j]=='' && student.semResults[j-1] && (student.semResults[j-1].reportLink!==undefined)
+            && student.semResults[j-1].reportLink.length>=5){  
                 semesterResultUploads.push({ 
                     sem: j, 
                     Percentage: req.body['semPercentage'+j], 
@@ -211,6 +238,7 @@ router.post("/updateProfile",function(req,res){
                     description: req.body['title'+k],
                     docLink: filePath['title'+k+'Card']
                 })
+                student.save();
                 counter();
             }else{
                 counter();
@@ -220,7 +248,6 @@ router.post("/updateProfile",function(req,res){
     function textUploader(){
         student.gender= req.body.gender;
         student.department = req.body.department;
-        student.placements= req.body.placementNumber;
         student.DOB= req.body.dob;
         student.mobile1= req.body.phone;
         student.address= req.body.address;
@@ -229,7 +256,6 @@ router.post("/updateProfile",function(req,res){
         student.twelfthResult= { board: req.body.twelfthBoard, Percentage: req.body.twelfthPercentage, 
                     yearPassed: req.body.twelfthPassYear, reportLink: filePath['twelfthCard']};
         student.semResults= semesterResultUploads;
-        student.semAggregate= req.body.sem1Percentage;
         student.resumeLink= filePath['resume'];
         student.save(function(err1,studentInfo){
             if(err1){
@@ -238,6 +264,18 @@ router.post("/updateProfile",function(req,res){
                 res.redirect("/");
             } 
             else{
+                student.semResults.forEach(function(sem,i){ 
+                    if(sem.Percentage!=null){
+                        noOfSems = noOfSems + 1;
+                    }
+                    if(i===student.semResults.length){
+                        semAggregate = semTotal/noOfSems;
+                        semAggregate = Math.round(semAggregate * 100) / 100;
+                        student.semAggregate=semAggregate;
+                        student.save();
+                    } 
+                    semTotal = semTotal + sem.Percentage;
+                })
                 console.log("Student Profile Updated ");
                 req.flash("success","Profile Updated");
                 res.redirect("/student/viewProfile");
@@ -258,7 +296,7 @@ router.get("/viewProfile",middleware.isLoggedIn, function(req,res){
 });
 
 router.post("/updateDP",function(req,res){
-    var profilePic = "/images/"+req.body.dp;
+    var profilePic = req.body.dp;
     User.update({'email':req.user.email},{$set:{"dp":profilePic}},function(err,doc){
         if(err){
             console.log("Update err");
@@ -289,7 +327,19 @@ router.get('/verifyUpdate', function(req, res) {
 });
 
 router.get('/viewFile', function(req, res) {
-    res.render("student/viewFile",{link:req.query.link});;
+    res.render("student/viewFile",{link:req.query.link});
+});
+router.get('/viewPlacements', function(req, res) {
+    
+    Student.findOne({'author':req.user._id}).populate({
+        path: 'registeredPlacements',
+        model:'placement'
+    }).exec(function(err1, student) {
+        // res.send(student);
+        res.render("student/viewPlacement",{student:student});
+    });
+    
+    
 });
 
 
@@ -297,6 +347,7 @@ router.get('/testAnalysis',middleware.isLoggedIn,function(req, res) {
     Student.findOne({'author':req.user._id},function(err, student) {
         if(err)
             console.log(err);
+            // res.send(student.PlacementTestResults);
         res.render('student/PlacementAnalysis',{testResult:student.PlacementTestResults});    
     });
 });
@@ -306,7 +357,8 @@ router.get('/getAnalysis',function(req,res){
         if(err)
             console.log(err);
             // console.log(student.PlacementTestResults[student.PlacementTestResults.length - 1][0]);
-        resultAnalysis(req,student.PlacementTestResults[student.PlacementTestResults.length-1][0],res);
+        if(student.PlacementTestResults.length>0)
+            resultAnalysis(req,student.PlacementTestResults[student.PlacementTestResults.length-1][0],res);
     });
 });
 

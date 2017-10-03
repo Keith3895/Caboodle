@@ -1,6 +1,6 @@
-<% include ../partials/header.ejs %>
+<% include ./partials/header.ejs %>
 <title>GradBunker - Add Student</title>
-<% include ../partials/navbar.ejs %>
+<% include ./partials/navbar.ejs %>
 <style>
   select{
     border: 1px solid rgba(39, 29, 33, 0.48);
@@ -11,7 +11,18 @@
       <div class="card-panel">
         <h4 class="center">Add Student</h4>
         <div class="row">
-    <form class="col s12 " action="/placementHead/addStudent" method="POST" id="SignUpForm">
+          
+          <%var link="";
+          if(update=='none'){
+            link="/addStudent";
+          }else{
+            link="/updateStudent/"+update.author._id;
+          }
+          %>
+          
+          
+          
+    <form class="col s12 " action="<%=link%>" method="POST" id="SignUpForm">
       
         <div class="input-field col m6 s12">
           <input id="firstName" name="firstName" type="text" class="validate">
@@ -81,5 +92,17 @@
 </div>
 
 
-<%include ../partials/script.ejs%>
-<% include ../partials/footer.ejs %>
+<script>
+  <% if(update!= 'none'){ %>
+    $('#firstName').val('<%=update.author.firstName%>');
+    $('#lastName').val('<%=update.author.lastName%>');
+    $('#email').val('<%=update.author.email%>');
+    $('#gender').val('<%=update.gender%>');
+    $('#sem').val('<%=update.semester%>');
+    $('#usn').val('<%=update.author.usn%>');
+    $('#department').val('<%=update.department%>');
+  <% } %>
+</script>
+
+<%include ./partials/script.ejs%>
+<% include ./partials/footer.ejs %>

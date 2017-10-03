@@ -1,0 +1,60 @@
+div class="row ">
+    	<div class="col offset-s2 s4 card-users hvr-float-shadow" onclick="window.location='/placementHead/addNewPlacement'">
+    		<div class="text-center">
+    			<div>
+    				<i class="large material-icons">add</i>
+    			</div>
+    			<div>
+    				<h5 class="card-text">Add Placement</h5>
+    			</div>
+    			<div>
+    				<!--<h4 class="card-text"><%= lengths.user %></h4>-->
+    			</div>
+    		</div>
+    	</div>	
+    	<div class="col offset-s1 s4 card-books hvr-float-shadow" onclick="window.location='placementHead/viewStats'">
+    		<div class="text-center">
+    			<div>
+    				<i class="fa fa-bar-chart" aria-hidden="true"></i>
+
+    			</div>
+    			<div>
+    				<h5 class="card-text">Test Analysis</h5>
+    			</div>
+    			<div>
+    				<!--<h4 class="card-text"></h4>-->
+    			</div>
+    		</div>
+    	</div>	
+    </div>
+    <div class="row">
+      <div class="col offset-s2 s4 card-Students hvr-float-shadow" onclick="window.location='/placementHead/students'">
+    		<div class="text-center">
+    			<div>
+    				<i class="fa fa-graduation-cap fa-5" aria-hidden="true"></i>
+    			</div>
+    			<div>
+    				<h5 class="card-text">List Students</h5>
+    			</div>
+    			<div>
+    				<h4 class="card-text"><%= lengths.student %></h4>
+    			</div>
+    		</div>
+    	</div>	
+    	<div class="col offset-s1 s4 card-placement hvr-float-shadow" onclick="window.location='/placementHead/list'">
+    		<div class="text-center">
+    			<div>
+    				<i class="large material-icons">work</i>
+    			</div>
+    			<div>
+    				<h5 class="card-text">Upcoming Placement</h5>
+    			</div>
+    			<div>
+    				<h4 class="card-text"><%= lengths.placement %></h4>
+    			</div>
+    		</div>
+    	</div>		
+    	
+    	
+    	
+    </div>

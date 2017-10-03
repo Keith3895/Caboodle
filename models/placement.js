@@ -18,8 +18,16 @@ var PlacementSchema = new mongoose.Schema({
 	    type: mongoose.Schema.Types.ObjectId,
 	    ref: "User"
 	},
-	registeredStudents: [String],
-	placedStudents: [String]
+	registeredStudents: [{
+	    type: mongoose.Schema.Types.ObjectId,
+	    ref: "Student",
+	    unique : true
+	}],
+	selectedStudents: [{
+	    type: mongoose.Schema.Types.ObjectId,
+	    ref: "Student",
+	    unique : true
+	}]
 });
 
 module.exports = mongoose.model("placement", PlacementSchema);

@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<% include ./slide_nav.ejs %>
 	<title>Get Links</title>
-		<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous">
-</script>
-
-<script
-  src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
-  integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
-  crossorigin="anonymous">
-</script>
-</head>
-<body>
+	<div class="row col m8 offset-m4">
     <h4>Upload images to get links</h4>
-    <form enctype="multipart/form-data" action="/upload" method="post" id="uploadForm">
+    <form enctype="multipart/form-data" action="/admin/upload" method="post" id="uploadForm">
         <div>
             <input type="file" name="image" />
             <p>
@@ -26,7 +15,7 @@
             </p>
         </div>
     </form>
-</body>
+    </div>
 <script>
 $(document).ready(function() {
 
@@ -49,4 +38,4 @@ $(document).ready(function() {
   return false;
   });   
 </script>
-</html>
+<% include ../partials/footer.ejs %>

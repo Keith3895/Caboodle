@@ -10,13 +10,15 @@
     <form class="col s12" action="/changePassword" method="POST" id="changePasswordForm">
       <div class="row">
       <div class="input-field col s12">
-        <input id="pass" name="pass" type="password" class="validate">
+        <input id="pass" name="pass" type="password" data-validation="length" data-validation-length="min5"
+        data-validation-error-msg="Password should contain 5 or more characters">
         <label for="pass">Enter New Password</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input id="pass1" name="pass1" type="password" class="validate">
+        <input id="pass1" name="pass1" type="password" data-validation="length" data-validation-length="min5"
+        data-validation-error-msg="Password should contain 5 or more characters">
         <label for="pass1">Re-Enter New Password</label>
       </div>
     </div>
@@ -32,5 +34,9 @@
       </div>
     </div>
 </div>
-
+<script>
+  $.validate({
+      scrollToTopOnError : true
+  });
+</script>
 <% include ./partials/footer.ejs %>

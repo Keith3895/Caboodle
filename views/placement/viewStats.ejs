@@ -14,6 +14,13 @@
     .stat th{
         display:table-cell;
     }
+    #testLeadBoardComp .rightBoard{
+        display:inline;
+    }
+    .scroll {
+    height: 208px !important;
+    overflow: auto;
+}
 </style>
 <% include ./sidenav.ejs %>
     <div class='row'>
@@ -22,7 +29,7 @@
         </div>
         <div class='col m5 offset-m1 s12 center-align'>
             <div class="card">
-                <div class="card-content">
+                <div class="card-content" style="height:490px">
                     <div class='card-title'>
                         <h5>Current test status</h5>
                     </div>
@@ -32,6 +39,7 @@
                           
                           
                       </table>
+                      <div class="col m12 s12 l12" id="testLeadBoardComp" style="display:inline"></div>
                     </div>
                     
                 </div>
@@ -80,6 +88,16 @@
                 }
             });
             
+        $.ajax({
+        method: "GET",
+        url: "/leader/test",
+        // data: Score,
+        success: function(data){
+            // console.log(data);
+            $('#testLeadBoardComp').append(data);
+            onLoad3();
+        }
+    });
             
             
             

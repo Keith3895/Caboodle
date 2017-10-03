@@ -10,11 +10,11 @@ var functions = {
     addToLeaderBoard : function (testResult,req){
         var xp = parseInt(testResult.marks) * .75 ;
         for(i in testResult.type){
-            if(testResult.type[i]== 'Quantitative aptitude')
+            if(testResult.type[i]== 'Quantitative aptitude' ||testResult.type[i]=='Data Interpretation')
                 xp+= parseInt(testResult.typeCorrect[i])*1.5;
             else if(testResult.type[i]== 'Logical Reasoning')
                 xp+= parseInt(testResult.typeCorrect[i])*2;
-            else if(testResult.type[i]== 'Verbal Reasoning')
+            else if(testResult.type[i]== 'Verbal Ability'|| testResult.type[i]=="Comprehension")
                 xp+= parseInt(testResult.typeCorrect[i])*1.5;
             else 
                 xp+= parseInt(testResult.typeCorrect[i])*3;
@@ -85,6 +85,7 @@ var functions = {
     studentSkiped: function(){
         LeaderBoard.find({}).sort({'_id':-1}).limit(1).exec(function(err, entry) {
         var found = false;
+        if(entry.length>0)
         Student.find({},function(err, std) {
             for(i=0;i<std.length;i++){
                 for(j=0;j<std[i].PlacementTestResults.length;j++){

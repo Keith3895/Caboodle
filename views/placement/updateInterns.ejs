@@ -12,8 +12,8 @@
 <div class="row">
     
     <div class="col s12 m10 offset-m1" style="margin-top:-70px;padding:0">
-        <h4 class="center" style="margin-top:40px;">Students Placed In <%= company.cName %></h4>
-        <form action="/placementHead/updatePlacementStats/<%= company._id %>" method="post">
+        <h4 class="center" style="margin-top:30px;"><%= company.cName %> Registrations</h4>
+        <form action="/placementHead/updateInternshipStats/<%= company._id %>" method="post">
             <input type="text" style="display:none" name="noOfStudents" value=<%= company.registeredStudents.length %>>
     <table class="striped centered " >
         <thead>
@@ -52,14 +52,14 @@
                             <input name="placed<%= i %>" value="no" type="radio" id="no<%= i %>" />
                             <label for="no<%= i %>">No</label><span class="space"></span>
                         <% }else{ %>
-                            <input name="placed<%= i  %>" value="<%= student._id %>" type="radio" id="yes<%= i %>" />
+                            <input name="placed<%= i  %>" value="<%= student._iy %>" type="radio" id="yes<%= i %>" />
                             <label for="yes<%= i %>">Yes</label><span class"space"></span>
                             <input name="placed<%= i %>" value="no" type="radio" id="no<%= i %>" checked/>
                             <label for="no<%= i %>">No</label><span class="space"></span>
                         <% } %>
                     </td>
                 </tr>
-            <% }); %>
+            <% }) %>
         </tbody>
     </table>
     </form>

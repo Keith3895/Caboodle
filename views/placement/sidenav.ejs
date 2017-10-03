@@ -14,22 +14,40 @@
         background-color:#2f2f2f;
             color: white;
     }
+    .active .fa-chevron-down{
+        display:none;
+    }
+    .fa.fa-chevron-up{
+        display:none;   
+    }
+    .active .fa.fa-chevron-up{
+        display:block;
+        
+    }
+    .collapsible-body li a{
+        padding-left:50px !important;
+    }
+
 </style>
 <!--<div class="row">-->
 <ul id="slide-out1" class="side-nav fixed collapsible" data-collapsible="accordion">
         <li class="logo">
-      		<a id="logo-container" href="/placementHead" class="brand-logo1">
-      		Placement Head
+      		<a href="/placementHead" >
+      		<i style="font-size:24px;" class="fa fa-home" aria-hidden="true"></i> Home
             </a>
         </li>
         <li>
         	<div class="collapsible-header waves-effect">
         	    <i class='flaticon-people'></i>
-        	    Student </div>
+        	    <span>Student</span>
+        	    <i class="fa fa-chevron-down" aria-hidden="true" style="float:right;font-size: 12px;"></i>
+        	    <i class="fa fa-chevron-up" aria-hidden="true" style="float:right;font-size: 12px;"></i>
+
+            </div>
 		      <div class="collapsible-body">
 		      	<ul>
-		      		<li><a href="/placementHead/student_list" >List</a></li>
-                    <li><a href="/placementHead/addStudent">Add</a></li>
+		      		<li><a href="/placementHead/students" ><i class="material-icons">list</i>List</a></li>
+                    <li><a href="/addStudent"><i class="material-icons">person_add</i>Add</a></li>
 		      	</ul>
 		      	
 		      </div>
@@ -40,7 +58,7 @@
         <li><a href="/placementHead/addNewInternship">
             <i style='color:white' class="fa fa-plus" aria-hidden="true"></i>
             Add New Internship</a></li>
-        <li><a href="/placementHead/list">
+        <li><a href="/placementHead/placements">
             <i class="material-icons left" style='font-size:1.2em'>work</i> 
             View Placements</a></li>
         <li><a href="/placementHead/viewStats">

@@ -41,9 +41,11 @@
 
 var label="<%=returnData.types%>";
 label=label.split(',');
+
 var requestedTestCor = [<%= returnData.requestedTest.typeCorrect%>];
 var requestedTestType = "<%= returnData.requestedTest.type%>".split(',');
-var val=[0,0,0,0];
+
+var val=[0,0,0,0,0,0];
 for(i=0;i<label.length;i++){
 	for(j=0; j<requestedTestType.length;j++){
 		if(label[i]==requestedTestType[j]){
@@ -116,7 +118,7 @@ var BarlineVar = document.getElementById('BarlineCanvas').getContext('2d');
 	          // Changes this dataset to become a line
 	          type: 'line'
 	        }],
-	    labels: label
+	    labels: requestedTestType
 	  },
 	  options: options
 	});
@@ -163,7 +165,7 @@ var RadarVar = document.getElementById('radarCanvas').getContext('2d');
                 pointBackgroundColor: 'blue'
             }
             ],
-	    labels: label
+	    labels: requestedTestType
 	  	},
 	    options: options
 	});

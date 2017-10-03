@@ -10,6 +10,7 @@
 	<body>
 		<p id="demo"></p>
 		<div class='button' id="submitTest"> <a href='#'>Submit Test</a></div>
+		<% if(currentUser.userType=='admin'){  %> <a href='/test/negSkip'>add skipped stds </a> <% } %>
 		<div id='container'>
 			<div id='title'>
 				<h1>Test number <%=questionset%></h1>
@@ -17,7 +18,9 @@
    			<br/>
   			<div id='quiz'>
   			</div>
-  			
+  			<div id='subNav'>
+				<div class="subButton"></div>
+  			</div>
     		<div class='button btn' id='next'><a href='#'>Next</a></div>
     		<div class='button btn' id='prev'><a href='#'>Prev</a></div>
     		<!-- <div class='button' id='start'> <a href='#'>Start Over</a></div> -->
@@ -27,8 +30,12 @@
     	</div>
     	<div id='legend'></div>
     	<div class="resp"></div>
+    	
     	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-		<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+		<script
+		  src="https://code.jquery.com/jquery-3.2.1.min.js"
+		  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+		  crossorigin="anonymous"></script>
 		<div id="analysis"></div>
 		<script type='text/javascript' src='/js/test.js'></script>
 	</body>

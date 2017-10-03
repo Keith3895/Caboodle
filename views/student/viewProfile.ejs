@@ -36,7 +36,7 @@
                             </tr>
                             <tr >
                                 <td class="border_bottom" width="45%">Gender: 
-                                &nbsp;&nbsp;&nbsp;<%= student.gender %></td>
+                                &nbsp;&nbsp;&nbsp;<%= student.author.gender %></td>
                                 <td class="space"></td>
                                 <td class="border_bottom">Department: 
                                 &nbsp;&nbsp;&nbsp;<%= student.department %></td> 
@@ -53,19 +53,24 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;+91 <%= student.mobile1 %></td>
                                 <td class="space"></td>
                                 <% var semAggregate = semTotal/noOfSems;
-                                    if(semAggregate==0){ semAggregate="NA" }
-                                    else{
-                                    semAggregate = Math.round(semAggregate * 100) / 100;
-                                    }
-                                %>
-                                <td class="border_bottom">Aggregate: &nbsp;&nbsp;&nbsp;&nbsp;
-                                &nbsp;&nbsp;<%= semAggregate %>%</td> 
+                                    if(isNaN(semAggregate)||semAggregate==0){ %>
+                                        <td class="border_bottom">Aggregate: &nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;Not Updated</td> 
+                                    <% } else{ %>
+                                        <td class="border_bottom">Aggregate: &nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;<%= semAggregate %>%</td> 
+                                    <% } %>
                             </tr>
                             <tr >
                                 <td class="border_bottom" width="45%">Email: 
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= student.author.email %></td>
                                 <td class="space"></td>
-                                <td class="border_bottom">No of Placements: &nbsp;&nbsp;&nbsp;&nbsp;<%= student.placements %></td> 
+                                <% if(student.selectedPlacements){  %>
+                                    <td class="border_bottom">No of Placements: &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <%= student.selectedPlacements.length %></td> 
+                                <% } else{ %>
+                                    <td class="border_bottom">No of Placements: &nbsp;&nbsp;&nbsp;&nbsp;0</td> 
+                                <% } %>
                             </tr>
                             <tr >
                                 <td class="border_bottom" width="45%">Address: 
@@ -80,11 +85,11 @@
                                     <h5 class="blue-text">10TH RESULT DETAILS</h5>
                                     <div class="card horizontal">
                                         <%if(student.tenthResult.reportLink){%>
-                                        <div class="card-image">
+                                        <div class="card-image hide-on-small-only">
                                             <% if(/.pdf/i.test(student.tenthResult.reportLink)){ %>
                                             <embed  class="activator" name="plugin" src="<%= student.tenthResult.reportLink%>" type="application/pdf" width="100%" height="207">
                                             <% } else { %>
-                                            <img src="<%= student.tenthResult.reportLink%>">
+                                            <img class="responsive-img"src="<%= student.tenthResult.reportLink%>">
                                             <% } %>
                                         </div>
                                         <% } %>
@@ -112,11 +117,11 @@
                                     <h5 class="blue-text">12TH RESULT DETAILS</h5>
                                     <div class="card horizontal">
                                         <%if(student.twelfthResult.reportLink){ %>
-                                        <div class="card-image">
+                                        <div class="card-image hide-on-small-only">
                                             <% if(/.pdf/i.test(student.twelfthResult.reportLink) ){ %>
                                                 <embed  class="activator" name="plugin" src="<%= student.twelfthResult.reportLink%>" type="application/pdf" width="100%" height="207">
                                             <% } else { %>
-                                                <img src="<%= student.twelfthResult.reportLink%>">
+                                                <img class="responsive-img"src="<%= student.twelfthResult.reportLink%>">
                                             <% } %>
                                         </div>
                                         <% }%>
@@ -157,14 +162,15 @@
                                 <div class="card-image">
                                     <% if(/.pdf/i.test(item.reportLink)){  %>
                                         <embed  class="activator" name="plugin" src="<%= item.reportLink%>" type="application/pdf" width="100%" height="300px">
-                                    <% } else if(/.jpg/i.test(item.reportLink)) {%>
-                                        <img src="<%= item.reportLink%>" style="min-height:305px;">
+                                    <% } else if(/.jpg|.png|gif|.jpeg/i.test(item.reportLink)) {%>
+                                        <img class="responsive-img"src="<%= item.reportLink%>" style="min-height:305px;">
                                     <% }else{ %>
                                     <div style="padding:150px"></div>
                                     <% }%>
-                                    <span class="card-title" style="color:black;">Sem: <%= item.sem%> <br> Result: <%= item.Percentage %>%</span>
+                                    
                                 </div>
                                 <div class="card-action" style="padding: 5px 5px 5px 5px">
+                                    <span class="card-title text-center" style="color:black;">Sem: <%= item.sem%> <br> Result: <%= item.Percentage %>%</span>
                                     <% var filename = item.reportLink.split("/");
                                                     filename = filename[filename.length - 1] %>
                                     <a href="/student/viewFile?link=<%=student.USN%>/<%=filename%>" target="_blank">
@@ -184,20 +190,23 @@
                     <div style="padding-top:30px; float:left;">
                         <h5 class="blue-text">CERTIFICATIONS</h5>
                         <% student.certifications.forEach(function(item,index){ %>
-                            <div class="card col s12 m3" style="margin:10px">
+                            <div class="card col s12 m5" style="margin:10px">
                                 <div class="card-image">
                                     <% if(/.pdf/i.test(item.docLink)){ %>
                                         <embed  class="activator" name="plugin" src="<%= item.docLink%>" type="application/pdf" width="100%" height="300px">
                                     <% } else {%>
-                                        <img src="<%= item.docLink%>">
+                                        <img class="responsive-img" src="<%= item.docLink%>">
                                     <% } %>
-                                    <span class="card-title" style="color:black;"><%= item.description%></span>
+                                    
                                 </div>
-                                <div class="card-action">
+                                <div class="card-action" style="padding: 5px 5px 5px 5px">
+                                    <span class="card-title text-center" style="color:black;"><%= item.description%></span>
                                     <% var filename = item.docLink.split("/");
                                                     filename = filename[filename.length - 1] %>
-                                    <a href="/student/viewFile?link=<%=student.USN%>/<%=filename%>" target="_blank">Open</a>
-                                    <a href="<%= item.docLink%>" download>Download</a>
+                                    <a class="left" href="/student/viewFile?link=<%=student.USN%>/<%=filename%>" target="_blank">
+                                        <i class="material-icons">remove_red_eye</i>
+                                    </a>
+                                    <a class='right' href="<%= item.docLink%>" download style="margin-right:0"><i class="material-icons">file_download</i></a>
                                 </div>
                             </div>
                         <% }); %>
@@ -214,16 +223,16 @@
     <div class="modal-content">
         <form action="/student/updateDP" method="POST" id="profilePic">
         <select id="selectImage" name="dp" class="image-picker show-labels show-html">
-          <option data-img-src="/images/male1.png" >male1.png</option>
-          <option data-img-src="/images/female1.png" >female1.png</option>
-          <option data-img-src="/images/male2.png" >male2.png</option>
-          <option data-img-src="/images/female2.jpg" >female2.jpg</option>
-          <option data-img-src="/images/male3.png" >male3.png</option>
-          <option data-img-src="/images/female3.jpg" >female3.jpg</option>
-          <option data-img-src="/images/male4.jpg" >male4.jpg</option>
-          <option data-img-src="/images/female4.jpg" >female4.jpg</option>
-          <option data-img-src="/images/male5.jpg" >male5.jpg</option>
-          <option data-img-src="/images/female5.jpg" >female5.jpg</option>
+          <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male1.png" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male1.png</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female1.png" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female1.png</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male2.png" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male2.png</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female2.jpg" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female2.jpg</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male3.png" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male3.png</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female3.jpg" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female3.jpg</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male4.jpg" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male4.jpg</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female4.jpg" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female4.jpg</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male5.jpg" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/male5.jpg</option>
+            <option data-img-src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female5.jpg" >https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/female5.jpg</option>
         </select>
         <button class="btn waves-effect waves-light right" style="width:100%" type="submit" name="action">Update
             <i class="material-icons">done</i>
@@ -245,12 +254,12 @@
 
     var $container = $('.image_picker_selector');
     // initialize
-    $container.imagesLoaded(function () {
-        $container.masonry({
-            columnWidth: 30,
-            itemSelector: '.thumbnail'
-        });
-    });
+    // $container.imagesLoaded(function () {
+    //     $container.masonry({
+    //         columnWidth: 30,
+    //         itemSelector: '.thumbnail'
+    //     });
+    // });
   });
   $('a[href=""]').remove();
   </script>

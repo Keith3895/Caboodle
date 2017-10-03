@@ -6,7 +6,7 @@
 <% include ./slide_nav.ejs %>
 
 <!-- Modal Structure -->
-  <div id="modal1" class="modal bottom-sheet">
+  <div id="confirmModal" class="modal bottom-sheet">
     <div class="modal-content">
       <h4>Delete Account?</h4>
       <p>You will lose all the details of the student! Are you sure you want to delete this account? </p>
@@ -37,8 +37,8 @@
             <td><%= el.USN %></td>
             <td><%= el.semester %></td>
             <td style="padding: 0px"> 
-                <a href="#modal1" onclick="f1('<%= el.USN %>','<%= el.author._id %>')"><i class="material-icons delete">delete</i></a>
-                <a href=""><i class="material-icons edit">mode_edit</i></a>
+                <a href="#confirmModal" onclick="f1('<%= el.USN %>','<%= el.author._id %>')"><i class="material-icons delete">delete</i></a>
+                <a href="updateProfile/<%=el.author._id%>"><i class="material-icons edit">mode_edit</i></a>
             </td>
           </tr>
           <% }); %>
@@ -58,13 +58,11 @@
   function f2(approval){
     if(approval==='yes'){
         $.ajax({
-            method: "POST",
-            url: "/student/students/delete",
+            method: "DELETE",
+            url: "/admin/students",
             data: {"USN": usn,"userID":userID},
             success: function() {
-            // if(/* check if it is ok */) {
-                location.reload();
-            // }
+                location.href = "https://erpdontdelete-mkb95.c9users.io/admin/students"
             }
         })
     }

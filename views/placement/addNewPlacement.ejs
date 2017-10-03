@@ -51,15 +51,21 @@
                             link= '/placementHead/addNewPlacement';
                              }else{
                         link= '/placementHead/updatePlacement/'+update._id;
-                         }%>
-                <form action="<%=link%>" method="POST" enctype="multipart/form-data" id="form">
-                    <div class="input-field col s6">
+                         } %>
+                <form action="<%= link %>" method="POST" enctype="multipart/form-data" id="form">
+                    <div class="input-field col s12 m6 offset-m3">
                         <input name="cName" id="cName" type="text" data-validation="required">
                         <label for="cName">Name of Company*</label>
                     </div>
                     <div class="input-field col s6" id="date">
-                        <input id="driveDate" name="driveDate" type="text" data-validation="date" data-validation-format="dd-mm-yyyy">
+                        <input id="driveDate" name="driveDate" type="text" data-validation="date" 
+                        data-validation-format="dd-mm-yyyy" >
                         <label for="driveDate">Date of Drive*</label>
+                    </div>
+                    <div class="input-field col s6" id="date">
+                        <input id="lastDate" name="lastDate" type="text" data-validation="date" 
+                        data-validation-format="dd-mm-yyyy">
+                        <label for="lastDate">Last Date To Register*</label>
                     </div>
                     
                     <div class="input-field col s12 inline" style="margin-top:-20; ">
@@ -127,7 +133,7 @@
                         <input id="driveLocation" name="driveLocation" type="text" data-validation="required" >
                         <label for="driveLocation">Drive Location*</label>
                     </div>
-                    <div class="input-field col s12">
+                    <div class="input-field col s12 range-field browser-default">
                         <label for="tenth">Tenth:</label>
                         <input type="text" name="tenth" id="tenth">
                     </div>
@@ -143,7 +149,8 @@
                     </div>
                     <div class="input-field col s12">
                         <textarea id="jobDescription" name="jobDescription" 
-                            class="materialize-textarea" data-validation="required"></textarea>
+                            class="materialize-textarea" data-validation="required"><% if(update.jobDescription){ %><%= update.jobDescription %><% } %>
+                        </textarea>
                         <label for="jobDescription">Job Description*</label>
                     </div>
                     <div class="input-field col s11 browse">
@@ -160,11 +167,11 @@
                     <div class="col s1" id="removeFile"><span><i style="font-size: 36px;" class="material-icons grey-text">delete</i></span></div>
                     <a class="btn waves-effect waves-light right modal-trigger" href="#" 
                             id="btnSubmit" onclick="test('#form')">
-                        <% if(update) {%>
+                        <% if(update) { %>
                             Update to Semesters
-                            <% }else{%>
+                            <% }else{ %>
                         Select Semesters
-                        <% }%>
+                        <% } %>
                         <i class="material-icons right">send</i>
                     </a>
                     <div id="modal1" class="modal">
@@ -232,15 +239,32 @@
     </div>
     
     <script>
+        var setLastDate;
+        function setMaxDate(lastdate){
+            setLastDate=lastDate
+        }
         $(document).ready(function(){
         // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
             $('.modal').modal();
          });
         $('#driveDate').datetimepicker({
-          timepicker: false,
-            format: "d-m-Y"
+            timepicker: false,
+            format: "d-m-Y",
+            formatDate:'d-m-Y',
+            mask:true,
+            minDate: '-02-01-1970'
         });
-        $("#engg,#twelfth,#tenth").ionRangeSlider({
+        $("#driveDate").change(function () {
+            $('#lastDate').datetimepicker({
+                timepicker: false,
+                format: "d-m-Y",
+                formatDate:'d-m-Y',
+                mask:true,
+                minDate: '-02-01-1970',
+                maxDate:$('#driveDate').val()?$('#driveDate').val():false
+            });
+        });
+        $("#tenth,#engg,#twelfth").ionRangeSlider({
             min: 0,
             max: 100,
             from: 50,
@@ -267,19 +291,17 @@
 		    $('.fileIn').val("");
 		    $('.file-path').val("");
 		});
-		<%if(update){ %>
+		<% if(update!='none'){ %> 
 		
-		$('#cName').val('<%=update.cName%>'); 
+		$('#cName').val('<%= update.cName %>'); 
 		$('#package').val('<%=update.Package%>');
 		$('#jobLocation').val('<%=update.jobLocation%>');
         $('#driveDate').val('<%=update.date %>');
+        $('#lastDate').val('<%=update.time %>');
         $('#skills').val('<%=update.skills%>');
         $('#designation').val('<%=update.designation%>');
         $('#driveLocation').val('<%=update.driveLocation%>');
-        <% if(update.jobDescription){ %>
-            var str = "<%=update.jobDescription.substr(0,(update.jobDescription.length/2)) %> ....";
-            $('#jobDescription').val(str);
-        <% } %>
+        
         var qualification = "<%=update.qualification%>".split(',');
         for(i=0;i<qualification.length;i++)
             $('input[value="'+qualification[i]+'"]').prop('checked', true);

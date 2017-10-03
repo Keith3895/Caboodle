@@ -14,83 +14,201 @@ var request = require('request');
 var Excel = require('exceljs');
 const tempfile = require('tempfile');
 var smtpTransport = require('nodemailer-smtp-transport');
+var ses = require('nodemailer-ses-transport');
 var fs = require('fs');
 var pdf = require('html-pdf');
 var conversion = require("phantom-html-to-pdf")();
 const template = './views/result/resultPdf.ejs';
 var randomstring = require("randomstring");
-var aws = require('aws-sdk');
-aws.config.loadFromPath('awscredentials.json');
-var s3 = new aws.S3();
-var s3Bucket = new aws.S3( { params: {Bucket: 'gradbunker'} } )
-var S3FS = require('s3fs'),
-    fs = require('fs'),
-    multiparty = require('connect-multiparty'),
-    multipartyMiddleware = multiparty();
-router.use(multipartyMiddleware); 
+require('dotenv').config();
 var transporter = nodemailer.createTransport({
-                service: 'Gmail',
-                host: "smtp.gmail.com",
-                auth: {
-                            user: 'bkm.blore.c9@gmail.com', // Your email id
-                            pass: 'cloudnine' // Your password
-                }
-        });
+        service: 'Gmail',
+        host: "smtp.gmail.com",
+        auth: {
+                    user: 'bkm.blore.c9@gmail.com', // Your email id
+                    pass: 'cloudnine' // Your password
+        }
+});
+
+// var transporter = nodemailer.createTransport(ses({
+//     accessKeyId: 'process.env.MailerKeyid',
+//     secretAccessKey: 'process.env.MailerPsd'
+// }));
+
+// var transporter = nodemailer.createTransport(smtpTransport({
+//     service: 'SES',
+//     host: 'email-smtp.us-east-1.amazonaws.com',
+//     port: 465,
+//     secure: true, // use TLS
+//     auth: {
+//         user: 'AKIAJNGUM74O5CZ6G5WA',
+//         pass: 'AprH23smDvmmucNEwzyse2l25udtuPdhZ2/kan8hsLXf'
+//     }
+// }));
 //root route
 
 //******For updating any info in any DOCS change stuff and use it******
-    // Student.find({}).populate('author').exec(function(err,docs){
-    //     res.send(docs);
-    //     docs.forEach(function(doc){
-    //         User.update({_id:doc.author._id}, {$set:{"gender":doc.gender}},function(err,updateddoc){
-    //              if(err){
-    //                  console.log("Update err");
-    //              }
-    //              else{
-                    
-    //                  console.log(updateddoc)
-    //              }
-    //          });
-    //     })
-         
-    // });
-    
-router.get("/upload",function(req,res){
-    res.render("upload");
-})
-
-router.post("/upload",function(req,res){
-    var url;
-    var imageFile = req.files.image;
-    //     fileExtension1 = imageFile.originalFilename.split(".");
-    // var fileExtension = fileExtension1[fileExtension1.length - 1]
-    var filename = imageFile.originalFilename;
-    var stream = fs.createReadStream(imageFile.path);
-    var params = {ACL: "public-read", Bucket: 'gradbunker', Key: 'publicImages/'+filename,
-        Body: stream
-    };
-    s3.upload(params, function(err, data) {
-        if(err)
-            console.log(err);
-        else{
-            url=data.Location;
-            var obj= { link: url }
-            res.send(JSON.stringify(obj));
-        }
-    });
-})
+// router.get("/clean",function(req,res){
+//     Student.find({}).exec(function(err,docs){
+//         console.log(docs.length);
+        // docs.forEach(function(doc){
+        //     User.remove({'usn':doc.USN},function(err1,user){
+        //         console.log("deleted user");
+        //     })
+        //     Student.remove({'USN':doc.USN},function(err2,stud){
+        //         console.log("Del student")
+        //     })
+            // console.log(doc.selectedPlacements);
+            // doc.remove();
+            // doc.save();
+            // delete doc.registeredStudents;
+            // delete doc.selectedStudents;
+            // delete doc.placedStudents;
+            // doc.save();
+        // });
+        // res.send(doc);
+//     });
+// })
 
 router.get("/",function(req,res){          // the index page
     req.session.redirectTo=null;
     res.render("homePage2");
 });
 
-router.get("/letter",function(req,res){   
-    res.render("student/letter");
+router.get("/addStudent", middleware.isAdminOrPlacement, function(req, res) {
+    res.render("addStudent",{update:'none'});
+}); 
+
+router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
+    var usn = req.body.usn;
+    var newUser = new User({
+        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        gender: req.body.gender,
+        usn: usn.toUpperCase(),
+        userType: "student"
+    });
+    User.register(newUser, 'amcec', function(err, user){
+        if(err){
+            console.log("error: ",err)
+            req.flash("error", "Email ID already exists!");
+            res.redirect("/addStudent");
+        }
+        var newStudent = new Student({
+            author: user._id,
+            semester: req.body.sem,
+            USN: usn.toUpperCase(),
+            department: req.body.department
+        })
+        Student.create(newStudent,function(err,student){
+            if(err){
+                console.log(err);
+            }
+            else{
+                
+                var htmlMail = '<div> <p> Hello ADMIN, </p>'+
+                '<p> This is a mail from GradBunker.  </p> <p> You added a new Student '+
+                user.firstName+'. If you did not add the student, '+
+                '<a href="https://erpdontdelete-mkb95.c9users.io/admin/delete/'+user._id+
+                '">click here</a> to delete the user account</p>'+
+                '<p> If not, Please ignore this mail</p><p> Regards, </p>'+
+                '<p> GradBunker</p></div>';
+                
+                var studentHtmlMail = '<div> <p> Hello '+user.firstName+', </p>'+
+                '<p> This is a mail from GradBunker.  </p><p> Welcome! You are registered on GradBunker.'+
+                ' Kindly update your profile. </p>'+
+                '<p> <a href="https://erpdontdelete-mkb95.c9users.io/student/updateProfile">Click here</a> to update your profile.</p><p> Regards, '+
+                '</p><p> GradBunker</p></div>';
+                var mailOptions = {
+                    from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
+                    to: 'bkm.blore@gmail.com', // list of receivers
+                    subject: 'You recently added a Student', // Subject line
+                    html: htmlMail //, // plaintext body
+                };
+                var studentMailOptions = {
+                    from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
+                    subject: 'Welcome to GradBunker', // Subject line
+                    to: user.email,
+                    html: studentHtmlMail //, // plaintext body
+                };
+                
+                transporter.sendMail(mailOptions, function(error, info){
+                    if(error){
+                        console.log(error);
+                    }
+                    else{
+                        transporter.sendMail(studentMailOptions, function(error1, info1){
+                            if(error1){
+                                console.log(error1);
+                            }
+                            else{
+                                console.log('Message sent to student: congo!!!!!');
+                            };
+                        });
+                        console.log('Message sent: congo!!!!!');
+                        res.redirect("/verify?authToken="+user.authToken);
+                    };
+                });
+            }
+        })
+    });
 });
 
-router.get("/updateProfile",function(req,res){ 
-    res.render("updateProfile");
+router.get("/updateStudent/:id", middleware.isAdminOrPlacement, function(req,res){ 
+    Student.findOne({'author':req.params.id}).populate({
+        path:'author',
+        model:'User'
+    }).exec(function(err,student){
+        res.render("addStudent",{update:student});    
+    });
+    
+});
+
+router.post('/updateStudent/:id',middleware.isAdminOrPlacement, function(req, res) {
+    // res.send(req.body);
+    var usn = req.body.usn;
+    User.findOne({'_id':req.params.id},function(err,user){
+        if(err) console.log("User update error: ",err);
+        else{
+            user.email= req.body.email,
+            user.firstName= req.body.firstName,
+            user.lastName= req.body.lastName,
+            user.gender= req.body.gender,
+            user.usn= usn.toUpperCase()
+            user.save();
+            Student.findOne({author:user._id},function(err2,student){
+                if(err2) console.log("User student update error: ",err2);
+                else{
+                    student.semester= req.body.sem;
+                    student.USN= usn.toUpperCase();
+                    student.department= req.body.department;
+                    student.save(function(err3){
+                        if(err3) console.log("Update student error: ",err3);
+                        else{
+                            req.flash("success","Student edited");
+                            res.redirect("/"+user.userType+"/students");
+                        }
+                    });
+                }
+            })
+        }
+    })
+});
+
+router.get('/verify', function(req, res) {
+    var user = req.user;
+    User.verifyEmail(req.query.authToken, function(err, existingAuthToken) {
+        if(err) console.log('err:', err);
+        else{
+            req.flash('success', 'New User added and Verified');
+            res.redirect("/");
+        }
+    });
+});
+
+router.get("/letter",function(req,res){   
+    res.render("student/letter");
 });
 
 router.get("/email",function(req,res){  
@@ -286,6 +404,9 @@ router.post("/forgotPassword",function(req,res){
                req.flash("error","User not registered!");
                res.redirect("/forgotPassword")
            }else{
+            //   if(!/@gmail.com/.test(user.email))
+                    // user.email="";
+                console.log(user.email);
                var mailOptions;
                req.session.verCode=randomstring.generate();
                var htmlMail = '<div> <p> Hello '+user.firstName+', </p>'+
@@ -296,8 +417,8 @@ router.post("/forgotPassword",function(req,res){
                 '<p> If you did not forget your password, Please ignore this mail</p><p> Regards, </p>'+
                 '<p> GradBunker</p></div>';
                 mailOptions = {
-                    from: 'GradBunker <bkm.blore.c9@gmail.com>', // sender address
-                    to: 'bkm.blore@gmail.com '+user.email, // list of receivers
+                    from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
+                    to: 'bkm.blore@gmail.com ,'+user.email, // list of receivers
                     subject: 'GradBunker-Verification Code', // Subject line
                     html: htmlMail
                 };
@@ -328,7 +449,7 @@ router.post("/verifyEmail",function(req,res){
     }else{
         req.session.verCode=null;
         req.session.verMail=null;
-        req.flash("error","Invalid Code! Please try again!")
+        req.flash("error","Invalid Code! Please try again!");
         res.redirect("/forgotPassword");
     }
 });
@@ -337,7 +458,8 @@ router.get('/resetPassword/:token', function(req, res) {
     if(req.params.token===req.session.verCode){
         res.render('resetPass',{token:req.params.token});
     } else {
-        req.flash('error', 'Invalid or Expired Link! Try again!');
+        req.flash('popup', 'Invalid or Expired Link! Try again! Due to our authentication policy we dont recognize this device'
+        +' please use the same device to reset password...');
         return res.redirect('/forgotPassword');
     }
 });
@@ -398,13 +520,8 @@ router.post("/register", function(req, res){
             req.flash("error", err.message);
             return res.render("signup");
         }
-        var transporter = nodemailer.createTransport({
-            service: 'Gmail',
-            auth: {
-                user: 'bkm.blore.c9@gmail.com', // Your email id
-                pass: 'cloudnine' // Your password
-            }
-        });
+        // if(!/@gmail.com/.test(user.email))
+            // user.email="";
         var text = 'Hello '+user.firstName+
                     ',\n This is a mail from GradBunker.\n '+
                     ' Kindly click the following link to reset password!\n'+
@@ -412,7 +529,7 @@ router.post("/register", function(req, res){
                     '?authToken=' + user.authToken+
                     '\n If you did not register, please ignore this email';
         var mailOptions = {
-            from: 'GradBunker <bkm.blore.c9@gmail.com>', // sender address
+            from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
             to: user.email, // list of receivers
             subject: 'Verify Your account', // Subject line
             text: text //, // plaintext body
@@ -444,11 +561,29 @@ router.get("/placements",function(req, res) {
     } 
     var today = dd+'-'+mm+'-'+yyyy;
     var tDate = today.split("-");
-    Placement.find({},function(err,cpny){
+    Placement.find({})
+    .populate({
+        path: 'registeredStudents',
+        model: 'Student',
+        populate: {
+          path: 'author',
+          model: 'User'
+        }
+    }).sort('student.department').exec(function(err,cpny){
         if(!err){
-            Internship.find({},function(err2,internships){
-                if(!err2){
-                    res.render('placement/placement_list',{company:cpny,internships: internships, todaysDate: tDate});
+            Internship.find({})
+            .populate({
+                path: 'registeredStudents',
+                model:'Student',
+                populate: {
+                  path: 'author',
+                  model: 'User'
+                }
+            }).sort('student.department').exec(function(err2,internships){
+                if(err2)console.log("Intern error: ",err2);
+                else{
+                    res.render('placement/placement_list',
+                    {company:cpny,internships: internships, todaysDate: tDate})
                 }
             })
         }
@@ -485,6 +620,9 @@ router.post("/login", function(req, res, next){
             //   return next(err); 
           }
           else{
+            //   req.cookies.user=user.email;
+            //   console.log("Email: ",user.email);
+            //   console.log("cookie: ",req.cookie.user);
           redirectTo = req.session.redirectTo ? req.session.redirectTo : '/' + user.userType;
           delete req.session.returnTo;
         //   console.log(redirectTo);
@@ -496,27 +634,7 @@ router.post("/login", function(req, res, next){
     })(req, res, next);
 });
 
-router.post("/login/app/", function(req, res, next){
-    
-    console.log(req.body);
-    passport.authenticate('local', function(err, user, info) {
-        if (err) { return next(err); }
-            // console.log("got one! "+user);
-            console.log("got one mobile");
-        if(user.userType=='placementHead'){
-            req.logIn(user, function(err) {
-              if (err) { 
-                  res.send(['no']);
-                  return next(err);
-              }
-            return res.send(['yes']);
-            });
-        }else{
-            res.send(['no']);
-        }
-    })(req, res, next);
-    
-});
+
 
 router.get("/changePassword",function(req,res){
     res.render("changePass"); 

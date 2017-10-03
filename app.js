@@ -15,7 +15,9 @@ var express             = require("express"),
     flash               = require('connect-flash'),
     session             = require('express-session'),
     sassMiddleware      = require('node-sass-middleware'),
-    upload              = require('express-fileupload');
+    upload              = require('express-fileupload'),
+    MongoStore          = require("connect-mongo")(session);
+    
     var logime          = require('log-timestamp');
 
 
@@ -31,23 +33,41 @@ var indexRoutes      = require("./routes/index"),
     sellRoutes     = require("./routes/buyNsell"),
     lostNfoundRoutes     = require("./routes/lostNfound"),
     testsRoutes     = require("./routes/tests"),
-    leaderRoutes    = require("./routes/leaderBoard");
+    leaderRoutes    = require("./routes/leaderBoard"),
+    mobileRoutes    = require("./routes/mobile"),
+    ResultsRoutes   = require("./routes/resultAnalysis");
 
 // =======================================
 // db connectins and body parsing
 // =======================================
 mongoose.Promise = global.Promise;
+// mongoose.connection.openUri("mongodb://localhost/GradBunkerV2");     // local mongo db
 // mongoose.connection.openUri("mongodb://localhost/GradBunker");     // local mongo db
-mongoose.connection.openUri("mongodb://admin:learningpwd@13.126.66.202/GradBunker");     // AWS mongo db
-
-
+mongoose.connection.openUri("mongodb://admin:learningpwd@35.154.241.79/GradBunker");     // AWS mongo db
 app.set("view engine","ejs");
-
 // app.use(upload());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(expressValidator());
 app.use(cookieParser());
+// app.use(function (req, res, next) {
+//   // check if client sent cookie
+//   var cookie = req.cookies.user;
+//   if (cookie === undefined)
+//   {
+//     // no: set a new cookie
+//     var randomNumber=Math.random().toString();
+//     randomNumber=randomNumber.substring(2,randomNumber.length);
+//     res.cookie('user','', { maxAge: 100000000, httpOnly: true });
+//     console.log('cookie created successfully');
+//   } 
+//   else
+//   {
+//     // yes, cookie was already present 
+//     console.log('cookie exists', cookie);
+//   } 
+//   next(); // <-- important!
+// });
 app.use(expressSanitizer());
 app.use(methodOverride("_method"));
 // app.use(session({ secret: 'session secret key' }));
@@ -58,10 +78,15 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        maxAge: 10*60*1000
+        maxAge: 1500000
     // secure: true
     },
-    rolling: true
+    rolling: true,
+    store:new MongoStore(
+    {mongooseConnection:mongoose.connection,
+        ttl:  24 * 60 * 60
+    }
+    )        
 }));
 
 aws.config.update({
@@ -98,16 +123,36 @@ app.use(function(req, res, next){
 // all the requests
 // ========================
 
+// app.use(function(req,res,next){
+//     if(req.cookies.user.length>2){
+//         passport.authenticate('local', function(err, user, info) {
+//             if (err) { return next(err); }
+//             req.logIn(req.cookies.user, function(err) {
+//               if (err) { 
+//                   req.flash("error","Invalid Credentials");
+//                     res.redirect('/login'); 
+//                 //   return next(err); 
+//               }
+//               else{
+//               console.log("Server restarted. Logged User again")
+//               }
+//             });
+//         })(req, res, next);
+//     }
+//     next();
+// })
 app.use("/", indexRoutes);
-app.use("/admin", adminRoutes);
-app.use("/placementHead",/*middleware.isPlacementHead,*/ placementRoutes);
+app.use("/admin",middleware.isAdmin, adminRoutes);
+app.use("/placementHead",middleware.isPlacementHead, placementRoutes);
+// app.use("/placementHead", placementRoutes);
 app.use("/student",middleware.isStudent, studentRoutes);
 // app.use("/library",libraryRoutes);
+app.use("/mobile",mobileRoutes);
 app.use("/lostNfound",lostNfoundRoutes);
 app.use("/sell",sellRoutes);
 app.use("/test",testsRoutes);
 app.use("/leader",leaderRoutes);
-
+app.use("/results",ResultsRoutes);
 app.get("*",function(req, res) {            // default route
     res.render("website_under_construction");
 });
@@ -122,7 +167,7 @@ app.get("*",function(req, res) {            // default route
 
 //the listener functions that is used to establish the connection
 process.env.PORT = 8080; //AWS 
-app.listen(process.env.PORT, function(){ //AWS
+app.listen(process.env.PORT || process.env.port, function(){ //AWS
 // app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server has started!!!");
 });

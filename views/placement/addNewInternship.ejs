@@ -46,9 +46,16 @@
         <div class="col s12 m10 l10" style="margin-top:-70px;padding:0">
             <div class="card-panel row">
                 <h4 class="center">Internship Update</h4>
-                <form action="/placementHead/addNewInternship" method="POST" 
-                    enctype="multipart/form-data" id="form">
-                    <div class="input-field col s6">
+                
+                
+                <% var link;
+                if(update == 'none') {
+                            link= '/placementHead/addNewInternship';
+                             }else{
+                        link= '/placementHead/updateInternship/'+update._id;
+                         }%>
+                <form action="<%=link%>" method="POST" enctype="multipart/form-data" id="form">
+                    <div class="input-field col s12 m6 offset-m3">
                         <input name="cName" id="cName" type="text" data-validation="required">
                         <label for="cName">Name of Company*</label>
                     </div>
@@ -142,7 +149,12 @@
                     </div>
                     <div class="input-field col s12">
                         <textarea id="internDescription" name="internDescription" 
-                            class="materialize-textarea" data-validation="required"></textarea>
+                            class="materialize-textarea" data-validation="required">
+                            <% if(update.internDescription){ %>
+                                <%= update.internDescription %>
+                            <% } %>
+                            
+                        </textarea>
                         <label for="internDescription">Job Description*</label>
                     </div>
                     <div class="input-field col s11 browse">
@@ -160,7 +172,13 @@
                         <i style="font-size: 36px;" class="material-icons grey-text">delete</i>
                     </span></div>
                     <a class="btn waves-effect waves-light right modal-trigger" href="#" 
-                        id="btnSubmit" onclick="test('#form')">Select Semesters
+                        id="btnSubmit" onclick="test('#form')">
+                        <% if(update) {%>
+                            Update to Semesters
+                            <% }else{%>
+                        Select Semesters
+                        <% }%>
+                        
                         <i class="material-icons right">send</i>
                     </a>
                     <div id="modal1" class="modal">
@@ -212,7 +230,9 @@
                     
                     <div class="modal-footer">
                       <buttom class="modal-action waves-effect waves-green btn-flat green"
-                            id="submit">Send Email</button>
+                            id="submit">
+                          
+                          Send Email</button>
                     </div>
           </div>
                 </form>
@@ -227,13 +247,15 @@
         $('.modal').modal();
       });
         $('#lastDate').datetimepicker({
-          timepicker: false,
-            format: "d-m-Y"
+            timepicker: false,
+            format: "d-m-Y",
+            mask:true,
+            minDate: '-1970/01/02'
         });
         $("#engg,#twelfth,#tenth").ionRangeSlider({
             min: 0,
             max: 100,
-            from: 50,
+            from: 0,
             hide_min_max: true,
         });
         
@@ -272,5 +294,46 @@
           $("input[name='sendTodepartment']").prop("checked", !clicked1);
           clicked1 = !clicked1;
         });
+        
+<%if(update){ %>
+		
+		$('#cName').val('<%=update.cName%>'); 
+		$('#package').val('<%=update.Package%>');
+		$('#internLocation').val('<%=update.internLocation%>');
+        $('#lastDate').val('<%=update.lastDate %>');
+        $('#skills').val('<%=update.skills%>');
+        $('#designation').val('<%=update.designation%>');
+        $('#duration').val('<%=update.duration%>');
+        $('#interviewLocation').val('<%=update.interviewLocation%>');
+        
+        var qualification = "<%=update.qualification%>".split(',');
+        for(i=0;i<qualification.length;i++)
+            $('input[value="'+qualification[i]+'"]').prop('checked', true);
+        var department = '<%=update.department%>'.split(',');
+        for(i=0;i<department.length;i++)
+            $('input[value="'+department[i]+'"]').prop('checked', true);
+        var eligibility='<%=update.eligibility%>'.split('-');
+        var sliderTenth = $("#tenth").data("ionRangeSlider");
+        sliderTenth.update({
+            min: 0,
+            max: 100,
+            from: eligibility[0],
+        });
+        var sliderTwe = $("#twelfth").data("ionRangeSlider");
+        sliderTwe.update({
+            min: 0,
+            max: 100,
+            from: eligibility[1],
+        });
+        var sliderengg = $("#engg").data("ionRangeSlider");
+        sliderengg.update({
+            min: 0,
+            max: 100,
+            from: eligibility[2],
+        });
+            
+        <% } %>
+            
+        
     </script>
 <% include ../partials/footer.ejs %>

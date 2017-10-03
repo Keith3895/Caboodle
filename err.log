@@ -1,8 +1,0 @@
-events.js:163
-      throw er; // Unhandled 'error' event
-      ^
-
-TypeError: Cannot read property 'author' of undefined
-    at /home/ubuntu/workspace/gradbunker/routes/placement.js:639:54
-    at /home/ubuntu/workspace/gradbunker/node_modules/mongoose/lib/query.js:2922:18
-    at process._tickDomainCallback (internal/process/next_tick.js:135:7)

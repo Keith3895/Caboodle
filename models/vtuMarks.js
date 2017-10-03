@@ -2,20 +2,21 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var Subjects = new Schema({
-	subjectCode: String,
+	subjectCode: { type : String , unique : true},
 	subjectName: String,
 	internalMarks: Number,	
 	externalMarks: Number,
 	subTotal: Number,
-	subResult: String
-});
+	subResult: String,
+	attempt: Number
+},{_id: false});
 
 var Marks = new Schema({
-	sem:Number,
+	sem:{ type : Number , unique : true},
 	subjects:[Subjects],
 	total: Number,
 	result: String
-});
+},{_id: false});
 
 var vtuMarksSchema = new Schema({
 	name: String,

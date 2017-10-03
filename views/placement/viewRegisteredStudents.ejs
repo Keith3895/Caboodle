@@ -1,28 +1,43 @@
 <% include ../partials/header.ejs %>
 <% include ../partials/navbar.ejs %>
 <link href="/stylesheets/admin_home.css" rel="stylesheet">
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
-<script src= "/js/admin_home.js" type="text/javascript"></script>
 <% include ./sidenav.ejs %>
-
+<!-- Modal Structure -->
+  <div id="modalDelete" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Delete Student from this list?</h4>
+      <p>You will not be able to undo this operation. Click 'YES' if you still want to delete.</p>
+    </div>
+    <div class="modal-footer">
+        <a onclick="f2('no')" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+        <a href="" onclick="f2('yes')" class="modal-action modal-close waves-effect waves-green btn-flat">Yes</a>
+    </div>
+  </div>
 <div class="row">
-    <div class="col m12"  style="margin-top:-70px;padding:0" >
-        <h4 class="center"><%= company.cName %> Registrations</h4>
-    <table class="striped">
-        <thead class="centered">
+    <div class="col m12"  style="margin-top:-50px;padding:0 20px" >
+        <% if(company.registeredStudents && company.registeredStudents.length>0){ %>
+        <a class="waves-effect waves-light btn" style="display: inline-block;
+            text-align: center;" href="/placementHead/exportRegisteredStudents/<%= company._id %>">
+            Export List</a>
+        <% } %>
+        <h4 class="center" style="margin-bottom:0"><%= company.cName %> Registrations</h4>
+    <table class="striped centered">
+        <thead>
             <tr>
-                <th>Sl No.</th>
+                <th style="width:5%">Sl No.</th>
                 <th>USN</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>10th Result</th>
-                <th>12th Result</th>
+                <th style="width:10%">10th Result</th>
+                <th style="width:10%">12th Result</th>
+                <th style="width:10%">Department</th>
+                <th></th>
             </tr>
         </thead>
         <% var i = 1; %>
         <tbody>
-            <% students.forEach(function(student){ %>
+            <% company.registeredStudents.forEach(function(student){ %>
                 <tr>
                     <td><%= i %></td>
                     <td><%= student.USN %></td>
@@ -31,6 +46,9 @@
                     <td><%= student.mobile1 %></td>
                     <td><%= student.tenthResult.Percentage %></td>
                     <td><%= student.twelfthResult.Percentage %></td>
+                    <td><%= student.department %></td>
+                    <td><a href="#modalDelete" onclick="f1('<%= company._id %>','<%= student._id %>')">
+                        <i class="material-icons delete">delete</i></a></td>
                 </tr>
                 <% i= i + 1; %>
             <% }) %>
@@ -39,5 +57,31 @@
     </div>
     </div>
     </div>
-    
+<script>
+    $(document).ready(function(){
+        var company_id ='';
+        $('.modal').modal();
+    });
+    function f1(compId,studId){
+        console.log("f1");
+        company_id=compId;
+        student_id=studId;
+    }
+    function f2(approval){
+        console.log("f2");
+        if(approval==='yes'){
+            console.log("Delete")
+            $.ajax({
+                url: "/placementHead/registeredStudents",
+                method: "DELETE",
+                data: {"cid": company_id,"sid":student_id},
+                success: function() {
+                    location.href = "https://erpdontdelete-mkb95.c9users.io/placementHead/registeredStudents/"+company_id;
+                }
+            })
+        }else{
+            console.log("Dont Delete")
+        }
+    }
+</script>
 <% include ../partials/footer.ejs %>
