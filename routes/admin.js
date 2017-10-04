@@ -28,8 +28,8 @@ router.use(multipartyMiddleware);
 var urls1 = [];
 var resultAnalysis = require("./externalFunction/resultAnalysis");
 require('dotenv').config();
-var homeurl = "http://gradbunker.keithfranklin.xyz:8080";
-// var homeurl = "https://erpdontdelete-mkb95.c9users.io";
+var homeurl = process.env.homeUrl;
+
 
 var has = function(container, value) {
 	var returnValue = false;
@@ -45,6 +45,7 @@ function remove(array, element) {
         array.splice(index, 1);
     }
 }
+
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
     host: "smtp.gmail.com",
@@ -390,12 +391,13 @@ router.get("/scrapeResults",function(req,res){
                                         console.log(error)
                                     else{
                                         console.log("Sem scraped: ",semsScraped)
+                                        var stud;
                                         if(existingSems.length>0){
                                             console.log("length > 0 :",existingSems.length)
                                             semsScraped.forEach(function(sem,ct){
                                                 if(!has(existingSems,sem)){
                                                     console.log("doesnt hav")
-                                                    VTUmarks.findOne({usn:usn},{$addToSet:{marks:semMarks[sem]}},function(error2,studMarks){
+                                                    VTUmarks.findOne({usn:usn},{$addToSet:{marks:semMarks2[sem]}},function(error2,studMarks){
                                                         if(error2){
                                                             console.log("Error2: ",error2)
                                                             var index = urls.indexOf(url);
@@ -437,17 +439,66 @@ router.get("/scrapeResults",function(req,res){
                                                             }
                                                         }
                                                     })
-                                                }else if(ct===existingSems.length-1){
+                                                }else{
                                                     // res.send("Sems exist")
-                                                    VTUmarks.find().distinct('marks.subjects.subjectCode', function(error, existingSubjects) {
+                                                    VTUmarks.findOne({'usn':usn})
+                                                    .exec(function(error, student) {
                                                         if(error)
                                                             console.log(error)
                                                         else{
-                                                            res.send(existingSubjects);
+                                                            var studentMarksss;
+                                                            student.marks.sort(function(a, b) {
+                                                                return parseFloat(a.sem) - parseFloat(b.sem);
+                                                            });
+                                                            var check = true;
+                                                            student.marks.forEach(function(semsMarks,i){
+                                                                studentMarksss= student.marks;
+                                                                // console.log("Student.marks ",student.marks)
+                                                                // console.log("studentMarkssss first ",studentMarksss);
+                                                                // console.log("Student marks ",semsMarks.sem,": ",sMarks)
+                                                                if(semsMarks.sem === sem && check===true){
+                                                                    check=false;
+                                                                    console.log("semMarks.sem: ",semsMarks.sem);
+                                                                    console.log("sem: ",sem)
+                                                                    remove(studentMarksss,semsMarks);
+                                                                    // console.log("studentMarkssss removal ",studentMarksss);
+                                                                    var sMarks=semsMarks.subjects;
+                                                                    // console.log("sMarks before ",sMarks)
+                                                                    // console.log("Sem ",sem,": ",sMarks)
+                                                                    semsMarks.subjects.forEach(function(subject){
+                                                                        if(has(subjectsScraped[semsMarks.sem],subject.subjectCode)){
+                                                                            remove(sMarks,subject);
+                                                                            sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
+                                                                        }else{
+                                                                            sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
+                                                                        }
+                                                                    })
+                                                                    // console.log("sMarks after ",sMarks);
+                                                                    semMarks2[sem]['subjects']=sMarks;
+                                                                    studentMarksss.push(semMarks2[sem]);
+                                                                    // console.log("studentMarksssssss after ",studentMarksss)
+                                                                }
+                                                                // console.log("Sem Marks ",i,sMarks);
+                                                                // VTUmarks.update(
+                                                                //   {usn:usn, 'marks.sem': semsMarks.sem },
+                                                                //   { $set: { "marks.sem.$.subjects" : sMarks } }
+                                                                // ).exec(function(error3,updatedResult){
+                                                                //     if(error3) console.log(error3);
+                                                                //     else{
+                                                                //         console.log("Updated result: ",updatedResult)
+                                                                //     }
+                                                                // })
+                                                            })
+                                                            console.log("Studddmarkss: ",studentMarksss)
+                                                            student.marks=studentMarksss;
+                                                            // student.save();
+                                                            stud = student;
                                                         }
                                                     })
                                                 }
                                             })
+                                        }else{
+                                            res.send(stud)
                                         }
                                     }
                                 })

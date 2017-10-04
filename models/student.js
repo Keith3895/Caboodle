@@ -26,22 +26,26 @@ var StudentSchema = new mongoose.Schema({
 	registeredPlacements: [{
 	     type: mongoose.Schema.Types.ObjectId,
 	     ref: "placement",
-	     unique : true
+	     unique : true,
+	     sparse:true
 	}],
 	selectedPlacements: [{
 	     type: mongoose.Schema.Types.ObjectId,
 	     ref: "placement",
-	     unique : true
+	     unique : true,
+	     sparse:true
 	}],
 	registeredInternships: [{
 	     type: mongoose.Schema.Types.ObjectId,
 	     ref: "internship",
-	     unique : true
+	     unique : true,
+	     sparse:true
 	}],
 	selectedInternships:[{
 	     type: mongoose.Schema.Types.ObjectId,
 	     ref: "internship",
-	     unique : true
+	     unique : true,
+	     sparse:true
 	}]
 });
 

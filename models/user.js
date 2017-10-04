@@ -9,7 +9,7 @@ var UserSchema = new mongoose.Schema({
     userType: String,
     gender: String,
     dp: String,
-    usn: { type : String , unique : true}
+    usn: { type : String , unique : true, sparse:true}
 });
 
 UserSchema.pre('save', function(next) {

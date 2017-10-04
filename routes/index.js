@@ -29,8 +29,7 @@ var transporter = nodemailer.createTransport({
                     pass: 'cloudnine' // Your password
         }
 });
-var homeurl = "http://gradbunker.keithfranklin.xyz:8080";
-// var homeurl = "https://erpdontdelete-mkb95.c9users.io";
+var homeurl = process.env.homeUrl;
 // var transporter = nodemailer.createTransport(ses({
 //     accessKeyId: 'process.env.MailerKeyid',
 //     secretAccessKey: 'process.env.MailerPsd'

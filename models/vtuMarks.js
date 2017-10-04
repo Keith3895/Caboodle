@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var Subjects = new Schema({
-	subjectCode: { type : String , unique : true},
+	subjectCode: { type : String , unique : true, sparse:true},
 	subjectName: String,
 	internalMarks: Number,	
 	externalMarks: Number,
@@ -12,7 +12,7 @@ var Subjects = new Schema({
 },{_id: false});
 
 var Marks = new Schema({
-	sem:{ type : Number , unique : true},
+	sem:{ type : Number , unique : true, sparse:true},
 	subjects:[Subjects],
 	total: Number,
 	result: String
