@@ -556,12 +556,13 @@ $(window).focus(function(ele) {
         $(window).blur(function() {
             //do something
             console.log("blur");
-            alert("the next time you change your active window the test will auto submit.");
+            
             beep();
              
             if(!blurCheck && !blurOn)
-              
               submitTest();
+            else
+              alert("the next time you change your active window the test will auto submit.");
         });
 
 
