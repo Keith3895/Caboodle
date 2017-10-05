@@ -450,7 +450,7 @@ router.get("/scrapeResults",function(req,res){
                                                                             remove(sMarks,subject);
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
                                                                             countCheck+=1;
-                                                                            if(countCheck==semMarks.subjects.length){ 
+                                                                            if(countCheck===semMarks.subjects.length){ 
                                                                                 semMarks2[sem]['subjects']=sMarks;
                                                                                 studentMarksss.push(semMarks2[sem]);
                                                                                 callback2();
@@ -458,7 +458,7 @@ router.get("/scrapeResults",function(req,res){
                                                                         }else{
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
                                                                             countCheck+=1;
-                                                                            if(countCheck==semMarks.subjects.length){ 
+                                                                            if(countCheck===semMarks.subjects.length){ 
                                                                                 semMarks2[sem]['subjects']=sMarks;
                                                                                 studentMarksss.push(semMarks2[sem]);
                                                                                 callback2();

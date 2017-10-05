@@ -20,15 +20,17 @@ var PlacementSchema = new mongoose.Schema({
 	},
 	registeredStudents: [{
 	    type: mongoose.Schema.Types.ObjectId,
-	    ref: "Student",
-	    unique : true,
-	    sparse:true
+	    ref: "Student"
+	},{
+	     unique : true,
+	     sparse:true
 	}],
 	selectedStudents: [{
 	    type: mongoose.Schema.Types.ObjectId,
-	    ref: "Student",
-	    unique : true,
-	    sparse:true
+	    ref: "Student"
+	},{
+	     unique : true,
+	     sparse:true
 	}]
 });
 
