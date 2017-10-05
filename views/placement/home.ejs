@@ -260,7 +260,10 @@
                         }
                     }],
         	  	yAxes: [{
-                        stacked: true
+                        stacked: true,
+                        ticks: {
+                            min: 0 // Edit the value according to what you need
+                        }
                     }],
                 legend: {
                     display: true,
@@ -300,6 +303,13 @@
                         backgroundColor: 'rgba(54, 162, 235,.2)',
                         borderColor: 'rgb(54, 162, 235)',
                         pointBackgroundColor: 'rgb(54, 162, 235)'
+                    },
+                    {
+                        label: "",
+                        data: [0],
+                        backgroundColor: 'rgba(54, 162, 235,0)',
+                        borderColor: 'rgba(54, 162, 235,0)',
+                        pointBackgroundColor: 'rgba(54, 162, 235,0)'
                     }
                     ],
         	    labels: department

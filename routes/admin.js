@@ -61,7 +61,7 @@ var transporter = nodemailer.createTransport({
 // }));
 
 for(var i= 57;i<58;i++){
-    urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1KG13CV"+("00" + i).slice(-3))
+    // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1KG13CV"+("00" + i).slice(-3))
     // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13ME"+("00" + i).slice(-3))
     // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13EC"+("00" + i).slice(-3))
     // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13IS"+("00" + i).slice(-3))
@@ -220,7 +220,7 @@ router.post('/users/delete', middleware.isAdminOrPlacement, function(req, res, n
 
 
 router.get("/scrapeResults",function(req,res){
-    for(var i= 1;i<10;i++){
+    for(var i= 57;i<58;i++){
         urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1KG13CV"+("00" + i).slice(-3))
         // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13ME"+("00" + i).slice(-3))
         // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13EC"+("00" + i).slice(-3))
@@ -401,7 +401,7 @@ router.get("/scrapeResults",function(req,res){
                                                             }
                                                             if(counter>=100){
                                                                 // console.log("Again");
-                                                                 f1(urls,urls.length);
+                                                                f1(urls,urls.length);
                                                             }
                                                             callback();
                                                         }
@@ -421,6 +421,7 @@ router.get("/scrapeResults",function(req,res){
                                                         }
                                                     })
                                                 }else{
+                                                    console.log("out")
                                                     // res.send("Sems exist")
                                                     VTUmarks.findOne({'usn':usn})
                                                     .exec(function(error, student) {
@@ -432,35 +433,52 @@ router.get("/scrapeResults",function(req,res){
                                                                 return parseFloat(a.sem) - parseFloat(b.sem);
                                                             });
                                                             var check = true;
-                                                            studentMarksss= student.marks;
+                                                            studentMarksss= student.marks.slice();
                                                             async.each(student.marks, function(semsMarks,callback2){
                                                                 // console.log("count: ",i)
                                                                 if(semsMarks.sem === sem && check===true){
+                                                                     console.log("in")
                                                                     check=false;
                                                                     remove(studentMarksss,semsMarks);
-                                                                    var sMarks=semsMarks.subjects;
+                                                                    var sMarks = semsMarks.subjects.slice();
+                                                                    console.log("SMARKS: ",sMarks.length,", ",semsMarks.subjects.length)
                                                                     var countCheck = 0;
-                                                                    semsMarks.subjects.forEach(function(subject){
+                                                                    async.each(semsMarks.subjects,function(subject,callback3){
                                                                         if(has(subjectsScraped[semsMarks.sem],subject.subjectCode)){
                                                                             remove(sMarks,subject);
+                                                                            // console.log("after remove: ",sMarks);
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
+                                                                            // console.log("after push updated: ",sMarks);
                                                                             countCheck+=1;
                                                                             if(countCheck===semsMarks.subjects.length){ 
+                                                                                console.log("Must update1")
                                                                                 semMarks2[sem]['subjects']=sMarks;
-                                                                                console.log(sMarks);
                                                                                 studentMarksss.push(semMarks2[sem]);
-                                                                                callback2();
-                                                                            };
+                                                                                updateNew();
+                                                                            }else{callback3();}
                                                                         }else{
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
                                                                             countCheck+=1;
                                                                             if(countCheck===semsMarks.subjects.length){ 
+                                                                                console.log("Must update2")
                                                                                 semMarks2[sem]['subjects']=sMarks;
                                                                                 studentMarksss.push(semMarks2[sem]);
-                                                                                callback2();
-                                                                            };
+                                                                                updateNew();
+                                                                            }else{callback3();}
                                                                         }
                                                                     })
+                                                                    function updateNew(){
+                                                                    VTUmarks.findOneAndUpdate({usn: usn}, 
+                                                                    {$set:{'marks':studentMarksss}}, {new: true}, function(err, doc){
+                                                                        if(err){
+                                                                            console.log("Something wrong when updating data!");
+                                                                        }
+                                                                        else{
+                                                                            console.log("Updated doc: ",doc)
+                                                                            callback2();
+                                                                        }
+                                                                    });
+                                                                    }
                                                                 }
                                                             }, function(erro) {
                                                                 if( erro ) {
@@ -471,14 +489,7 @@ router.get("/scrapeResults",function(req,res){
                                                             })
                                                             // console.log("Studddmarkss: ",studentMarksss)
                                                             console.log("Stud id: ",student._id)
-                                                            VTUmarks.findOneAndUpdate({usn: usn}, 
-                                                            {$set:{'marks':studentMarksss}}, {new: true}, function(err, doc){
-                                                                if(err){
-                                                                    console.log("Something wrong when updating data!");
-                                                                }
                                                             
-                                                                // console.log("Updated doc: ",doc);
-                                                            });
                                                         }
                                                     })
                                                 }

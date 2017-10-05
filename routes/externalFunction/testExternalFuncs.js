@@ -83,10 +83,11 @@ var functions = {
         });
     },
     studentSkiped: function(){
-        LeaderBoard.find({}).sort({'_id':-1}).limit(1).exec(function(err, entry) {
+        LeaderBoard.find({}).sort({'_id':-1}).limit(2).exec(function(err, entry) {
         var found = false;
-        if(entry.length>0)
+        if(entry.length>1)
         Student.find({},function(err, std) {
+            entry[0]=entry[1];
             for(i=0;i<std.length;i++){
                 for(j=0;j<std[i].PlacementTestResults.length;j++){
                     if(std[i].PlacementTestResults[j][0].id == entry[0].testId){
