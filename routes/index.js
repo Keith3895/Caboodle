@@ -94,7 +94,7 @@ router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
             console.log("error: ",err)
             req.flash("error", "Email ID already exists!");
             res.redirect("/addStudent");
-        }
+        }else{
         var newStudent = new Student({
             author: user._id,
             semester: req.body.sem,
@@ -152,6 +152,7 @@ router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
                 });
             }
         })
+        }
     });
 });
 

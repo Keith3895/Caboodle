@@ -292,7 +292,7 @@ router.get("/scrapeResults",function(req,res){
                             var subjectName = $(this).children().children().eq(1).text();
                             // var internalMarks = isNaN($(this).children().children().eq(2).text())
                             // ? NaN:$(this).children().children().eq(2).text();
-                            var internalMarks = 45;
+                            var internalMarks = 1000;
                             var externalMarks = isNaN($(this).children().children().eq(3).text())
                             ? NaN:$(this).children().children().eq(3).text();
                             var subjectTotal = $(this).children().children().eq(4).text();
@@ -300,7 +300,7 @@ router.get("/scrapeResults",function(req,res){
                             var subject = {
                                 subjectCode: subjectCode,
                             	subjectName: subjectName,
-                            	internalMarks: 45,	
+                            	internalMarks: 1000,	
                             	externalMarks: externalMarks,
                             	subTotal: subjectTotal,
                             	subResult: subjectResult
@@ -380,19 +380,19 @@ router.get("/scrapeResults",function(req,res){
                                     }
                                 })
                             }else{
-                                console.log("Result Present")
+                                console.log("Result Present");
                                 VTUmarks.find().distinct('marks.sem', function(error, existingSems) {
                                     if(error)
-                                        console.log(error)
+                                        console.log(error);
                                     else{
                                         console.log("Sem scraped: ",semsScraped)
                                         var stud;
                                         if(existingSems.length>0){
                                             console.log("length > 0 :",existingSems.length)
-                                            semsScraped.forEach(function(sem,ct){
+                                            semsScraped.forEach(async function(sem,ct){
                                                 if(!has(existingSems,sem)){
                                                     console.log("doesnt hav")
-                                                    VTUmarks.findOne({usn:usn},{$addToSet:{marks:semMarks2[sem]}},function(error2,studMarks){
+                                                    await VTUmarks.findOne({usn:usn},{$addToSet:{marks:semMarks2[sem]}},function(error2,studMarks){
                                                         if(error2){
                                                             console.log("Error2: ",error2)
                                                             var index = urls.indexOf(url);
@@ -412,18 +412,8 @@ router.get("/scrapeResults",function(req,res){
                                                         }
                                                         else{
                                                             console.log("Scraped:",usn);
-                                                            var index = urls.indexOf(url);
-                                                            if (index > -1) {
-                                                                urls.splice(index, 1);
-                                                            }
+                                                            remove(urls,url)
                                                             counter = counter + 1;
-                                                            VTUmarks.findOne({usn:usn},function(err4,updatedStudent){
-                                                                if(err4) console.log(err4);
-                                                                else{
-                                                                    console.log("Updated")
-                                                                    // res.send(updatedStudent)
-                                                                }
-                                                            })
                                                             len = len - 1;
                                                             if(counter>=100){
                                                                 // console.log("Again");
@@ -437,7 +427,7 @@ router.get("/scrapeResults",function(req,res){
                                                 }else{
                                                     // res.send("Sems exist")
                                                     VTUmarks.findOne({'usn':usn})
-                                                    .exec(function(error, student) {
+                                                    .exec(async function(error, student) {
                                                         if(error)
                                                             console.log(error)
                                                         else{
@@ -446,22 +436,14 @@ router.get("/scrapeResults",function(req,res){
                                                                 return parseFloat(a.sem) - parseFloat(b.sem);
                                                             });
                                                             var check = true;
-                                                            student.marks.forEach(function(semsMarks,i){
+                                                            student.marks.forEach(async function(semsMarks,i){
                                                                 // console.log("count: ",i)
                                                                 studentMarksss= student.marks;
-                                                                // console.log("Student.marks ",student.marks)
-                                                                // console.log("studentMarkssss first ",studentMarksss);
-                                                                // console.log("Student marks ",semsMarks.sem,": ",sMarks)
                                                                 if(semsMarks.sem === sem && check===true){
                                                                     check=false;
-                                                                    // console.log("semMarks.sem: ",semsMarks.sem);
-                                                                    // console.log("sem: ",sem)
                                                                     remove(studentMarksss,semsMarks);
-                                                                    // console.log("studentMarkssss removal ",studentMarksss);
                                                                     var sMarks=semsMarks.subjects;
-                                                                    // console.log("sMarks before ",sMarks)
-                                                                    // console.log("Sem ",sem,": ",sMarks)
-                                                                    semsMarks.subjects.forEach(function(subject){
+                                                                    semsMarks.subjects.forEach(async function(subject){
                                                                         if(has(subjectsScraped[semsMarks.sem],subject.subjectCode)){
                                                                             remove(sMarks,subject);
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
@@ -487,7 +469,7 @@ router.get("/scrapeResults",function(req,res){
                                                             })
                                                             // console.log("Studddmarkss: ",studentMarksss)
                                                             console.log("Stud id: ",student._id)
-                                                            VTUmarks.findOneAndUpdate({usn: usn}, 
+                                                            await VTUmarks.findOneAndUpdate({usn: usn}, 
                                                             {$set:{'marks':studentMarksss}}, {new: true}, function(err, doc){
                                                                 if(err){
                                                                     console.log("Something wrong when updating data!");

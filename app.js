@@ -41,9 +41,8 @@ var indexRoutes      = require("./routes/index"),
 // db connectins and body parsing
 // =======================================
 mongoose.Promise = global.Promise;
-// mongoose.connection.openUri("mongodb://localhost/GradBunkerV3");     // local mongo db
-// mongoose.connection.openUri("mongodb://localhost/GradBunker");     // local mongo db
-mongoose.connection.openUri("mongodb://admin:learningpwd@13.126.229.49/GradBunker");     // AWS mongo db
+mongoose.connection.openUri(process.env.mongoURL);     // local mongo db
+// mongoose.connection.openUri("mongodb://admin:learningpwd@13.126.229.49/GradBunker");     // AWS mongo db
 app.set("view engine","ejs");
 // app.use(upload());
 app.use(bodyParser.urlencoded({extended: true}));

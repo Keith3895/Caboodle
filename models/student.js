@@ -5,7 +5,7 @@ var StudentSchema = new mongoose.Schema({
 	     type: mongoose.Schema.Types.ObjectId,
 	     ref: "User"
 	},
-	USN: { type : String , unique : true, required : true, dropDups: true },
+	USN: { type : String , unique : true, sparse:true},
 	department: String,
 	gender: String,
 	books:[{bookID: {
@@ -25,7 +25,8 @@ var StudentSchema = new mongoose.Schema({
 	certifications: [{description: String, docLink: String}],
 	registeredPlacements: [{
 	     type: mongoose.Schema.Types.ObjectId,
-	     ref: "placement",
+	     ref: "placement"
+	},{
 	     unique : true,
 	     sparse:true
 	}],
@@ -34,16 +35,25 @@ var StudentSchema = new mongoose.Schema({
 	     ref: "placement",
 	     unique : true,
 	     sparse:true
+	},{
+	     unique : true,
+	     sparse:true
 	}],
 	registeredInternships: [{
 	     type: mongoose.Schema.Types.ObjectId,
 	     ref: "internship",
 	     unique : true,
 	     sparse:true
+	},{
+	     unique : true,
+	     sparse:true
 	}],
 	selectedInternships:[{
 	     type: mongoose.Schema.Types.ObjectId,
 	     ref: "internship",
+	     unique : true,
+	     sparse:true
+	},{
 	     unique : true,
 	     sparse:true
 	}]
