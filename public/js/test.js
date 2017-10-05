@@ -516,12 +516,7 @@ function timer(){
           document.getElementById("demo").innerHTML = "EXPIRED";
           
           if(!stoppedTimer){
-              $('#question').remove();
-              var scoreElem = displayScore();
-              quiz.append(scoreElem).fadeIn();
-              $('#next').hide();
-              $('#prev').hide();
-              $('#start').show();
+               $('#submitTest').click();
           }
       }
       if(minutes == Math.floor(timelimit-timelimit/3))
