@@ -86,7 +86,7 @@
     }   
     $('#legend').append('<div><span class ="label marked"></span><span>Attempted Question</span><div>' );
     
-    te = $('.buttonContainer').height()+ 30;
+    te = $('.buttonContainer').height()+ 200;
     $('#legend').css({'top':te});
     $('.numberButton').on('click',function(){
             gotopage($(this).html());
@@ -538,34 +538,34 @@ function timer(){
 
 }
 
-// window.onresize = function()
-// {
-//     if ((window.outerHeight - window.innerHeight) > 100)
-//         alert('Docked inspector was opened forced submit');
-//         var i=0;
-//         var be = setInterval(function() {
-//           i++;
-//           beep();
-//           beep();
-//           if(i>5){
-//             clearInterval(be);
-//             submitTest();
-//           }
-//         }, 1000);
-// }
-// $(window).focus(function(ele) {
-//             //do something
-//             blurOn=false;
+window.onresize = function()
+{
+    if ((window.outerHeight - window.innerHeight) > 100)
+        alert('Docked inspector was opened forced submit');
+        var i=0;
+        var be = setInterval(function() {
+          i++;
+          beep();
+          beep();
+          if(i>5){
+            clearInterval(be);
+            submitTest();
+          }
+        }, 1000);
+}
+$(window).focus(function(ele) {
+            //do something
+            blurOn=false;
             
-//         });
-//         $(window).blur(function() {
-//             //do something
-//             console.log("blur");
-//             beep();
+        });
+        $(window).blur(function() {
+            //do something
+            console.log("blur");
+            beep();
              
-//             if(!blurCheck && !blurOn)
-//               submitTest();
-//         });
+            if(!blurCheck && !blurOn)
+              submitTest();
+        });
 
 
 

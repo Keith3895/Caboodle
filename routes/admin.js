@@ -266,7 +266,7 @@ router.get("/scrapeResults",function(req,res){
         counter = 0;
     scrape.concurrent(urls,100, function(url, callback) {
         if(url){
-        request(url, function(error, response, html){
+        request(url,async function(error, response, html){
             var usn1 = url.split('usn=')[1];
             if(!error){
                 var $ = cheerio.load(html);
@@ -279,7 +279,8 @@ router.get("/scrapeResults",function(req,res){
                     var semMarks = [],semMarks2=[],subjectMarks2=[];
                     var dep = usn.substr(5,2);
                     var semsScraped=[],subjectsScraped=[];
-                    $('.table').each(function(){
+                    async function extract(){
+                        $('.table').each(function(){
                         var semester = $(this).prev().text().split(': ')[1];
                         semester = parseInt(semester);
                         semsScraped.push(semester);
@@ -300,7 +301,7 @@ router.get("/scrapeResults",function(req,res){
                             var subject = {
                                 subjectCode: subjectCode,
                             	subjectName: subjectName,
-                            	internalMarks: 1000,	
+                            	internalMarks: internalMarks,	
                             	externalMarks: externalMarks,
                             	subTotal: subjectTotal,
                             	subResult: subjectResult
@@ -327,23 +328,17 @@ router.get("/scrapeResults",function(req,res){
                         }
                         semMarks.push(semesterResult);
                         semMarks2[semester]=semesterResult;   //For update: to identify a sem's marks with index as sem
+                        // console.log("Sem: ",semMarks2[semester])
                     })
-                    // console.log("Dep:",dep);
-                    // var studentResult = new VTUmarks({
-                    //     name: name,
-                    // 	usn: usn,
-                    // 	department: dep,
-                    // 	marks:semMarks
-                    // });
-                    var studentResult = {
-                        name: name,
-                    	usn: usn,
-                    	department: dep,
-                    	marks:semMarks
-                    };
-                    // res.send(studentResult);
-                    // console.log("Scraped:",usn);
+                    }
+                    async function update(){
                     VTUmarks.findOne({usn:usn},function(err1,student){
+                        var studentResult = {
+                            name: name,
+                        	usn: usn,
+                        	department: dep,
+                        	marks:semMarks
+                        };
                         if(err1) console.log("Scrape route find student: ",err1);
                         else{
                             // console.log("Initial check",student);
@@ -450,35 +445,23 @@ router.get("/scrapeResults",function(req,res){
                                                                             remove(sMarks,subject);
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
                                                                             countCheck+=1;
-                                                                            if(countCheck===semMarks.subjects.length){ 
+                                                                            if(countCheck===semsMarks.subjects.length){ 
                                                                                 semMarks2[sem]['subjects']=sMarks;
+                                                                                console.log(sMarks);
                                                                                 studentMarksss.push(semMarks2[sem]);
                                                                                 callback2();
                                                                             };
                                                                         }else{
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
                                                                             countCheck+=1;
-                                                                            if(countCheck===semMarks.subjects.length){ 
+                                                                            if(countCheck===semsMarks.subjects.length){ 
                                                                                 semMarks2[sem]['subjects']=sMarks;
                                                                                 studentMarksss.push(semMarks2[sem]);
                                                                                 callback2();
                                                                             };
                                                                         }
                                                                     })
-                                                                    // console.log("sMarks after ",sMarks);
-                                                                    
-                                                                    // console.log("studentMarksssssss after ",studentMarksss)
                                                                 }
-                                                                // console.log("Sem Marks ",i,sMarks);
-                                                                // VTUmarks.update(
-                                                                //   {usn:usn, 'marks.sem': semsMarks.sem },
-                                                                //   { $set: { "marks.sem.$.subjects" : sMarks } }
-                                                                // ).exec(function(error3,updatedResult){
-                                                                //     if(error3) console.log(error3);
-                                                                //     else{
-                                                                //         console.log("Updated result: ",updatedResult)
-                                                                //     }
-                                                                // })
                                                             }, function(erro) {
                                                                 if( erro ) {
                                                                   console.log('A file failed to process');
@@ -511,52 +494,13 @@ router.get("/scrapeResults",function(req,res){
                                         }
                                     }
                                 })
-                                // res.send(student);
-                                // VTUmarks.findOneAndUpdate({usn: usn,'marks.sem':{$in:[2,3,4]}},{$addToSet:{marks:{$each: semMarks}}},{new:true,upsert:true},function(err3,updatedStudResult){
-                                //     if(err3){
-                                //         console.log("Error3: ",err3)
-                                //         var index = urls.indexOf(url);
-                                //         if (index > -1) {
-                                //             urls.splice(index, 1);
-                                //         }
-                                //         counter = counter + 1;
-                                //         len = len - 1;
-                                //         if(len<=0&&urls.length<=0){
-                                //             f2();
-                                //         }
-                                //         if(counter>=100){
-                                //             // console.log("Again");
-                                //              f1(urls,urls.length);
-                                //         }
-                                        
-                                //     }
-                                //     else{
-                                //         console.log("Scraped:",usn);
-                                //         var index = urls.indexOf(url);
-                                //         if (index > -1) {
-                                //             urls.splice(index, 1);
-                                //         }
-                                //         counter = counter + 1;
-                                //         VTUmarks.findOne({usn:usn},function(err4,updatedStudent){
-                                //             if(err4) console.log(err4);
-                                //             else{
-                                //                 console.log("Updated")
-                                //                 res.send(updatedStudent)
-                                //             }
-                                //         })
-                                //         len = len - 1;
-                                //         if(counter>=100){
-                                //             // console.log("Again");
-                                //             f1(urls,urls.length);
-                                //         }
-                                //         if(len<=0&&urls.length<=0){
-                                //             f2();
-                                //         }
-                                //     }
-                                // })
                             }
                         }
                     })
+                    }
+                    
+                    await extract();
+                    await update();
                 }
                 else{
                     // console.log("Doesnt exist: ",usn1);
