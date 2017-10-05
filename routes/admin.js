@@ -389,10 +389,10 @@ router.get("/scrapeResults",function(req,res){
                                         var stud;
                                         if(existingSems.length>0){
                                             console.log("length > 0 :",existingSems.length)
-                                            semsScraped.forEach(async function(sem,ct){
+                                            async.each(semsScraped,function(sem,callback){
                                                 if(!has(existingSems,sem)){
                                                     console.log("doesnt hav")
-                                                    await VTUmarks.findOne({usn:usn},{$addToSet:{marks:semMarks2[sem]}},function(error2,studMarks){
+                                                    VTUmarks.findOne({usn:usn},{$addToSet:{marks:semMarks2[sem]}},function(error2,studMarks){
                                                         if(error2){
                                                             console.log("Error2: ",error2)
                                                             var index = urls.indexOf(url);
@@ -408,7 +408,7 @@ router.get("/scrapeResults",function(req,res){
                                                                 // console.log("Again");
                                                                  f1(urls,urls.length);
                                                             }
-                                                            
+                                                            callback();
                                                         }
                                                         else{
                                                             console.log("Scraped:",usn);
@@ -422,12 +422,13 @@ router.get("/scrapeResults",function(req,res){
                                                             if(len<=0&&urls.length<=0){
                                                                 f2();
                                                             }
+                                                            callback();
                                                         }
                                                     })
                                                 }else{
                                                     // res.send("Sems exist")
                                                     VTUmarks.findOne({'usn':usn})
-                                                    .exec(async function(error, student) {
+                                                    .exec(function(error, student) {
                                                         if(error)
                                                             console.log(error)
                                                         else{
@@ -436,14 +437,15 @@ router.get("/scrapeResults",function(req,res){
                                                                 return parseFloat(a.sem) - parseFloat(b.sem);
                                                             });
                                                             var check = true;
-                                                            student.marks.forEach(async function(semsMarks,i){
+                                                            studentMarksss= student.marks;
+                                                            async.each(student.marks, function(semsMarks,callback2){
                                                                 // console.log("count: ",i)
-                                                                studentMarksss= student.marks;
                                                                 if(semsMarks.sem === sem && check===true){
                                                                     check=false;
                                                                     remove(studentMarksss,semsMarks);
                                                                     var sMarks=semsMarks.subjects;
-                                                                    semsMarks.subjects.forEach(async function(subject){
+                                                                    var countCheck = 0;
+                                                                    semsMarks.subjects.forEach(function(subject){
                                                                         if(has(subjectsScraped[semsMarks.sem],subject.subjectCode)){
                                                                             remove(sMarks,subject);
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
@@ -466,6 +468,13 @@ router.get("/scrapeResults",function(req,res){
                                                                 //         console.log("Updated result: ",updatedResult)
                                                                 //     }
                                                                 // })
+                                                            }, function(erro) {
+                                                                // if any of the file processing produced an error, err would equal that error
+                                                                if( erro ) {
+                                                                  console.log('A file failed to process');
+                                                                } else {
+                                                                  console.log('All files have been processed successfully');
+                                                                }
                                                             })
                                                             // console.log("Studddmarkss: ",studentMarksss)
                                                             console.log("Stud id: ",student._id)
@@ -479,6 +488,12 @@ router.get("/scrapeResults",function(req,res){
                                                             });
                                                         }
                                                     })
+                                                }
+                                            }, function(err) {
+                                                if( err ) {
+                                                  console.log('A file failed to process');
+                                                } else {
+                                                  console.log('All files have been processed successfully');
                                                 }
                                             })
                                         }else{

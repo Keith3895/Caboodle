@@ -4,7 +4,10 @@
 
 
 <div class="row">
-    <h3>The test will begin in approximately <span id="time"></span> Seconds please read the following.</h3>
+    <div class='col s12'>
+        <h3>The test will begin in approximately <span id="time"></span> <br> 
+        Seconds please read the following.</h3>
+    </div>
     <div class='col s12 m8'>
         <h5>Follow these instructions:</h5>
         <ol>
@@ -13,9 +16,15 @@
             <li>Do not open any form of a developer console</li>
             <li>The use of a calculator is strictly prohibited</li>
             <li>Do submit the test, only once.</li>
-            <li>The time period for the test is _, after which the test will be automatically submitted.</li>
+            <li>The time period for the test is 50 min, after which the test will be automatically submitted.</li>
+            <li>The  type(quantitative aptitude,verbal, etc) of the questions is highlighted with different colors, check the legend 
+            in the test environment.</li>
+            <li>For questions of type 'data interpretation' and 'comprehension' there will be sub-quesions, use the navigations
+            accordingly.</li>
         </ol>
-        <h6>Failure to comply with any of the rules will result in immediate disqualification.All the best!</h6>
+        <div class='col s12'>
+            <h6>Failure to comply with any of the rules will result in immediate disqualification. <br>All the best!</h6>
+        </div>
     </div>
     <div class="col s12 m3">
         <div>Click Here to Start The test.</div>
@@ -26,7 +35,7 @@
 
 
 <script>
-    var timelimit =0;
+    var timelimit =1;
     var d1 = new Date (),
       d2 = new Date ( d1 );
   d2.setMinutes ( d1.getMinutes() + timelimit);
