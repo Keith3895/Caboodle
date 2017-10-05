@@ -86,7 +86,7 @@
     }   
     $('#legend').append('<div><span class ="label marked"></span><span>Attempted Question</span><div>' );
     
-    te = $('.buttonContainer').height()+ 200;
+    te = $('.buttonContainer').height()+ 100;
     $('#legend').css({'top':te});
     $('.numberButton').on('click',function(){
             gotopage($(this).html());
