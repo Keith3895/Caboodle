@@ -220,12 +220,12 @@ router.post('/users/delete', middleware.isAdminOrPlacement, function(req, res, n
 
 
 router.get("/scrapeResults",function(req,res){
-    // for(var i= 57;i<58;i++){
-    //     urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1KG13CV"+("00" + i).slice(-3))
-    //     // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13ME"+("00" + i).slice(-3))
-    //     // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13EC"+("00" + i).slice(-3))
-    //     // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13IS"+("00" + i).slice(-3))
-    // }
+    for(var i= 1;i<10;i++){
+        urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1KG13CV"+("00" + i).slice(-3))
+        // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13ME"+("00" + i).slice(-3))
+        // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13EC"+("00" + i).slice(-3))
+        // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13IS"+("00" + i).slice(-3))
+    }
     function getResultStatus(marks,sem){
         if(sem==1 || sem==2 ){
             if((parseInt(marks)>=(775*0.7)-5)){
@@ -290,8 +290,9 @@ router.get("/scrapeResults",function(req,res){
                         $(this).children('tbody').each(function(){
                             var subjectCode = $(this).children().children().first().text();
                             var subjectName = $(this).children().children().eq(1).text();
-                            var internalMarks = isNaN($(this).children().children().eq(2).text())
-                            ? NaN:$(this).children().children().eq(2).text();
+                            // var internalMarks = isNaN($(this).children().children().eq(2).text())
+                            // ? NaN:$(this).children().children().eq(2).text();
+                            var internalMarks = 45;
                             var externalMarks = isNaN($(this).children().children().eq(3).text())
                             ? NaN:$(this).children().children().eq(3).text();
                             var subjectTotal = $(this).children().children().eq(4).text();
@@ -299,7 +300,7 @@ router.get("/scrapeResults",function(req,res){
                             var subject = {
                                 subjectCode: subjectCode,
                             	subjectName: subjectName,
-                            	internalMarks: internalMarks,	
+                            	internalMarks: 45,	
                             	externalMarks: externalMarks,
                             	subTotal: subjectTotal,
                             	subResult: subjectResult
@@ -351,10 +352,7 @@ router.get("/scrapeResults",function(req,res){
                                 VTUmarks.create(studentResult,function(err2,studResult){
                                     if(err2){
                                         console.log("VTU marks create error: ",err2)
-                                        var index = urls.indexOf(url);
-                                        if (index > -1) {
-                                            urls.splice(index, 1);
-                                        }
+                                        remove(urls,url);
                                         counter = counter + 1;
                                         len = len - 1;
                                         if(len<=0&&urls.length<=0){
@@ -367,14 +365,11 @@ router.get("/scrapeResults",function(req,res){
                                     }
                                     else{
                                         console.log("Scraped:",usn);
-                                        var index = urls.indexOf(url);
-                                        if (index > -1) {
-                                            urls.splice(index, 1);
-                                        }
+                                        remove(urls,url);
                                         counter = counter + 1;
                                         len = len - 1;
                                         console.log("blaaaah")
-                                        res.send(studResult)
+                                        // res.send(studResult)
                                         if(counter>=100){
                                             // console.log("Again");
                                             f1(urls,urls.length);
@@ -426,7 +421,7 @@ router.get("/scrapeResults",function(req,res){
                                                                 if(err4) console.log(err4);
                                                                 else{
                                                                     console.log("Updated")
-                                                                    res.send(updatedStudent)
+                                                                    // res.send(updatedStudent)
                                                                 }
                                                             })
                                                             len = len - 1;
@@ -452,14 +447,15 @@ router.get("/scrapeResults",function(req,res){
                                                             });
                                                             var check = true;
                                                             student.marks.forEach(function(semsMarks,i){
+                                                                // console.log("count: ",i)
                                                                 studentMarksss= student.marks;
                                                                 // console.log("Student.marks ",student.marks)
                                                                 // console.log("studentMarkssss first ",studentMarksss);
                                                                 // console.log("Student marks ",semsMarks.sem,": ",sMarks)
                                                                 if(semsMarks.sem === sem && check===true){
                                                                     check=false;
-                                                                    console.log("semMarks.sem: ",semsMarks.sem);
-                                                                    console.log("sem: ",sem)
+                                                                    // console.log("semMarks.sem: ",semsMarks.sem);
+                                                                    // console.log("sem: ",sem)
                                                                     remove(studentMarksss,semsMarks);
                                                                     // console.log("studentMarkssss removal ",studentMarksss);
                                                                     var sMarks=semsMarks.subjects;
@@ -489,10 +485,16 @@ router.get("/scrapeResults",function(req,res){
                                                                 //     }
                                                                 // })
                                                             })
-                                                            console.log("Studddmarkss: ",studentMarksss)
-                                                            student.marks=studentMarksss;
-                                                            // student.save();
-                                                            stud = student;
+                                                            // console.log("Studddmarkss: ",studentMarksss)
+                                                            console.log("Stud id: ",student._id)
+                                                            VTUmarks.findOneAndUpdate({usn: usn}, 
+                                                            {$set:{'marks':studentMarksss}}, {new: true}, function(err, doc){
+                                                                if(err){
+                                                                    console.log("Something wrong when updating data!");
+                                                                }
+                                                            
+                                                                // console.log("Updated doc: ",doc);
+                                                            });
                                                         }
                                                     })
                                                 }

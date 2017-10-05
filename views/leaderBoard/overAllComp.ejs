@@ -38,7 +38,7 @@ $(document).ready(function(){
       <p class="headerCard-text">LEADERBOARD</p>
     </div>
     <% if(board){ %>
-      <%if(board[1]){%>
+      <% if(board.length>3){  if(board[1]){%>
       <div class="leaderCard grey lighten-5 hide-on-small-only row">
             <div class="col s4 grey lighten-5">
             <img class="secondImage shadowed"  src="/images/2nd.png">
@@ -57,9 +57,10 @@ $(document).ready(function(){
             <p class="caption3 "><%= board[2].author.firstName%> <%= board[2].author.lastName%><br>
             <%= board[2].author.usn %></p>
             </div>
-      <% } %>      
+            </div>
+      <% } }%>      
   
-      </div>
+      
       <table id="myTable">
           <thead>
             <tr>

@@ -5,7 +5,7 @@
         var int = window.setInterval(function() {
           Materialize.showStaggeredList('.pageDisc');
           clearInterval(int);
-        },1000);
+        },400);
         
       } },
       {selector: '#loginCard', offset: 0, callback: function(el) {
@@ -16,7 +16,7 @@
         var int = window.setInterval(function() {
           Materialize.showStaggeredList('.placementDisc ul');
           clearInterval(int);
-        },1000);
+        },400);
       } },
       {selector: '#placmentCard', offset: 300, callback: function(el) {
         $('#placmentCard').addClass('slideInLeft');
@@ -37,7 +37,7 @@
         var int = window.setInterval(function() {
           Materialize.showStaggeredList('.leaderDisc ul');
           clearInterval(int);
-        },1000);
+        },400);
       } },
       {selector: '#vtuDisc', offset: 150, callback: function(el) {
         $('#vtuDisc').addClass('fadeIn');

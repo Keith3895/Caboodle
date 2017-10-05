@@ -41,33 +41,16 @@ var indexRoutes      = require("./routes/index"),
 // db connectins and body parsing
 // =======================================
 mongoose.Promise = global.Promise;
-mongoose.connection.openUri("mongodb://localhost/GradBunkerV2");     // local mongo db
+// mongoose.connection.openUri("mongodb://localhost/GradBunkerV3");     // local mongo db
 // mongoose.connection.openUri("mongodb://localhost/GradBunker");     // local mongo db
-// mongoose.connection.openUri("mongodb://admin:learningpwd@35.154.93.48/GradBunker");     // AWS mongo db
+mongoose.connection.openUri("mongodb://admin:learningpwd@13.126.229.49/GradBunker");     // AWS mongo db
 app.set("view engine","ejs");
 // app.use(upload());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(expressValidator());
 app.use(cookieParser());
-// app.use(function (req, res, next) {
-//   // check if client sent cookie
-//   var cookie = req.cookies.user;
-//   if (cookie === undefined)
-//   {
-//     // no: set a new cookie
-//     var randomNumber=Math.random().toString();
-//     randomNumber=randomNumber.substring(2,randomNumber.length);
-//     res.cookie('user','', { maxAge: 100000000, httpOnly: true });
-//     console.log('cookie created successfully');
-//   } 
-//   else
-//   {
-//     // yes, cookie was already present 
-//     console.log('cookie exists', cookie);
-//   } 
-//   next(); // <-- important!
-// });
+
 app.use(expressSanitizer());
 app.use(methodOverride("_method"));
 // app.use(session({ secret: 'session secret key' }));
@@ -123,24 +106,6 @@ app.use(function(req, res, next){
 // all the requests
 // ========================
 
-// app.use(function(req,res,next){
-//     if(req.cookies.user.length>2){
-//         passport.authenticate('local', function(err, user, info) {
-//             if (err) { return next(err); }
-//             req.logIn(req.cookies.user, function(err) {
-//               if (err) { 
-//                   req.flash("error","Invalid Credentials");
-//                     res.redirect('/login'); 
-//                 //   return next(err); 
-//               }
-//               else{
-//               console.log("Server restarted. Logged User again")
-//               }
-//             });
-//         })(req, res, next);
-//     }
-//     next();
-// })
 app.use("/", indexRoutes);
 app.use("/admin",middleware.isAdmin, adminRoutes);
 app.use("/placementHead",middleware.isPlacementHead, placementRoutes);
@@ -157,17 +122,10 @@ app.get("*",function(req, res) {            // default route
     res.render("website_under_construction");
 });
 
-// function (req, res, next) {
-//     if ('HEAD' == req.method || 'OPTIONS' == req.method) return next();
-//     // break session hash / force express to spit out a new cookie once per second at most
-//     req.session._garbage = Date();
-//     req.session.touch();
-//     next();
-// }
 
 //the listener functions that is used to establish the connection
-process.env.PORT = 8080; //AWS 
-app.listen(process.env.PORT || process.env.port, function(){ //AWS
-// app.listen(process.env.PORT, process.env.IP, function(){
+// process.env.PORT = 8080; //AWS 
+// app.listen(process.env.PORT || process.env.port, function(){ //AWS
+app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server has started!!!");
 });
