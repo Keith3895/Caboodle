@@ -516,7 +516,7 @@ function timer(){
           document.getElementById("demo").innerHTML = "EXPIRED";
           
           if(!stoppedTimer){
-               $('#submitTest').click();
+               submitTest();
           }
       }
       if(minutes == Math.floor(timelimit-timelimit/3))
@@ -559,6 +559,7 @@ $(window).focus(function(ele) {
             beep();
              
             if(!blurCheck && !blurOn)
+              alert("the next time you change your active window the test will auto submit.");
               submitTest();
         });
 
