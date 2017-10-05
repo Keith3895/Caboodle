@@ -449,13 +449,24 @@ router.get("/scrapeResults",function(req,res){
                                                                         if(has(subjectsScraped[semsMarks.sem],subject.subjectCode)){
                                                                             remove(sMarks,subject);
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
+                                                                            countCheck+=1;
+                                                                            if(countCheck==semMarks.subjects.length){ 
+                                                                                semMarks2[sem]['subjects']=sMarks;
+                                                                                studentMarksss.push(semMarks2[sem]);
+                                                                                callback2();
+                                                                            };
                                                                         }else{
                                                                             sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
+                                                                            countCheck+=1;
+                                                                            if(countCheck==semMarks.subjects.length){ 
+                                                                                semMarks2[sem]['subjects']=sMarks;
+                                                                                studentMarksss.push(semMarks2[sem]);
+                                                                                callback2();
+                                                                            };
                                                                         }
                                                                     })
                                                                     // console.log("sMarks after ",sMarks);
-                                                                    semMarks2[sem]['subjects']=sMarks;
-                                                                    studentMarksss.push(semMarks2[sem]);
+                                                                    
                                                                     // console.log("studentMarksssssss after ",studentMarksss)
                                                                 }
                                                                 // console.log("Sem Marks ",i,sMarks);
@@ -469,7 +480,6 @@ router.get("/scrapeResults",function(req,res){
                                                                 //     }
                                                                 // })
                                                             }, function(erro) {
-                                                                // if any of the file processing produced an error, err would equal that error
                                                                 if( erro ) {
                                                                   console.log('A file failed to process');
                                                                 } else {
@@ -478,7 +488,7 @@ router.get("/scrapeResults",function(req,res){
                                                             })
                                                             // console.log("Studddmarkss: ",studentMarksss)
                                                             console.log("Stud id: ",student._id)
-                                                            await VTUmarks.findOneAndUpdate({usn: usn}, 
+                                                            VTUmarks.findOneAndUpdate({usn: usn}, 
                                                             {$set:{'marks':studentMarksss}}, {new: true}, function(err, doc){
                                                                 if(err){
                                                                     console.log("Something wrong when updating data!");
