@@ -223,7 +223,7 @@ router.get("/email",function(req,res){
 
 router.get("/viewResults",function(req,res){
     var branch = 'Computer Science Engineering',department;
-    var sem = 7;
+    var sem = 8;
     if(req.query.department){
         department = req.query.department;
         switch(req.query.department) {
@@ -251,7 +251,7 @@ router.get("/viewResults",function(req,res){
         sem = req.query.sem;
     }else department = 'CS';
     
-   VTUmarks.find( {$and: [{'department':department,'marks.sem':8}]}).sort('-marks.total').exec(function(err,records){
+   VTUmarks.find({'department':department,'marks.sem':sem}).sort('-marks.total').exec(function(err,records){
        if(err){
            console.log("Error: ",err);
        }
@@ -284,6 +284,7 @@ router.get("/viewResult/:id",function(req, res){
 })
 
 router.get("/exportPDF/:id",function(req,res){
+    // https://www.npmjs.com/package/wkhtmltopdf
     var usn = req.params.id.toUpperCase();
     VTUmarks.findOne({'usn':usn},function(err,record){
         if(err){

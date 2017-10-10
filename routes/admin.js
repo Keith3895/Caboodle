@@ -60,18 +60,6 @@ var transporter = nodemailer.createTransport({
 //     secretAccessKey: 'process.env.MailerPsd'
 // }));
 
-for(var i= 57;i<58;i++){
-    // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1KG13CV"+("00" + i).slice(-3))
-    // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13ME"+("00" + i).slice(-3))
-    // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13EC"+("00" + i).slice(-3))
-    // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13IS"+("00" + i).slice(-3))
-}
-for(var j= 1;j<=180;j++){
-    // urls1.push("http://results.vtu.ac.in/results/result_page.php?usn=1AM13CS"+("00" + j).slice(-3))
-    // urls1.push("http://results.vtu.ac.in/results/result_page.php?usn=1AM13ME"+("00" + j).slice(-3))
-    // urls1.push("http://results.vtu.ac.in/results/result_page.php?usn=1AM13EC"+("00" + j).slice(-3))
-    // urls1.push("http://results.vtu.ac.in/results/result_page.php?usn=1AM13IS"+("00" + j).slice(-3))
-}
 
 router.get("/",middleware.isAdmin,function(req,res){
     var lengths_users,lengths_students,length_placementHeads=0;
@@ -218,21 +206,37 @@ router.post('/users/delete', middleware.isAdminOrPlacement, function(req, res, n
     })
 });
 
+router.get("/scrapeResults",middleware.isAdmin, function(req,res){
+    res.render("result/scrapeResults");
+})
 
-router.get("/scrapeResults",function(req,res){
-    for(var i= 57;i<58;i++){
-        urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1KG13CV"+("00" + i).slice(-3))
-        // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13ME"+("00" + i).slice(-3))
-        // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13EC"+("00" + i).slice(-3))
-        // urls1.push("http://results.vtu.ac.in/results17/result_page.php?usn=1AM13IS"+("00" + i).slice(-3))
-    }
-    function getResultStatus(marks,sem){
+router.post("/scrapeResults",middleware.isAdmin,function(req,res){
+    var checkCBCS=false;
+    function createlinks(){
+        console.log("Creating Links");
+        if(req.body.sublink.substring(0,4)=='cbcs') checkCBCS=true;
+        var fromUSN=parseInt(req.body.fromUSN.substring(7,10));
+        var toUSN=parseInt(req.body.toUSN.substring(7,10));
+        var department = [];
+        (typeof req.body.department === 'string') ? department.push(req.body.department) : department = req.body.department;
+        var link = "http://results.vtu.ac.in/"+req.body.sublink+"?usn="+(req.body.fromUSN.substring(0,5));
+        var mainurls=[],i,linktopush;
+        department.forEach(function(dep){
+            for(i=fromUSN;i<=toUSN;i++){
+                linktopush=link+dep+("00" + i).slice(-3);
+                mainurls.push(linktopush)
+            }
+        })
+        console.log("Links created");
+        f1(mainurls,mainurls.length);
+    } //Function to create links before scraping
+    function getResultStatus(marks,sem,cbcs){
         if(sem==1 || sem==2 ){
-            if((parseInt(marks)>=(775*0.7)-5)){
+            if((parseInt(marks)>=(750*0.7)-5)){
                 return "FIRST CLASS WITH DISTINCTION";
-            }else if(parseInt(marks)>=(775*0.6)){
+            }else if(parseInt(marks)>=(750*0.6)){
                 return 'FIRST CLASS';
-            }else if(parseInt(marks)>=(775*0.5)){
+            }else if(parseInt(marks)>=(750*0.5)){
                 return 'SECOND CLASS';
             }else{
                 return 'THIRD CLASS';
@@ -249,22 +253,26 @@ router.get("/scrapeResults",function(req,res){
                 return 'THIRD CLASS';
             }
         }else{
-            if((parseInt(marks)>=(900*0.7)-5)){
+            var tmarks;
+            if(cbcs) tmarks= 800;
+            else tmarks= 900
+            if((parseInt(marks)>=(tmarks*0.7)-5)){
                 return "FIRST CLASS WITH DISTINCTION";
-            }else if(parseInt(marks)>=(900*0.6)){
+            }else if(parseInt(marks)>=(tmarks*0.6)){
                 return 'FIRST CLASS';
-            }else if(parseInt(marks)>=(900*0.5)){
+            }else if(parseInt(marks)>=(tmarks*0.5)){
                 return 'SECOND CLASS';
             }else{
                 return 'THIRD CLASS';
             }
         }
-    }
-    console.log("Scraping Initiated.....")
+    }    //Function to get result status based on marks(Ex: FCD,FC,etc)
     var counter = 0;
     function f1(urls,len){
+        console.log("Scraping Initiated.....")
         counter = 0;
-    scrape.concurrent(urls,100, function(url, callback) {
+        var compareLength=urls.length;
+        scrape.concurrent(urls,3000, function(url, callback) {
         if(url){
         request(url,async function(error, response, html){
             var usn1 = url.split('usn=')[1];
@@ -288,15 +296,17 @@ router.get("/scrapeResults",function(req,res){
                         var subjectMarks = [],semResult;
                         subjectsScraped[semester]=[];
                         subjectMarks2[semester]=[];
+                        var fail = false,absent=false;
                         $(this).children('tbody').each(function(){
                             var subjectCode = $(this).children().children().first().text();
                             var subjectName = $(this).children().children().eq(1).text();
-                            // var internalMarks = isNaN($(this).children().children().eq(2).text())
-                            // ? NaN:$(this).children().children().eq(2).text();
-                            var internalMarks = 1000;
+                            var internalMarks = isNaN($(this).children().children().eq(2).text())
+                            ? NaN:parseInt($(this).children().children().eq(2).text());
+                            // var internalMarks = 1009;
                             var externalMarks = isNaN($(this).children().children().eq(3).text())
-                            ? NaN:$(this).children().children().eq(3).text();
-                            var subjectTotal = $(this).children().children().eq(4).text();
+                            ? NaN:parseInt($(this).children().children().eq(3).text());
+                            var subjectTotal = isNaN($(this).children().children().eq(4).text())
+                            ? NaN:parseInt($(this).children().children().eq(4).text());
                             var subjectResult = $(this).children().children().eq(5).text();
                             var subject = {
                                 subjectCode: subjectCode,
@@ -310,12 +320,14 @@ router.get("/scrapeResults",function(req,res){
                             subjectMarks.push(subject);
                             subjectMarks2[semester][subjectCode]=subject;
                             semTotal = semTotal + parseInt(internalMarks) + parseInt(externalMarks);
-                            if(subjectResult=='F'){
+                            if(subjectResult=='F'&&(!fail)){
+                                fail=true;
                                 semResult = 'FAIL'
-                            }else if(subjectResult=='A'&&subjectResult!='F'){
+                            }else if(subjectResult=='A'&&(!fail)&&(!absent)){
+                                absent=true;
                                 semResult = 'AB'
-                            }else if(subjectResult!='A'&&subjectResult!='F'){
-                                semResult=getResultStatus(semTotal,semester);
+                            }else if((!fail)&&(!absent)){
+                                semResult=getResultStatus(semTotal,semester,checkCBCS);
                             }
                         });
                         // var semTotal = $(this).parent().next().children().first().children().first().children().last().text().split(': ')[1];;
@@ -343,7 +355,7 @@ router.get("/scrapeResults",function(req,res){
                         else{
                             // console.log("Initial check",student);
                             if(student===null){
-                                console.log("Im in")
+                                // console.log("Im in")
                                 VTUmarks.create(studentResult,function(err2,studResult){
                                     if(err2){
                                         console.log("VTU marks create error: ",err2)
@@ -353,8 +365,8 @@ router.get("/scrapeResults",function(req,res){
                                         if(len<=0&&urls.length<=0){
                                             f2();
                                         }
-                                        if(counter>=100){
-                                            // console.log("Again");
+                                        if(counter>=compareLength){
+                                            console.log("Loop Again");
                                              f1(urls,urls.length);
                                         }
                                     }
@@ -363,10 +375,8 @@ router.get("/scrapeResults",function(req,res){
                                         remove(urls,url);
                                         counter = counter + 1;
                                         len = len - 1;
-                                        console.log("blaaaah")
-                                        // res.send(studResult)
-                                        if(counter>=100){
-                                            // console.log("Again");
+                                        if(counter>=compareLength){
+                                            console.log("Loop Again");
                                             f1(urls,urls.length);
                                         }
                                         if(len<=0&&urls.length<=0){
@@ -376,132 +386,154 @@ router.get("/scrapeResults",function(req,res){
                                 })
                             }else{
                                 console.log("Result Present");
-                                VTUmarks.find().distinct('marks.sem', function(error, existingSems) {
+                                VTUmarks.findOne({usn:usn}).distinct('marks.sem', function(error, existingSems) {
                                     if(error)
                                         console.log(error);
                                     else{
-                                        console.log("Sem scraped: ",semsScraped)
-                                        var stud;
+                                        var studentMarksToSaveFinally=[];
+                                        var stud,scrapedSemCount=0;
                                         if(existingSems.length>0){
-                                            console.log("length > 0 :",existingSems.length)
+                                            // console.log("OK1");
+                                            // console.log("length > 0 :",existingSems.length)
                                             async.each(semsScraped,function(sem,callback){
                                                 if(!has(existingSems,sem)){
-                                                    console.log("doesnt hav")
-                                                    VTUmarks.findOne({usn:usn},{$addToSet:{marks:semMarks2[sem]}},function(error2,studMarks){
-                                                        if(error2){
-                                                            console.log("Error2: ",error2)
-                                                            var index = urls.indexOf(url);
-                                                            if (index > -1) {
-                                                                urls.splice(index, 1);
-                                                            }
-                                                            counter = counter + 1;
-                                                            len = len - 1;
-                                                            if(len<=0&&urls.length<=0){
-                                                                f2();
-                                                            }
-                                                            if(counter>=100){
-                                                                // console.log("Again");
-                                                                f1(urls,urls.length);
-                                                            }
-                                                            callback();
+                                                    //console.log("OK2");
+                                                    studentMarksToSaveFinally.push(semMarks2[sem]);
+                                                    scrapedSemCount+=1;
+                                                    if(scrapedSemCount===semsScraped.length){
+                                                        remove(urls,url);
+                                                        counter = counter + 1;
+                                                        len = len - 1;
+                                                        if(counter>=compareLength){
+                                                            console.log("Loop Again");
+                                                            f1(urls,urls.length);
                                                         }
-                                                        else{
-                                                            console.log("Scraped:",usn);
-                                                            remove(urls,url)
-                                                            counter = counter + 1;
-                                                            len = len - 1;
-                                                            if(counter>=100){
-                                                                // console.log("Again");
-                                                                f1(urls,urls.length);
-                                                            }
-                                                            if(len<=0&&urls.length<=0){
-                                                                f2();
-                                                            }
-                                                            callback();
+                                                        if(len<=0&&urls.length<=0){
+                                                            f2();
                                                         }
-                                                    })
+                                                        // console.log("Updating: ",usn);
+                                                    } 
+                                                    else callback();
                                                 }else{
-                                                    console.log("out")
-                                                    // res.send("Sems exist")
-                                                    VTUmarks.findOne({'usn':usn})
-                                                    .exec(function(error, student) {
-                                                        if(error)
-                                                            console.log(error)
-                                                        else{
-                                                            var studentMarksss;
-                                                            student.marks.sort(function(a, b) {
-                                                                return parseFloat(a.sem) - parseFloat(b.sem);
-                                                            });
-                                                            var check = true;
-                                                            studentMarksss= student.marks.slice();
-                                                            async.each(student.marks, function(semsMarks,callback2){
-                                                                // console.log("count: ",i)
-                                                                if(semsMarks.sem === sem && check===true){
-                                                                     console.log("in")
-                                                                    check=false;
-                                                                    remove(studentMarksss,semsMarks);
-                                                                    var sMarks = semsMarks.subjects.slice();
-                                                                    console.log("SMARKS: ",sMarks.length,", ",semsMarks.subjects.length)
-                                                                    var countCheck = 0;
-                                                                    async.each(semsMarks.subjects,function(subject,callback3){
-                                                                        if(has(subjectsScraped[semsMarks.sem],subject.subjectCode)){
-                                                                            remove(sMarks,subject);
-                                                                            // console.log("after remove: ",sMarks);
-                                                                            sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
-                                                                            // console.log("after push updated: ",sMarks);
-                                                                            countCheck+=1;
-                                                                            if(countCheck===semsMarks.subjects.length){ 
-                                                                                console.log("Must update1")
-                                                                                semMarks2[sem]['subjects']=sMarks;
-                                                                                studentMarksss.push(semMarks2[sem]);
-                                                                                updateNew();
-                                                                            }else{callback3();}
-                                                                        }else{
-                                                                            sMarks.push(subjectMarks2[semsMarks.sem][subject.subjectCode])
-                                                                            countCheck+=1;
-                                                                            if(countCheck===semsMarks.subjects.length){ 
-                                                                                console.log("Must update2")
-                                                                                semMarks2[sem]['subjects']=sMarks;
-                                                                                studentMarksss.push(semMarks2[sem]);
-                                                                                updateNew();
-                                                                            }else{callback3();}
-                                                                        }
-                                                                    })
-                                                                    function updateNew(){
-                                                                    VTUmarks.findOneAndUpdate({usn: usn}, 
-                                                                    {$set:{'marks':studentMarksss}}, {new: true}, function(err, doc){
-                                                                        if(err){
-                                                                            console.log("Something wrong when updating data!");
-                                                                        }
-                                                                        else{
-                                                                            console.log("Updated doc: ",doc)
-                                                                            callback2();
-                                                                        }
-                                                                    });
-                                                                    }
+                                                    //console.log("OK3 sem exists already");
+                                                    var check = true,subjectsToUpdate=[];
+                                                    async.each(student.marks, function(eachSemMarks,callback2){
+                                                        if(eachSemMarks.sem === sem && check===true){
+                                                            // console.log("Sem update: ",sem)
+                                                            // console.log("OK4");
+                                                            var semTotal2=0,semResult2,fail=false,absent=false;
+                                                            async.each(eachSemMarks.subjects, function(subject,callback3){
+                                                                semTotal2+=subjectMarks2[sem][subject.subjectCode]['subTotal'];
+                                                                var subjectResult = subjectMarks2[sem][subject.subjectCode]['subResult'];
+                                                                if(subjectResult=='F'&&(!fail)){
+                                                                    fail=true;
+                                                                    semResult2 = 'FAIL'
+                                                                }else if(subjectResult=='A'&&(!fail)&&(!absent)){
+                                                                    absent=true;
+                                                                    semResult2 = 'AB'
+                                                                }else if((!fail)&&(!absent)){
+                                                                    semResult2=getResultStatus(semTotal2,sem,checkCBCS);
                                                                 }
-                                                            }, function(erro) {
-                                                                if( erro ) {
-                                                                  console.log('A file failed to process');
+                                                                if(has(subjectsScraped[sem],subject.subjectCode)){
+                                                                    subjectsToUpdate.push(subjectMarks2[sem][subject.subjectCode]);
+                                                                    // console.log("OK5");
+                                                                    callback3();
+                                                                }else{
+                                                                    subjectsToUpdate.push(subject);
+                                                                    // console.log("OK6");
+                                                                    callback3();
+                                                                }
+                                                            },function(error1) {
+                                                                if(error1) {
+                                                                    console.log('A file failed to process 1');
+                                                                    // console.log("OK7");
+                                                                    callback2();
                                                                 } else {
-                                                                  console.log('All files have been processed successfully');
+                                                                    semMarks2[sem]={
+                                                                        sem: sem,
+                                                                    	subjects: subjectsToUpdate,
+                                                                    	total: semTotal2,
+                                                                    	result: semResult2
+                                                                    }
+                                                                    studentMarksToSaveFinally.push(semMarks2[sem]);
+                                                                    // console.log("OK8");
+                                                                    callback2();
                                                                 }
                                                             })
-                                                            // console.log("Studddmarkss: ",studentMarksss)
-                                                            console.log("Stud id: ",student._id)
-                                                            
+                                                        }else{
+                                                            // console.log("OK9");
+                                                            callback2();
+                                                        }
+                                                    },function(error2) {
+                                                        if(error2) {
+                                                          console.log('A file failed to process 2');
+                                                        //   console.log("OK13");
+                                                          callback();
+                                                        } else {
+                                                        //   console.log('All files have been processed successfully 2');
+                                                        // console.log("OK14");
+                                                          callback();
                                                         }
                                                     })
                                                 }
                                             }, function(err) {
                                                 if( err ) {
-                                                  console.log('A file failed to process');
+                                                  console.log('A file failed to process 3');
                                                 } else {
-                                                  console.log('All files have been processed successfully');
+                                                    // console.log('Final Callback');
+                                                    console.log("Updated final: ",usn);
+                                                    remove(urls,url);
+                                                    console.log("URLS left 1: ",urls.length);
+                                                    student.marks=studentMarksToSaveFinally;
+                                                    student.save(function(errorSave,docSaved){
+                                                        if(errorSave){
+                                                            console.log("Error final save: ",errorSave)
+                                                        }else{
+                                                            // console.log("Updated final: ",usn)
+                                                            // remove(urls,url);
+                                                        }
+                                                    })
+                                                    counter = counter + 1;
+                                                    len = len - 1;
+                                                    if(counter>=compareLength&&len<=0){
+                                                        f2();
+                                                    }else if(counter>=compareLength){
+                                                        console.log("Loop Again");
+                                                        f1(urls,urls.length);
+                                                    }
+                                                    // if(len<=0&&urls.length<=0){
+                                                    //     f2();
+                                                    // }
                                                 }
                                             })
                                         }else{
-                                            res.send(stud)
+                                            student.marks=semMarks2;
+                                            student.save(function(errorSave,docSaved){
+                                                if(errorSave){
+                                                    console.log("Error final save: ",usn,": ",errorSave)
+                                                    remove(urls,url);
+                                                    counter = counter + 1;
+                                                    len = len - 1;
+                                                    if(counter>=compareLength&&len<=0){
+                                                        f2();
+                                                    }else if(counter>=compareLength){
+                                                        console.log("Loop Again");
+                                                        f1(urls,urls.length);
+                                                    }
+                                                }else{
+                                                    // console.log("Updated final: ",usn)
+                                                    remove(urls,url);
+                                                    console.log("URLS left 2: ",urls.length);
+                                                    counter = counter + 1;
+                                                    len = len - 1;
+                                                    if(counter>=compareLength&&len<=0){
+                                                        f2();
+                                                    }else if(counter>=compareLength){
+                                                        console.log("Loop Again");
+                                                        f1(urls,urls.length);
+                                                    }
+                                                }
+                                            })
                                         }
                                     }
                                 })
@@ -509,32 +541,29 @@ router.get("/scrapeResults",function(req,res){
                         }
                     })
                     }
-                    
                     await extract();
                     await update();
                 }
                 else{
                     // console.log("Doesnt exist: ",usn1);
-                    var index = urls.indexOf(url);
-                    if (index > -1) {
-                        urls.splice(index, 1);
-                    }
+                    remove(urls,url);
+                    console.log("URLS left 3: ",urls.length);
                     counter = counter + 1;
                     len = len - 1;
-                    if(len<=0&&urls.length<=0){
+                    if(counter>=compareLength&&len<=0){
                         f2();
+                    }else if(counter>=compareLength){
+                        console.log("Loop Again");
+                        f1(urls,urls.length);
                     }
-                    if(counter>=100){ 
-                        // console.log("Again");
-                        f1(urls,urls.length)
-                    };
                     
                 }
             }
             else{
                 console.log("Error: ",usn1)
+                console.log("URLS left 4: ",urls.length);
                 counter = counter + 1;
-                if(counter>=100){
+                if(counter>=compareLength){
                     console.log("Again");
                     f1(urls,urls.length);
                 } 
@@ -543,6 +572,8 @@ router.get("/scrapeResults",function(req,res){
         }
         else{
             console.log("Chill")
+            // if(urls.length==0)
+            //     f2();
         }
     })
     }
@@ -551,151 +582,8 @@ router.get("/scrapeResults",function(req,res){
         req.flash("success","Scraped");
         res.redirect("/viewResults");
     }
-    f1(urls1);
-});
-
-
-router.get("/scrapeResults_bkp", middleware.isAdmin, function(req,res){
-    // req.flash("success","Scrape Request initiated");
-    // res.redirect("/")
-    console.log("Scraping Initiated.....")
-    var counter = 0;
-    function f1(urls,len){
-        counter = 0;
-    scrape.concurrent(urls,100, function(url, callback) {
-        if(url){
-        request(url, function(error, response, html){
-            var usn1 = url.split('usn=')[1];
-            if(!error){
-                var $ = cheerio.load(html);
-                var usn = $('table tr').first().children().eq(1).text().split(': ')[1]; 
-                if(usn){
-                    var index = urls.indexOf(url);
-                    urls.splice(index, 1);
-                    var name = $('table tr').eq(1).children().eq(1).text().split(': ')[1];
-                    // console.log("Name:",name);
-                    var semMarks = [];
-                    var dep = usn.substr(5,2);
-                    $('.table').each(function(){
-                        var semester = $(this).prev().text().split(': ')[1];
-                        semester = parseInt(semester);
-                        var subjectMarks = [];
-                        $(this).children('tbody').each(function(){
-                            var subjectCode = $(this).children().children().first().text();
-                            var subjectName = $(this).children().children().eq(1).text();
-                            var internalMarks = $(this).children().children().eq(2).text();
-                            var externalMarks = $(this).children().children().eq(3).text();
-                            var subjectTotal = $(this).children().children().eq(4).text();
-                            var subjectResult = $(this).children().children().eq(5).text();
-                            var subjects = {
-                                subjectCode: subjectCode,
-                            	subjectName: subjectName,
-                            	internalMarks: internalMarks,	
-                            	externalMarks: externalMarks,
-                            	subTotal: subjectTotal,
-                            	subResult: subjectResult
-                            }
-                            subjectMarks.push(subjects);
-                        });
-                        var semTotal = $(this).parent().next().children().first().children().first().children().last().text().split(': ')[1];;
-                        var semResult = $(this).parent().next().children().last().children().last().children().last().text().split(': ')[1];
-                        var semesterResult = {
-                            sem: semester,
-                        	subjects: subjectMarks,
-                        	total: semTotal,
-                        	result: semResult
-                        }
-                        semMarks.push(semesterResult);
-                    })
-                    // console.log("Dep:",dep);
-                    // var studentResult = new VTUmarks({
-                    //     name: name,
-                    // 	usn: usn,
-                    // 	department: dep,
-                    // 	marks:semMarks
-                    // });
-                    var studentResult = {
-                        name: name,
-                    	usn: usn,
-                    	department: dep,
-                    	marks:semMarks
-                    };
-                    // console.log("Scraped:",usn);
-                    VTUmarks.update({usn: usn},{$push:{marks:{$each: semMarks}}},{new:true,upsert:true},function(err1,studResult){
-                        if(err1){
-                            console.log("Error1: ",err1)
-                            var index = urls.indexOf(url);
-                            if (index > -1) {
-                                urls.splice(index, 1);
-                            }
-                            counter = counter + 1;
-                            len = len - 1;
-                            if(len<=0&&urls.length<=0){
-                                f2();
-                            }
-                            if(counter>=100){
-                                // console.log("Again");
-                                 f1(urls,urls.length);
-                            }
-                            
-                        }
-                        else{
-                            console.log("Scraped:",usn);
-                            var index = urls.indexOf(url);
-                            if (index > -1) {
-                                urls.splice(index, 1);
-                            }
-                            counter = counter + 1;
-                            len = len - 1;
-                            if(counter>=100){
-                                // console.log("Again");
-                                f1(urls,urls.length);
-                            }
-                            if(len<=0&&urls.length<=0){
-                                f2();
-                            }
-                        }
-                    })
-                }
-                else{
-                    // console.log("Doesnt exist: ",usn1);
-                    var index = urls.indexOf(url);
-                    if (index > -1) {
-                        urls.splice(index, 1);
-                    }
-                    counter = counter + 1;
-                    len = len - 1;
-                    if(len<=0&&urls.length<=0){
-                        f2();
-                    }
-                    if(counter>=100){ 
-                        // console.log("Again");
-                        f1(urls,urls.length)
-                    };
-                    
-                }
-            }
-            else{
-                console.log("Error: ",usn1)
-                counter = counter + 1;
-                if(counter>=100){
-                    console.log("Again");
-                    f1(urls,urls.length);
-                } 
-            }
-        });
-        }
-        else{
-            console.log("Chill")
-        }
-    })
-    }
-    function f2(){
-        console.log("Scraping Done");
-        req.flash("success","Scraped");
-        res.redirect("/viewResults");
-    }
-    f1(urls1);
+    // f1(urls1);
+    createlinks();
 });
 
 

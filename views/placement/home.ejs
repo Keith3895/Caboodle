@@ -254,15 +254,17 @@
         	  },
         	  options: {
         	    responsive:false,
+        	    
         	  	xAxes: [{
                         ticks: {
-                            min: 0 // Edit the value according to what you need
+                            beginAtZero: true
                         }
                     }],
         	  	yAxes: [{
-                        stacked: true,
+                        // stacked: true,
+                        display: true,
                         ticks: {
-                            min: 0 // Edit the value according to what you need
+                            beginAtZero: true
                         }
                     }],
                 legend: {

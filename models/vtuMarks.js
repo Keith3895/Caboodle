@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var Subjects = new Schema({
-	subjectCode: { type : String},
+	subjectCode: String,
 	subjectName: String,
 	internalMarks: Number,	
 	externalMarks: Number,
@@ -12,7 +12,7 @@ var Subjects = new Schema({
 });
 
 var Marks = new Schema({
-	sem:{ type : Number},
+	sem:Number,
 	subjects:[Subjects],
 	total: Number,
 	result: String
@@ -20,7 +20,7 @@ var Marks = new Schema({
 
 var vtuMarksSchema = new Schema({
 	name: String,
-	usn: String,
+	usn: { type : String , unique : true},
 	department: String,
 	marks:[Marks]
 });

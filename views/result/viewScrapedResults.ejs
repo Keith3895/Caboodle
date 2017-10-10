@@ -64,7 +64,7 @@
                         <option value="EC">Electronics & Communication</option>
                         <option value="ME">Mechanical</option>
                         <option value="EE">Electrical</option>
-                        <option value="CE">Civil</option>
+                        <option value="CV">Civil</option>
                     </select>
                 </div>
     
@@ -108,8 +108,16 @@
                     if(semester.sem==sem){ 
                          marks = semester;
                      } }) 
-                    if(marks!==null){ %>
-                    <% var percentage = Math.round((marks.total / 7.5) * 100) / 100 %>
+                    if(marks!==null){ 
+                        var percentage;
+                        if(sem==8){
+                            percentage = Math.round((marks.total / 7.5) * 100) / 100;
+                        }else if(sem==1 || sem==2){
+                            percentage = Math.round((marks.total / 7.75) * 100) / 100; 
+                        }else{
+                            percentage = Math.round((marks.total / 9) * 100) / 100; 
+                        }
+                    %>
                     <td><%= i %></td>
                     <td><%= student.usn %></td>
                     <td><%= student.name %></td> 

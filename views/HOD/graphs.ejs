@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>plot</title>
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+	<div id="AllSemResults" style="width:50%;height:auto;float:left"></div>
+    <div id="AllDepartmentPassVsFail" style="width:50%;height:auto;float:left"></div>
+    <div id="SemestersPassVsFail" style="width:50%;height:auto;float:left"></div>
+    <div id="BoxPlot" style="width:50%;height:auto;float:left"></div>
+    <div id="DeptResultType" style="width:100%;height:auto;float:left"></div>
+    <script src="/js/graphs.js"></script>
+	<script type="text/javascript">
+	$.ajax({
+        method: "GET",
+        url: "/results",
+        // data: Score,
+        success: function(data){
+            AllSemResults(data.all);
+            AllDepartmentPassVsFail(data.all);
+            SemestersPassVsFail(data.dept);
+            BoxPlot(data.subs);
+            
+        }
+	});
+	$.ajax({
+        method: "GET",
+        url: "/results/typeAll",
+        success:function(data){
+          DeptResultType(data);
+        }
+      });
+	</script>
+</body>
+</html>

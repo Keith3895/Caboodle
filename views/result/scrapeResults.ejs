@@ -1,0 +1,83 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+	<% include ../admin/slide_nav.ejs %>
+<style>
+    [type="checkbox"]+label {
+        padding-left:25px;
+        margin-right:20px;
+    }
+    .form-error{
+        color:red;
+    }
+</style>
+<div style="margin-top:-30px;" class="row col s12 m8 offset-m3">
+<h4 class="center">Scrape Results</h4>
+<h5 class="center">Enter link in the following format</h5>
+
+    <form action="/admin/scrapeResults" method="POST" style="font-size: 1.5rem;margin: 3% 0 0 5%;">
+        <p>Example link format Non-CBCS: 
+        <span style="border-bottom: 1px solid black">http://results.vtu.ac.in/
+        <b class="red-text">results17/result_page.php</b>?usn=<b class="red-text">1am13cs001</b></span><br>
+        </p>
+        <p>
+        Example link format CBCS: 
+        <span style="border-bottom: 1px solid black">http://results.vtu.ac.in/
+        <b class="red-text">cbcs_17/result_page.php</b>?usn=<b class="red-text">1AM16CS001</b></span>
+        </p>
+        <p>
+            http://results.vtu.ac.in/
+            <input type="text" name="sublink" id="sublink" placeholder="results17/result_page.php"
+            style="width:20%; border:1px solid black;font-size:1.5rem" value="cbcs_17/result_page.php">
+            ?usn=<input type="text" name="fromUSN" id="fromUSN" placeholder="1AM16CS001"
+            style="width:15%; border:1px solid black;font-size:1.2rem" value="1AM16CS001"
+            data-validation="custom" data-validation-regexp='^[1-4][a-zA-Z]{2}[0-9]{2}[a-zA-Z]{2}[0-9]{3}$'>
+        </p>
+        <p>
+            Enter USN upto which you want to scrape: 
+            <input type="text" name="toUSN" id="toUSN" placeholder="1AM16CS001"
+            style="width:15%; border:1px solid black;font-size:1.2rem" value="1AM16CS001"
+            data-validation="custom" data-validation-regexp='^[1-4][a-zA-Z]{2}[0-9]{2}[a-zA-Z]{2}[0-9]{3}$'>
+        </p>
+        <p>
+            Departments you want to scrape:
+            <input type="checkbox" class="filled-in" id="cse" name="department" value="CS" 
+            data-validation="checkbox_group" data-validation-qty="min1" />
+            <label for="cse">CSE</label>
+            <span></span>
+            <input type="checkbox" class="filled-in" id="ise" name="department" value="IS" 
+            data-validation="checkbox_group" data-validation-qty="min1" />
+            <label for="ise">ISE</label>
+            <span></span>
+            <input type="checkbox" class="filled-in" id="ece" name="department" value="EC" 
+            data-validation="checkbox_group" data-validation-qty="min1" />
+            <label for="ece">ECE</label>
+            <span></span>
+            <input type="checkbox" class="filled-in" id="mech" name="department" value="ME" 
+            data-validation="checkbox_group" data-validation-qty="min1" />
+            <label for="mech">ME</label>
+            <span></span>
+            <input type="checkbox" class="filled-in" id="eee" name="department" value="EE" 
+            data-validation="checkbox_group" data-validation-qty="min1" />
+            <label for="eee">EEE</label>
+            <span></span>
+            <input type="checkbox" class="filled-in" id="cv" name="department" value="CV"
+            data-validation="checkbox_group" data-validation-qty="min1" />
+            <label for="cv">Civil</label>
+            <button type="button" class="allDept btn"> Select All</button>
+        </p>
+        <p>
+            <input type="submit" class="waves-effect waves-green btn btn-flat blue" value="Scrape Results" />
+        </p>
+    </form>
+</div>
+
+<script>
+    $.validate();
+    var clicked = false;
+    $(".allDept").on("click", function() {
+        $("input[name='department']").prop("checked", !clicked);
+        clicked = !clicked;
+    });
+</script>
+<% include ../partials/footer.ejs %>
