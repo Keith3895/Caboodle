@@ -21,6 +21,12 @@ var conversion = require("phantom-html-to-pdf")();
 const template = './views/result/resultPdf.ejs';
 var randomstring = require("randomstring");
 require('dotenv').config();
+
+
+var adminController = require('../lib/controller/admin');
+
+
+
 var transporter = nodemailer.createTransport({
         service: 'Gmail',
         host: "smtp.gmail.com",
@@ -69,6 +75,27 @@ var homeurl = process.env.homeUrl;
         // res.send(doc);
 //     });
 // })
+
+
+
+router.post("/register", function(req, res){
+    var newUser = new User({
+        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        userType: "admin"
+    });
+    adminController.signUp(newUser,function(addedUser){
+        res.send("user Added");
+    });
+});
+router.post("/login", function(req, res, next){
+    adminController.Login(req,res,function(stat){
+        // res.send();
+        console.log(stat);
+    });
+});
+
 
 router.get("/",function(req,res){          // the index page
     req.session.redirectTo=null;
@@ -509,46 +536,47 @@ router.get("/register",function(req, res) {
 
 
 //handle sign up logic
-router.post("/register", function(req, res){
-    var newUser = new User({
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        userType: "admin"
-    });
-    User.register(newUser, req.body.password, function(err, user){
-        if(err){
-            console.log("error: ",err)
-            req.flash("error", err.message);
-            return res.render("signup");
-        }
-        // if(!/@gmail.com/.test(user.email))
-            // user.email="";
-        var text = 'Hello '+user.firstName+
-                    ',\n This is a mail from GradBunker.\n '+
-                    ' Kindly click the following link to reset password!\n'+
-                    ' Link: '+homeurl+'/verify'+
-                    '?authToken=' + user.authToken+
-                    '\n If you did not register, please ignore this email';
-        var mailOptions = {
-            from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
-            to: user.email, // list of receivers
-            subject: 'Verify Your account', // Subject line
-            text: text //, // plaintext body
-        };
-        transporter.sendMail(mailOptions, function(error, info){
-            if(error){
-                console.log(error);
-            }
-            else{
-                console.log('Message sent: congo!!!!!');
-                res.json({message: 'Verification Mail Sent'});
-                // req.flash('success', 'Reset link sent to your mail!');
-        // res.json({yo: info.response});
-            };
-        });
-    });
-});
+// router.post("/register", function(req, res){
+//     var newUser = new User({
+//         email: req.body.email,
+//         firstName: req.body.firstName,
+//         lastName: req.body.lastName,
+//         userType: "admin"
+//     });
+//     User.register(newUser, req.body.password, function(err, user){
+//         if(err){
+//             console.log("error: ",err)
+//             req.flash("error", err.message);
+//             return res.render("signup");
+//         }
+//         // if(!/@gmail.com/.test(user.email))
+//             // user.email="";
+//         var text = 'Hello '+user.firstName+
+//                     ',\n This is a mail from GradBunker.\n '+
+//                     ' Kindly click the following link to reset password!\n'+
+//                     ' Link: '+homeurl+'/verify'+
+//                     '?authToken=' + user.authToken+
+//                     '\n If you did not register, please ignore this email';
+//         var mailOptions = {
+//             from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
+//             to: user.email, // list of receivers
+//             subject: 'Verify Your account', // Subject line
+//             text: text //, // plaintext body
+//         };
+//         transporter.sendMail(mailOptions, function(error, info){
+//             if(error){
+//                 console.log(error);
+//             }
+//             else{
+//                 console.log('Message sent: congo!!!!!');
+//                 res.json({message: 'Verification Mail Sent'});
+//                 // req.flash('success', 'Reset link sent to your mail!');
+//         // res.json({yo: info.response});
+//             };
+//         });
+//     });
+// });
+
 
 router.get("/placements",function(req, res) {
     var today = new Date();
@@ -608,33 +636,33 @@ router.get("/login", function(req, res){
 });
 
 //handling login logic
-router.post("/login", function(req, res, next){
-    // console.log("got one!");
-    // console.log(req.body);
-    if(req.params.id=='test')
-        req.params.id='student';
-    passport.authenticate('local', function(err, user, info) {
-        if (err) { return next(err); }
-        req.logIn(user, function(err) {
-          if (err) { 
-              req.flash("error","Invalid Credentials");
-                res.redirect('/login'); 
-            //   return next(err); 
-          }
-          else{
-            //   req.cookies.user=user.email;
-            //   console.log("Email: ",user.email);
-            //   console.log("cookie: ",req.cookie.user);
-          redirectTo = req.session.redirectTo ? req.session.redirectTo : '/' + user.userType;
-          delete req.session.returnTo;
-        //   console.log(redirectTo);
-          return res.redirect(redirectTo);
-          }
-        });
+// router.post("/login", function(req, res, next){
+//     // console.log("got one!");
+//     // console.log(req.body);
+//     if(req.params.id=='test')
+//         req.params.id='student';
+//     passport.authenticate('local', function(err, user, info) {
+//         if (err) { return next(err); }
+//         req.logIn(user, function(err) {
+//           if (err) { 
+//               req.flash("error","Invalid Credentials");
+//                 res.redirect('/login'); 
+//             //   return next(err); 
+//           }
+//           else{
+//             //   req.cookies.user=user.email;
+//             //   console.log("Email: ",user.email);
+//             //   console.log("cookie: ",req.cookie.user);
+//           redirectTo = req.session.redirectTo ? req.session.redirectTo : '/' + user.userType;
+//           delete req.session.returnTo;
+//         //   console.log(redirectTo);
+//           return res.redirect(redirectTo);
+//           }
+//         });
         
         
-    })(req, res, next);
-});
+//     })(req, res, next);
+// });
 
 
 
