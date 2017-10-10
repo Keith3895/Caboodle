@@ -24,7 +24,7 @@ require('dotenv').config();
 
 
 var adminController = require('../lib/controller/admin');
-
+var studentController = require('../lib/controller/student');
 
 
 var transporter = nodemailer.createTransport({
@@ -79,13 +79,8 @@ var homeurl = process.env.homeUrl;
 
 
 router.post("/register", function(req, res){
-    var newUser = new User({
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        userType: "admin"
-    });
-    adminController.signUp(newUser,function(addedUser){
+    
+    adminController.signUp(req.body,function(addedUser){
         res.send("user Added");
     });
 });
@@ -95,7 +90,14 @@ router.post("/login", function(req, res, next){
         console.log(stat);
     });
 });
+router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
 
+    studentController.addStudent(req.body,function(addedStudent){
+        res.redirect("/verify?authToken="+addedStudent.authToken);    
+    });
+
+    
+});
 
 router.get("/",function(req,res){          // the index page
     req.session.redirectTo=null;
@@ -105,93 +107,103 @@ router.get("/",function(req,res){          // the index page
 router.get("/addStudent", middleware.isAdminOrPlacement, function(req, res) {
     res.render("addStudent",{update:'none'});
 }); 
-
-router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
-    var usn = req.body.usn;
-    var newUser = new User({
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        gender: req.body.gender,
-        usn: usn.toUpperCase(),
-        userType: "student"
-    });
-    User.register(newUser, 'amcec', function(err, user){
-        if(err){
-            console.log("error: ",err)
-            req.flash("error", "Email ID already exists!");
-            res.redirect("/addStudent");
-        }else{
-        var newStudent = new Student({
-            author: user._id,
-            semester: req.body.sem,
-            USN: usn.toUpperCase(),
-            department: req.body.department
-        })
-        Student.create(newStudent,function(err,student){
-            if(err){
-                console.log(err);
-            }
-            else{
-                
-                var htmlMail = '<div> <p> Hello ADMIN, </p>'+
-                '<p> This is a mail from GradBunker.  </p> <p> You added a new Student '+
-                user.firstName+'. If you did not add the student, '+
-                '<a href="'+homeurl+'/admin/delete/'+user._id+
-                '">click here</a> to delete the user account</p>'+
-                '<p> If not, Please ignore this mail</p><p> Regards, </p>'+
-                '<p> GradBunker</p></div>';
-                
-                var studentHtmlMail = '<div> <p> Hello '+user.firstName+', </p>'+
-                '<p> This is a mail from GradBunker.  </p><p> Welcome! You are registered on GradBunker.'+
-                ' Kindly update your profile. </p>'+
-                '<p> <a href="'+homeurl+'/student/updateProfile">Click here</a> to update your profile.</p><p> Regards, '+
-                '</p><p> GradBunker</p></div>';
-                var mailOptions = {
-                    from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
-                    to: 'bkm.blore@gmail.com', // list of receivers
-                    subject: 'You recently added a Student', // Subject line
-                    html: htmlMail //, // plaintext body
-                };
-                var studentMailOptions = {
-                    from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
-                    subject: 'Welcome to GradBunker', // Subject line
-                    to: user.email,
-                    html: studentHtmlMail //, // plaintext body
-                };
-                
-                transporter.sendMail(mailOptions, function(error, info){
-                    if(error){
-                        console.log(error);
-                    }
-                    else{
-                        transporter.sendMail(studentMailOptions, function(error1, info1){
-                            if(error1){
-                                console.log(error1);
-                            }
-                            else{
-                                console.log('Message sent to student: congo!!!!!');
-                            };
-                        });
-                        console.log('Message sent: congo!!!!!');
-                        res.redirect("/verify?authToken="+user.authToken);
-                    };
-                });
-            }
-        })
-        }
-    });
-});
-
-router.get("/updateStudent/:id", middleware.isAdminOrPlacement, function(req,res){ 
-    Student.findOne({'author':req.params.id}).populate({
-        path:'author',
-        model:'User'
-    }).exec(function(err,student){
+router.get("/updateStudent/:id", middleware.isAdminOrPlacement, function(req,res){
+    populate = {
+            path:'author',
+            model:'User'
+        };
+    var selectArray=['department','semester'];
+    studentController.findStudent(req.params.id,selectArray,populate,function(student){
+        console.log(student);
         res.render("addStudent",{update:student});    
     });
-    
 });
+// router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
+//     var usn = req.body.usn;
+//     var newUser = new User({
+//         email: req.body.email,
+//         firstName: req.body.firstName,
+//         lastName: req.body.lastName,
+//         gender: req.body.gender,
+//         usn: usn.toUpperCase(),
+//         userType: "student"
+//     });
+//     User.register(newUser, 'amcec', function(err, user){
+//         if(err){
+//             console.log("error: ",err)
+//             req.flash("error", "Email ID already exists!");
+//             res.redirect("/addStudent");
+//         }else{
+//         var newStudent = new Student({
+//             author: user._id,
+//             semester: req.body.sem,
+//             USN: usn.toUpperCase(),
+//             department: req.body.department
+//         })
+//         Student.create(newStudent,function(err,student){
+//             if(err){
+//                 console.log(err);
+//             }
+//             else{
+                
+//                 var htmlMail = '<div> <p> Hello ADMIN, </p>'+
+//                 '<p> This is a mail from GradBunker.  </p> <p> You added a new Student '+
+//                 user.firstName+'. If you did not add the student, '+
+//                 '<a href="'+homeurl+'/admin/delete/'+user._id+
+//                 '">click here</a> to delete the user account</p>'+
+//                 '<p> If not, Please ignore this mail</p><p> Regards, </p>'+
+//                 '<p> GradBunker</p></div>';
+                
+//                 var studentHtmlMail = '<div> <p> Hello '+user.firstName+', </p>'+
+//                 '<p> This is a mail from GradBunker.  </p><p> Welcome! You are registered on GradBunker.'+
+//                 ' Kindly update your profile. </p>'+
+//                 '<p> <a href="'+homeurl+'/student/updateProfile">Click here</a> to update your profile.</p><p> Regards, '+
+//                 '</p><p> GradBunker</p></div>';
+//                 var mailOptions = {
+//                     from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
+//                     to: 'bkm.blore@gmail.com', // list of receivers
+//                     subject: 'You recently added a Student', // Subject line
+//                     html: htmlMail //, // plaintext body
+//                 };
+//                 var studentMailOptions = {
+//                     from: 'GradBunker <keith@keithfranklin.xyz>', // sender address
+//                     subject: 'Welcome to GradBunker', // Subject line
+//                     to: user.email,
+//                     html: studentHtmlMail //, // plaintext body
+//                 };
+                
+//                 transporter.sendMail(mailOptions, function(error, info){
+//                     if(error){
+//                         console.log(error);
+//                     }
+//                     else{
+//                         transporter.sendMail(studentMailOptions, function(error1, info1){
+//                             if(error1){
+//                                 console.log(error1);
+//                             }
+//                             else{
+//                                 console.log('Message sent to student: congo!!!!!');
+//                             };
+//                         });
+//                         console.log('Message sent: congo!!!!!');
+//                         res.redirect("/verify?authToken="+user.authToken);
+//                     };
+//                 });
+//             }
+//         })
+//         }
+//     });
+// });
+
+// router.get("/updateStudent/:id", middleware.isAdminOrPlacement, function(req,res){ 
+//     Student.findOne({'author':req.params.id}).populate({
+//         path:'author',
+//         model:'User'
+//     }).exec(function(err,student){
+//         res.render("addStudent",{update:student});    
+//     });
+    
+// });
 
 router.post('/updateStudent/:id',middleware.isAdminOrPlacement, function(req, res) {
     // res.send(req.body);
