@@ -768,7 +768,7 @@ router.get("/updatePlacementStats/:id",function(req,res){
         }
     }];
     placementController.findPlacement({_id:req.params.id},[],populate,function(record){
-        req.flash("error","Updated Info")
+        req.flash("error","Updated Info");
         res.render("placement/updatePlacedStudents",{company:record});
     });
 })
