@@ -77,7 +77,10 @@
             <option value="CE">Civil</option>
         </select>
     </div>
-    
+    <div class="input-field col s12">
+      <input id="college" name="college" type="text" class="validate">
+      <label for="college">College</label>
+    </div>
     
         <div class="input-field col s12">
           <button class="btn waves-effect waves-light right" type="submit" name="action">Add
@@ -93,6 +96,8 @@
 
 
 <script>
+  $('#college').val('<%=currentUser.college%>');
+
   <% if(update!= 'none'){ %>
     $('#firstName').val('<%=update.author.firstName%>');
     $('#lastName').val('<%=update.author.lastName%>');

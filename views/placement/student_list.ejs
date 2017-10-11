@@ -109,10 +109,11 @@
     if(approval==='yes'){
         $.ajax({
             method: "DELETE",
-            url: "/admin/students",
+            url: "/placementHead/students",
             data: {"USN": usn,"userID":userID},
-            success: function() {
-                location.href = "https://erpdontdelete-mkb95.c9users.io/placementHead/students"
+            success: function(data) {
+                // location.href = "https://erpdontdelete-mkb95.c9users.io/placementHead/students"
+                console.log(data);
             }
         })
     }
