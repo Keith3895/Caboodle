@@ -67,6 +67,15 @@ router.use(multipartyMiddleware);
 const template = './views/placement/email.ejs';
 const internshipTemplate = './views/placement/internEmail.ejs';
 
+
+
+var adminController = require('../lib/controller/admin');
+var studentController = require('../lib/controller/student');
+var placementHeadController = require('../lib/controller/placementHead');
+var placementController    = require('../lib/controller/placement');
+var funcs = require('../lib/CustomFunctions/functions');
+
+
 var uploadData;
 function fileUploader(i,file,uploadPath,noOfFiles,mailAttachments,filePaths){
     if(file[i].originalFilename!==''){
@@ -130,51 +139,34 @@ router.get("/sms",function(req,res){
 });
 
 router.get("/",function(req,res){
-    var lengths_users,lengths_students,length_placementHeads=0;
-    User.find({}, function (err, users) {
-        lengths_users = users.length;
-        users.forEach(function(val,index){
-            if(val.userType == 'placementHead')
-                length_placementHeads++;    
-        });
-        Student.find({}, function (err, studs) {
-            lengths_students = studs.length;
-            length ={
-                user : lengths_users,
-                student: lengths_students,
-                placement: length_placementHeads
-            };
-            res.render("placement/home",{lengths:length});
-        }); 
-    });
+    res.render("placement/home");
 });
 
-router.get('/students',middleware.isPlacementHead,function(req, res) {
-    Student.find({}).populate({
+
+
+router.get('/students',middleware.isAdminOrPlacement,function(req, res) {
+    populate = {
         path: 'author',
-        model: 'User'
-    }).exec(function(err,studs){
-        res.render('placement/student_list',{list:studs});        
-    });
+        model: 'User',
+        match:{
+            'college':req.user.college
+        }
+    };
+    selectArray =[];
+    studentController.listStudents({},selectArray,populate,function(list){
+        res.render('placement/student_list',{list:list});        
+    }); 
 });
 
-router.post('/students/delete',middleware.isPlacementHead, function(req, res, next) {
-    var usn = req.body.USN || req.query.USN;
+router.delete('/students',middleware.isAdminOrPlacement, function(req, res, next) {
+    // var usn = req.body.USN || req.query.USN;
     var userID = req.body.userID || req.query.userID;
-    Student.remove({'USN':usn }, function(err, user) {
-        if (err) { 
-            res.json({"error": err});
-        } else { 
-            User.remove({'_id':userID }, function(err, user) {
-                if (err) { 
-                    res.json({"error": err});
-                } else { 
-                    res.json({success: true});
-                    req.flash("success","User removed");
-                }
-            })
-       }
-   });
+    console.log(req.body);
+    studentController.removeStudent({author:userID},function(data){
+        console.log(data);
+        req.flash("success","User deleted");
+        res.json({success: true});
+    });
 });
 
 
@@ -272,11 +264,8 @@ router.post("/addNewPlacement",async function(req,res){
 
 
 router.get("/updatePlacement/:id",function(req,res){
-    Placement.findOne({'_id':req.params.id},function(err, record) {
-    if(err)
-        console.log(err);
-        // console.log(record);
-    res.render("placement/addNewPlacement",{update:record});
+    placementController.findPlacement({'_id':req.params.id},[],'',function(record){
+        res.render("placement/addNewPlacement",{update:record});
     });
 });
 
@@ -546,48 +535,32 @@ router.post("/updateInternship/:id",async function(req,res){
     fileUploader(0,req.files.docs,'InternshipUploads/',length,mailAttachments,filePaths);
 });
 
+
+
 router.get("/placements",function(req, res) {
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
-    var yyyy = today.getFullYear();
-    if(dd<10){
-        dd='0'+dd;
-    } 
-    if(mm<10){
-        mm='0'+mm;
-    } 
-    var today = dd+'-'+mm+'-'+yyyy;
-    var tDate = today.split("-");
-    Placement.find({})
-    .populate({
+    var tDate = funcs.tdate();
+    var populate=[{
         path: 'registeredStudents',
         model: 'Student',
         populate: {
           path: 'author',
           model: 'User'
         }
-    }).exec(function(err,cpny){
-        if(err)console.log("In placement error: ",err);
-        if(!err){
-            Internship.find({})
-            .populate({
-                path: 'registeredStudents',
-                model:'Student',
-                populate: {
-                  path: 'author',
-                  model: 'User'
-                }
-            }).exec(function(err2,internships){
-                if(err2)console.log("Intern error: ",err2);
-                if(!err2){
-                    res.render('placement/viewPlacements',
-                    {company:cpny,internships: internships, todaysDate: tDate});
-                }
-            })
+    },{
+          path: 'author',
+          model: 'User',
+          match:{
+                'college':req.user.college
+            }
         }
+    ];
+    placementController.listPlacementsInternships({},[],populate,function(all){
+        res.render('placement/viewPlacements',
+                    {company:all.cpny,internships: all.internships, todaysDate: tDate});
     });
 });
+
+
 
 router.delete("/placements/:id",function(req,res){
     function deletePlacement(record,registered,selected){
@@ -702,7 +675,7 @@ router.delete("/registeredStudents",function(req,res){
             deleteRecord(record)
         }
     })
-})
+});
 
 router.get("/exportRegisteredStudents/:id",function(req,res){
     function exportList(company){
@@ -780,21 +753,24 @@ router.get("/exportRegisteredStudents/:id",function(req,res){
 })
 
 router.get("/updatePlacementStats/:id",function(req,res){
-    Placement.findOne({'_id':req.params.id}).populate({
+    populate=[{
         path: 'registeredStudents',
         model: 'Student',
         populate: {
           path: 'author',
           model: 'User'
         }
-    }).exec(function(err,record){
-        if(err) console.log(err);
-        else{
-            // res.send({company:record});
-            req.flash("error","Updated Info")
-            res.render("placement/updatePlacedStudents",{company:record}) 
+    },{
+          path: 'author',
+          model: 'User',
+          match:{
+            'college':req.user.college
         }
-    })
+    }];
+    placementController.findPlacement({_id:req.params.id},[],populate,function(record){
+        req.flash("error","Updated Info");
+        res.render("placement/updatePlacedStudents",{company:record});
+    });
 })
 
 
@@ -968,3 +944,45 @@ module.exports = router;
 
 
 
+// router.get("/placements",function(req, res) {
+//     var today = new Date();
+//     var dd = today.getDate();
+//     var mm = today.getMonth()+1; //January is 0!
+//     var yyyy = today.getFullYear();
+//     if(dd<10){
+//         dd='0'+dd;
+//     } 
+//     if(mm<10){
+//         mm='0'+mm;
+//     } 
+//     var today = dd+'-'+mm+'-'+yyyy;
+//     var tDate = today.split("-");
+//     Placement.find({})
+//     .populate({
+//         path: 'registeredStudents',
+//         model: 'Student',
+//         populate: {
+//           path: 'author',
+//           model: 'User'
+//         }
+//     }).exec(function(err,cpny){
+//         if(err)console.log("In placement error: ",err);
+//         if(!err){
+//             Internship.find({})
+//             .populate({
+//                 path: 'registeredStudents',
+//                 model:'Student',
+//                 populate: {
+//                   path: 'author',
+//                   model: 'User'
+//                 }
+//             }).exec(function(err2,internships){
+//                 if(err2)console.log("Intern error: ",err2);
+//                 if(!err2){
+//                     res.render('placement/viewPlacements',
+//                     {company:cpny,internships: internships, todaysDate: tDate});
+//                 }
+//             })
+//         }
+//     });
+// });
