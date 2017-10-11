@@ -54,10 +54,8 @@ function refreshQuestions(){
     	});
     	resp.on('end', function() {
     		var parsed = JSON.parse(body);
-    // 		console.log(parsed);
     		var dataRecievedC= parsed;
             for(i=0;i<dataRecievedC.length;i++){
-                // dataRecievedC[i].timestamp= timestamp;
                 Context.create(dataRecievedC[i],function(err, questionEnter) {
                    if(err)
                     console.log(err);
@@ -147,18 +145,7 @@ router.get('/status',function(req, res) {
             Student.find({},function(err, std) {
                 var total = std.length;
                 res.send({Submit:Submit,total:total,questionset:questionset});
-            });
-            
-            // entry=entry[0];
-            // var newEnt;
-            // for(i=0;i<entry.entry.length;i++){
-            //     if(entry.entry[i].marks==-2)
-            //         newEnt = entry.entry[i];
-            // }
-            // entry.entry=newEnt;
-            // entry.save();
-            
-            
+            });            
         });
     
 });
@@ -175,31 +162,6 @@ router.get('/removeResults',middleware.isAdmin,function(req, res) {
         });
         
         
-    });
-});
-router.get('/student',function(req, res) {
-    Student.find({},function(err,std){
-        res.send(std);
-    });
-});
-router.get('/leader',function(req, res) {
-    LeaderBoard.find({},function(err, List) {
-        res.send(List);
-    });
-});
-router.get('/leader/:id',function(req, res) {
-    LeaderBoard.remove({'_id':req.params.id},function(err, List) {
-        res.send(List);
-    });
-});
-
-
-router.get('/Glist',function(req, res) {
-    GlobalLeaderBoard.find({}).populate({
-        path:'author',
-        madel:'User'
-    }).exec(function(err, std) {
-        res.send(std);
     });
 });
 router.get('/solutionPDF',function(req,res){
@@ -253,23 +215,4 @@ router.get('/solutionPDF2',function(req,res){
     });
     
 });
-
-// router.get('/Gleader',function(req, res) {
-    
-//     Student.find({},function(err, std) {
-//       for(i=0;i<std.length;i++){
-//             var entry = {
-//                 author:std[i].author,
-//                 xp:0,
-//                 test:0
-//             };   
-//           GlobalLeaderBoard.create(entry,function(err,bEn){
-//              if(err)
-//                 console.log(err);
-//           });
-//       } 
-//       res.send("bla");
-//     });
-    
-// });
 module.exports = router;
