@@ -107,8 +107,22 @@ router.get("/",function(req,res){          // the index page
 router.get("/addStudent", middleware.isAdminOrPlacement, function(req, res) {
     res.render("addStudent",{update:'none'});
 }); 
+
+router.get("/mails",function(req,res){
+    var searchCondition={ semester: { $in: [7,8] } , department: { $in: ['CSE','ISE','ECE'] }};
+    var selectArray = ['author.email'];
+    var populate = '';
+    studentController.getEmailIDs(searchCondition,selectArray,populate,function(mails){
+        console.log(mails);
+        res.send(mails);    
+    });
+    // studentController.getEmailIDs(searchCondition,function(mails){
+    //     console.log(mails);
+    //     res.send(mails);    
+    // });
+});
 router.get("/updateStudent/:id", middleware.isAdminOrPlacement, function(req,res){
-    populate = {
+    var populate = {
             path:'author',
             model:'User'
         };
