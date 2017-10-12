@@ -7,8 +7,8 @@ var express             = require("express"),
     mongoose            = require("mongoose"),
     path                = require('path'),
     passport            = require("passport"),
+    User                = require('./models/user'),
     LocalStrategy       = require("passport-local"),
-    User                = require("./models/user"),
     aws                 = require("aws-sdk"),
     // seedDB              = require("./seeds"),
     cookieParser        = require('cookie-parser'),
@@ -30,8 +30,8 @@ var indexRoutes      = require("./routes/index"),
     placementRoutes  = require("./routes/placement"),
     studentRoutes    = require("./routes/student"),
     // libraryRoutes     = require("./routes/library"),
-    sellRoutes     = require("./routes/buyNsell"),
-    lostNfoundRoutes     = require("./routes/lostNfound"),
+    // sellRoutes     = require("./routes/buyNsell"),
+    // lostNfoundRoutes     = require("./routes/lostNfound"),
     testsRoutes     = require("./routes/tests"),
     leaderRoutes    = require("./routes/leaderBoard"),
     mobileRoutes    = require("./routes/mobile"),
@@ -112,8 +112,8 @@ app.use("/placementHead",middleware.isPlacementHead, placementRoutes);
 app.use("/student",middleware.isStudent, studentRoutes);
 // app.use("/library",libraryRoutes);
 app.use("/mobile",mobileRoutes);
-app.use("/lostNfound",lostNfoundRoutes);
-app.use("/sell",sellRoutes);
+// app.use("/lostNfound",lostNfoundRoutes);
+// app.use("/sell",sellRoutes);
 app.use("/test",testsRoutes);
 app.use("/leader",leaderRoutes);
 app.use("/results",ResultsRoutes);
