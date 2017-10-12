@@ -176,52 +176,17 @@ router.get("/addNewPlacement",function(req,res){
 });
 
 router.post("/addNewPlacement",function(req,res){
-    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
-    var qualification = req.body.qualification;
-    var sems=[],deps=[];
-    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
-    var department = req.body.department;
-    department = (typeof department === 'string') ? department : department.join(", ");
-    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
-    var emails='',students;
-    var newPlacement = new Placement({
-        author: req.user._id,
-        cName: req.body.cName,
-    	Package: req.body.package,
-    	jobLocation: req.body.jobLocation,
-    	qualification: qualification,
-    	department: department,
-    	skills: req.body.skills,
-    	designation: req.body.designation,
-    	driveLocation: req.body.driveLocation,
-    	driveDate: req.body.driveDate,
-    	lastDate: req.body.lastDate,
-    	eligibility: eligibility,
-    	jobDescription: req.body.jobDescription
-    });
-    fileUploadComponent.uploadFiles(req.files.docs,'PlacementUploads/',function(uploadedFiles){
-        newPlacement.doc_links=uploadedFiles.links;
-        placementController.addPlacement(newPlacement,function(newDrive){
-            var body = {
-                subject: newDrive.cName+'- New Placement Update',
-                templateData: {placement: newDrive},
-                departments: deps,
-                semesters: sems
-            }
-            emailController.MailForAddPlacement(body,uploadedFiles,function(error,info){
-                if(error){
-                    console.log(error);
-                    req.flash("error","Couldnt Update New Drive");
-                    res.redirect("/placementHead/addNewPlacement");
-                }
-                else{
-                    console.log('Message sent: congo!!!!!');
-                    req.flash("success","Updated Placement Info");
-                    res.redirect("/placementHead/placements");
-                }
-            })
-        })
+    placementController.addNewPlacement(req,function(error,info){
+        if(error){
+            console.log(error);
+            req.flash("error","Couldnt Update New Drive");
+            res.redirect("/placementHead/addNewPlacement");
+        }
+        else{
+            console.log('Message sent: congo!!!!!');
+            req.flash("success","Updated Placement Info");
+            res.redirect("/placementHead/placements");
+        }
     })
 })
 
