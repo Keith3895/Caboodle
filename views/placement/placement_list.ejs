@@ -73,7 +73,7 @@
    <div id="upcoming">
     <div class="row" style="margin-left: 2%">
    <% company.forEach(function(comp,i) {
-   var pDate= comp.date.split("-");
+   var pDate= comp.driveDate.split("-");
     if((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0]))){ %>
     <div class="col s12 m4 l4">
         <div class="card  teal darken-1 z-depth-3">
@@ -91,7 +91,7 @@
                     <i class="fa fa-calendar-o" aria-hidden="true" style="font-size: .7em"></i>
                     
                     <span>
-                        <%= comp.date %></span>
+                        <%= comp.driveDate %></span>
                 </span>
                 <p class="divider"></p>
                 <div class="details">
@@ -133,7 +133,7 @@
     <div class="modal-content">
       <h3 class="center"><%= comp.cName %></h3>
       <h6 class="center">Placement Drive at</h6>
-      <h5 class="center"><%= comp.driveLocation %> on <%= comp.date %></h5>
+      <h5 class="center"><%= comp.driveLocation %> on <%= comp.driveDate %></h5>
       <div class="divider"></div>
       <p><strong>Package: </strong><%= comp.Package %></p>
       <p><strong>Role: </strong><%= comp.designation %></p>
@@ -152,7 +152,7 @@
     <div id="completed">
         <div class="row" style="margin-left: 2%">
    <% company.forEach(function(comp,i) {
-       var pDate= comp.date.split("-");
+       var pDate= comp.driveDate.split("-");
         if(!((todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0])))){ %>
     <div class="col s12 m4 l4" >
         <div class="card  teal  darken-3 z-depth-3">
@@ -170,7 +170,7 @@
                     <i class="fa fa-calendar-o" aria-hidden="true" style="font-size: .7em"></i>
                     
                     <span>
-                        <%= comp.date %></span>
+                        <%= comp.driveDate %></span>
                 </span>
                 <p class="divider"></p>
                 <div class="details">
@@ -212,7 +212,7 @@
     <div class="modal-content">
       <h3 class="center"><%= comp.cName %></h3>
       <h5 class="center">Placement Drive Completed at</h5>
-      <h5 class="center"><%= comp.driveLocation %> on <%= comp.date %></h5>
+      <h5 class="center"><%= comp.driveLocation %> on <%= comp.driveDate %></h5>
       <div class="divider"></div>
       <p><strong>Package: </strong><%= comp.Package %></p>
       <p><strong>Role: </strong><%= comp.designation %></p>
@@ -331,7 +331,7 @@
     <div class="modal-content">
       <h3 class="center"><%= internship.cName %></h3>
       <h6 class="center">Interview at</h6>
-      <h5 class="center"><%= internship.interviewLocation %> on <%= internship.date %></h5>
+      <h5 class="center"><%= internship.interviewLocation %> by <%= internship.lastDate %></h5>
       <div class="divider"></div>
       <p><strong>Package: </strong><%= internship.Package %></p>
       <p><strong>Role: </strong><%= internship.designation %></p>

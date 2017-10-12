@@ -118,6 +118,7 @@ router.get("/mails",function(req,res){
         res.send(mails);    
     });
 });
+
 router.get("/updateStudent/:id", middleware.isAdminOrPlacement, function(req,res){
     var populate = {
             path:'author',
