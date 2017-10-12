@@ -67,13 +67,14 @@ router.use(multipartyMiddleware);
 const template = './views/placement/email.ejs';
 const internshipTemplate = './views/placement/internEmail.ejs';
 
-
-
 var adminController = require('../lib/controller/admin');
 var studentController = require('../lib/controller/student');
 var placementHeadController = require('../lib/controller/placementHead');
 var placementController    = require('../lib/controller/placement');
 var funcs = require('../lib/CustomFunctions/functions');
+var emailController = require('../lib/controller/email');
+
+var fileUploadComponent = require('../lib/components/fileUploader');
 
 
 var uploadData;
@@ -174,7 +175,57 @@ router.get("/addNewPlacement",function(req,res){
     res.render("placement/addNewPlacement",{update:'none'});
 });
 
-router.post("/addNewPlacement",async function(req,res){
+router.post("/addNewPlacement",function(req,res){
+    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
+    var qualification = req.body.qualification;
+    var sems=[],deps=[];
+    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
+    var department = req.body.department;
+    department = (typeof department === 'string') ? department : department.join(", ");
+    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
+    (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
+    var emails='',students;
+    var newPlacement = new Placement({
+        author: req.user._id,
+        cName: req.body.cName,
+    	Package: req.body.package,
+    	jobLocation: req.body.jobLocation,
+    	qualification: qualification,
+    	department: department,
+    	skills: req.body.skills,
+    	designation: req.body.designation,
+    	driveLocation: req.body.driveLocation,
+    	driveDate: req.body.driveDate,
+    	lastDate: req.body.lastDate,
+    	eligibility: eligibility,
+    	jobDescription: req.body.jobDescription
+    });
+    fileUploadComponent.uploadFiles(req.files.docs,'PlacementUploads/',function(uploadedFiles){
+        newPlacement.doc_links=uploadedFiles.links;
+        placementController.addPlacement(newPlacement,function(newDrive){
+            var body = {
+                subject: newDrive.cName+'- New Placement Update',
+                templateData: {placement: newDrive},
+                departments: deps,
+                semesters: sems
+            }
+            emailController.MailForAddPlacement(body,uploadedFiles,function(error,info){
+                if(error){
+                    console.log(error);
+                    req.flash("error","Couldnt Update New Drive");
+                    res.redirect("/placementHead/addNewPlacement");
+                }
+                else{
+                    console.log('Message sent: congo!!!!!');
+                    req.flash("success","Updated Placement Info");
+                    res.redirect("/placementHead/placements");
+                }
+            })
+        })
+    })
+})
+
+router.post("/addNewPlacement_bkp",async function(req,res){
     // console.log(req.body);
     var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
     var qualification = req.body.qualification;
@@ -317,8 +368,8 @@ router.post("/updatePlacement/:id",async function(req,res){
             	placement.skills= req.body.skills,
             	placement.designation= req.body.designation,
             	placement.driveLocation= req.body.driveLocation,
-            	placement.date= req.body.driveDate,
-            	placement.time= req.body.lastDate,
+            	placement.driveDate= req.body.driveDate,
+            	placement.lastDate= req.body.lastDate,
             	placement.eligibility= eligibility,
             	placement.jobDescription= req.body.jobDescription, 
             	placement.doc_links= filePaths
