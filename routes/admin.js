@@ -1,5 +1,7 @@
 var express = require("express");
 var router  = express.Router();
+var User = require("../models/user");
+var Student = require("../models/student");
 var VTUmarks = require("../models/vtuMarks");
 var VTUmarks1 = require("../models/marks2");
 var middleware = require("../middleware");
@@ -83,7 +85,7 @@ router.get("/",middleware.isAdmin,function(req,res){
 
 router.get("/upload",function(req,res){
     res.render("admin/upload");
-})
+});
 
 router.post("/upload",function(req,res){
     var url;
@@ -104,7 +106,7 @@ router.post("/upload",function(req,res){
             res.end(JSON.stringify(obj));
         }
     });
-})
+});
 
 
 
@@ -555,7 +557,11 @@ router.post("/addPlacementHead", middleware.isAdmin, function(req, res){
         res.redirect("/verify?authToken="+addedPLacementHead.authToken);
     });
 });
-//handle sign up logic
+router.get('/resetQuestion',function(req,res) {
+    adminController.getColleges(function(clgs){
+        res.render('admin/resetQuestions',{clgs:clgs});
+    });
+});
 
 
 

@@ -152,8 +152,10 @@ router.get('/students',middleware.isAdminOrPlacement,function(req, res) {
             'college':req.user.college
         }
     };
-    selectArray =[];
+    selectArray =['author','department','semester'];
+    console.log(populate);
     studentController.listStudents({},selectArray,populate,function(list){
+        console.log(list);
         res.render('placement/student_list',{list:list});        
     }); 
 });
@@ -180,7 +182,7 @@ router.post("/addNewPlacement",async function(req,res){
     var qualification = req.body.qualification;
     var sems=[],deps=[];
     qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
-    var department = req.body.department;
+    var department =  req.body.department;
     department = (typeof department === 'string') ? department : department.join(", ");
     (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
     (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;

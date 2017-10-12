@@ -6,7 +6,8 @@
   var timelimit = 40;
   var Score={},GTypes=[];
   var questions = [];
-  var stoppedTimer=false,blurCheck=false,blurOn=false;
+  var stoppedTimer=false,blurCheck=false,blurOn=true;
+  var blurCount =0;
   var questionCounter = 0,subindex=0; //Tracks question number
   var selections = [],selectionsSub={}; //Array containing user choices
   var quiz = $('#quiz'); //Quiz div object
@@ -535,41 +536,34 @@ function timer(){
 
 window.onresize = function()
 {
-    if ((window.outerHeight - window.innerHeight) > 100)
+    if ((window.outerHeight - window.innerHeight) > 100){
         alert('Docked inspector was opened forced submit');
         var i=0;
         var be = setInterval(function() {
           i++;
-          beep();
           beep();
           if(i>5){
             clearInterval(be);
             submitTest();
           }
         }, 1000);
+      }
 }
 $(window).focus(function(ele) {
             //do something
             blurOn=false;
             
         });
-        $(window).blur(function() {
-            //do something
-            console.log("blur");
-            
-            beep();
-             
-            if(!blurCheck && !blurOn)
-              submitTest();
-            else
-              alert("the next time you change your active window the test will auto submit.");
-        });
-
-
-
-
-
-
+$(window).blur(function() {
+    //do something
+    blurCount++;
+    console.log("blur");
+    beep();
+    if(blurCount>4 && !blurOn)
+      submitTest();
+    else if(blurCount==2)
+      alert("the next time you change your active window the test will auto submit.");
+});
 
 
 })();

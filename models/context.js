@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var ContextSchema = new mongoose.Schema({
+    college:String,
     context:String,
     type: String,
     marks: String,

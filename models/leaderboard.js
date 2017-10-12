@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 
 var leaderSchema = new mongoose.Schema({
+	college:String,
     testId: {type: String,unique:true},
     entry: [{
         author:  {

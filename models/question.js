@@ -8,6 +8,7 @@ var QuestionSchema = new mongoose.Schema({
     solution: String,
     images: [String],
     frequency:Number,
-    timestamp:String
+    timestamp:String,
+    college:String
 });
 module.exports = mongoose.model("Question", QuestionSchema);
