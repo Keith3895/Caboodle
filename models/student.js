@@ -82,12 +82,12 @@ StudentSchema.pre('remove', function(next) {
         else{
             if(placements!==null){
                 placements.forEach(function(placement){
-                    if(funcs.has(placement.registeredStudents,user._id)){
-                       funcs.remove(placement.registeredStudents,user._id);
+                    if(funcs.has(placement.registeredStudents,this._id)){
+                       funcs.remove(placement.registeredStudents,this._id);
                         placement.save();
                     }
-                    if(funcs.has(placement.selectedStudents,user._id)){
-                       funcs.remove(placement.selectedStudents,user._id);
+                    if(funcs.has(placement.selectedStudents,this._id)){
+                       funcs.remove(placement.selectedStudents,this._id);
                         placement.save();
                     }
                 })
@@ -95,16 +95,16 @@ StudentSchema.pre('remove', function(next) {
         }
 	});
 	this.model('internship').find({},function(err1,internships){
-		if(err) console.log("Internship delete error: ",err1)
+		if(err1) console.log("Internship delete error: ",err1)
 		else{
 		    if(internships!==null){
 		        internships.forEach(function(internship){
-		            if(funcs.has(internship.registeredStudents,user._id)){
-		               funcs.remove(internship.registeredStudents,user._id);
+		            if(funcs.has(internship.registeredStudents,this._id)){
+		               funcs.remove(internship.registeredStudents,this._id);
 		                internship.save();
 		            }
-		            if(funcs.has(internship.selectedStudents,user._id)){
-		               funcs.remove(internship.selectedStudents,user._id);
+		            if(funcs.has(internship.selectedStudents,this._id)){
+		               funcs.remove(internship.selectedStudents,this._id);
 		                internship.save();;
 		            }
 		        })

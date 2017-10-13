@@ -14,8 +14,6 @@ var ejs = require('ejs');
 const tempfile = require('tempfile');
 var smtpTransport = require('nodemailer-smtp-transport');
 var ses = require('nodemailer-ses-transport');
-var http = require('http');
-var urlencode = require('urlencode');
 var mkdirp = require('mkdirp');
 var aSync = require('async');
 require('dotenv').config();
@@ -75,6 +73,7 @@ var funcs = require('../lib/CustomFunctions/functions');
 var emailController = require('../lib/controller/email');
 
 var fileUploadComponent = require('../lib/components/fileUploader');
+var smsComponent = require('../lib/components/sms');
 
 
 var uploadData;
@@ -115,28 +114,10 @@ function fileUploader(i,file,uploadPath,noOfFiles,mailAttachments,filePaths){
 router.get("/sms",function(req,res){
     console.log("In text")
     // Messages can only be sent between 9am to 9pm
-    var msg=urlencode("Hello! This is a test");
-    var number='+917892650591';
-    var username='bkm.blore@gmail.com';
-    var hash='e4e4a3e59ffa2ab4a6ed9bf7052f759d16140164d5c1b1a3d37cc7746ab67d9b';
-    var sender='txtlcl';
-    var data='username='+username+'&hash='+hash+'&sender='+sender+'&numbers='+number+'&message='+msg;
-    var options = {
-        host: 'api.textlocal.in',
-        path: '/send?'+data
-    };
-    var callback = function(response) {
-        var str = '';
-        //another chunk of data has been recieved, so append it to `str`
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-        //the whole response has been recieved, so we just print it out here
-        response.on('end', function () {
-            console.log(str);
-        });
-    }
-    http.request(options, callback).end();
+    smsComponent.sendSMS('+917892650591',"This is a test",function(info){
+        console.log(info);
+        res.redirect("/")
+    })
 });
 
 router.get("/",function(req,res){
@@ -144,16 +125,15 @@ router.get("/",function(req,res){
 });
 
 
-
 router.get('/students',middleware.isAdminOrPlacement,function(req, res) {
-    populate = {
+    var populate = {
         path: 'author',
         model: 'User',
         match:{
             'college':req.user.college
         }
     };
-    selectArray =[];
+    var selectArray =[];
     studentController.listStudents({},selectArray,populate,function(list){
         res.render('placement/student_list',{list:list});        
     }); 
@@ -175,7 +155,7 @@ router.get("/addNewPlacement",function(req,res){
     res.render("placement/addNewPlacement",{update:'none'});
 });
 
-router.post("/addNewPlacement",function(req,res){
+router.post("/addNewPlacement", function(req,res){
     placementController.addNewPlacement(req,function(error,info){
         if(error){
             console.log(error);
@@ -190,94 +170,6 @@ router.post("/addNewPlacement",function(req,res){
     })
 })
 
-router.post("/addNewPlacement_bkp",async function(req,res){
-    // console.log(req.body);
-    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
-    var qualification = req.body.qualification;
-    var sems=[],deps=[];
-    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
-    var department = req.body.department;
-    department = (typeof department === 'string') ? department : department.join(", ");
-    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
-    var emails='',students;
-    await Student.find({ semester: { $in: sems } , department: { $in: deps }}).populate('author').exec(function(err,records){
-        if(err) console.log(err);
-        else{
-            console.log()
-            records.forEach(function(record){
-                // res.send(records);
-                // if(/@gmail.com/.test(record.author.email))
-                    emails = emails + ', '+ record.author.email;
-            })
-        }
-    })
-    // console.log()(typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    var mailAttachments = [];
-    var length = req.files.docs.length;
-    var filePaths=[],count = 1;
-    uploadData = function f2(){
-    var newPlacement = new Placement({
-        author: req.user._id,
-        cName: req.body.cName,
-    	Package: req.body.package,
-    	jobLocation: req.body.jobLocation,
-    	qualification: qualification,
-    	department: department,
-    	skills: req.body.skills,
-    	designation: req.body.designation,
-    	driveLocation: req.body.driveLocation,
-    	date: req.body.driveDate,
-    	time: req.body.lastDate,
-    	eligibility: eligibility,
-    	jobDescription: req.body.jobDescription, 
-    	doc_links: filePaths,
-    });
-    Placement.create(newPlacement,function(error,newDrive){
-        if(error){
-            console.log(error);
-            req.flash("error","Couldnt Update New Drive");
-            res.redirect("/placementHead/addNewPlacement");
-        }
-        else{
-            var html;
-            // console.log("Created: ",newDrive);
-            // req.flash("success","Updated New Drive");
-            // res.redirect("/placementHead");
-            var mailOptions;
-            
-            // console.log("Attachments: ",mailAttachments);
-            ejs.renderFile(template,{placement: newDrive}, function(err, html){
-                if (err) console.log(err);
-                else{
-                    console.log(emails);
-                    mailOptions = {
-                        from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
-                        to: 'bkm.blore@gmail.com '+emails, // list of receivers
-                        subject: newDrive.cName+'- New Placement Update', // Subject line
-                        html: html, //, // plaintext body
-                        attachments: mailAttachments
-                    };
-                }
-            });
-            
-            transporter.sendMail(mailOptions, function(error, info){
-                if(error){
-                    console.log(error);
-                }
-                else{
-                    console.log('Message sent: congo!!!!!');
-                    req.flash("success","Updated Placement Info");
-                    res.redirect("/placementHead/placements");
-                    // callback(null,"It works");
-                };
-            });
-        }
-    })
-    };
-    fileUploader(0,req.files.docs,'PlacementUploads/',length,mailAttachments,filePaths);
-});
-
 
 router.get("/updatePlacement/:id",function(req,res){
     placementController.findPlacement({'_id':req.params.id},[],'',function(record){
@@ -285,179 +177,39 @@ router.get("/updatePlacement/:id",function(req,res){
     });
 });
 
-router.post("/updatePlacement/:id",async function(req,res){
-    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
-    var qualification = req.body.qualification;
-    var sems=[],deps=[];
-    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
-    var department = req.body.department;
-    department = (typeof department === 'string') ? department : department.join(", ");
-    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
-    console.log(deps);
-    console.log(sems);
-    var emails='',students;
-    await Student.find({ semester: { $in: sems } , department: { $in: deps }}).populate('author').exec(function(err,records){
-        if(err) console.log(err);
-        else{
-            records.forEach(function(record){
-                // res.send(records);
-                // if(/@gmail.com/.test(record.author.email))
-                    emails = emails + ', '+ record.author.email;
-            })
+router.post("/updatePlacement/:id", function(req,res){
+    placementController.updatePlacement(req,{_id:req.params.id},function(error,info){
+        if(error){
+            console.log(error);
+            req.flash("error","Couldnt Update Drive");
+            res.redirect("/placementHead/updatePlacement/"+req.params.id);
         }
-    })
-    // console.log()(typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    var mailAttachments = [];
-    var length = req.files.docs.length;
-    var filePaths=[],count = 1;
-    uploadData = function f2(){
-        Placement.findOne({_id:req.params.id},function(err,placement){
-            if(err) console.log(err);
-            else{
-                if(mailAttachments.length<1){
-                    placement.doc_links.forEach(function(fpath){
-                        var splitPath = fpath.split("/")
-                        mailAttachments.push({
-                            filename: splitPath[splitPath.length - 1],
-                            path: fpath
-                        })
-                    })
-                }
-                placement.author= req.user._id,
-                placement.cName= req.body.cName,
-            	placement.Package= req.body.package,
-            	placement.jobLocation= req.body.jobLocation,
-            	placement.qualification= qualification,
-            	placement.department= department,
-            	placement.skills= req.body.skills,
-            	placement.designation= req.body.designation,
-            	placement.driveLocation= req.body.driveLocation,
-            	placement.driveDate= req.body.driveDate,
-            	placement.lastDate= req.body.lastDate,
-            	placement.eligibility= eligibility,
-            	placement.jobDescription= req.body.jobDescription, 
-            	placement.doc_links= filePaths
-            	placement.save(function(){
-            	    var html;
-                    var mailOptions;
-                    ejs.renderFile(template,{placement: placement}, function(err, html){
-                        if (err) console.log(err);
-                        else{
-                            mailOptions = {
-                                from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
-                                to: 'bkm.blore@gmail.com '+emails, // list of receivers
-                                subject: placement.cName+'- ALERT! Placement Info Updated', // Subject line
-                                html: html, //, // plaintext body
-                                attachments: mailAttachments
-                            };
-                        }
-                    });
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if(error){
-                            console.log(error);
-                        }
-                        else{
-                            console.log('Message sent: congo!!!!!');
-                            req.flash("success","Updated Placement Info");
-                            res.redirect("/placementHead/placements");
-                            // callback(null,"It works");
-                        };
-                    });
-            	})
-            }
-        })
-    }
-    fileUploader(0,req.files.docs,'PlacementUploads/',length,mailAttachments,filePaths);
-});
-
+        else{
+            console.log('Message sent: congo!!!!!');
+            req.flash("success","Updated Placement Info");
+            res.redirect("/placementHead/placements");
+        }
+    })    
+})
 
 
 router.get("/addNewInternship",function(req,res){
-    
     res.render("placement/addNewInternship",{update:'none'});
 });
 
-router.post("/addNewInternship",async function(req,res){
-    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
-    var sems = [];
-    var qualification = req.body.qualification;
-    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
-    var department = req.body.department;
-    department = (typeof department === 'string') ? department : department.join(", ");
-    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    var emails,students;
-    await Student.find({ semester: { $in: sems } }).populate('author').exec(function(err,records){
-        if(err) console.log(err);
-        else{
-            records.forEach(function(record){
-                emails = emails + ', '+ record.author.email;
-            })
-        }
-    })
-    var mailAttachments = [];
-    var length = req.files.docs.length;
-    var filePaths=[],count = 1;
-    uploadData = function f2(){
-    var newInternship = new Internship({
-        author: req.user._id,
-        cName: req.body.cName,
-    	Package: req.body.package,
-    	internLocation: req.body.internLocation,
-    	duration: req.body.duration,
-    	qualification: qualification,
-    	department: department,
-    	skills: req.body.skills,
-    	designation: req.body.designation,
-    	interviewLocation: req.body.interviewLocation,
-    	lastDate: req.body.lastDate,
-    	eligibility: eligibility,
-    	internDescription: req.body.internDescription, 
-    	doc_links: filePaths,
-    });
-
-    Internship.create(newInternship,function(error,newIntern){
+router.post("/addNewInternship", function(req,res){
+    placementController.addNewInternship(req,function(error,info){
         if(error){
             console.log(error);
-            req.flash("error","Couldnt Update New Internship Details!");
+            req.flash("error","Couldnt Update New Internship");
             res.redirect("/placementHead/addNewInternship");
         }
         else{
-            var html;
-            // console.log("Created: ",newDrive);
-            // req.flash("success","Updated New Drive");
-            // res.redirect("/placementHead");
-            var mailOptions;
-            // console.log("Attachments: ",mailAttachments);
-            ejs.renderFile(internshipTemplate,{internship: newIntern}, function(err, html){
-                if (err) console.log(err);
-                else{
-                    mailOptions = {
-                        from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
-                        to: 'bkm.blore@gmail.com '+emails, // list of receivers
-                        subject: newIntern.cName+'- New Internship Update', // Subject line
-                        html: html, //, // plaintext body
-                        attachments: mailAttachments
-                    };
-                }
-            });
-            
-            transporter.sendMail(mailOptions, function(error, info){
-                if(error){
-                    console.log(error);
-                }
-                else{
-                    console.log('Message sent: congo!!!!!');
-                    req.flash("success","Updated Internship Info");
-                    res.redirect("/placementHead/placements");
-                    // callback(null,"It works");
-                };
-            });
+            console.log('Message sent: congo!!!!!');
+            req.flash("success","Updated Internship Info");
+            res.redirect("/placementHead/placements");
         }
-    })
-    };
-    fileUploader(0,req.files.docs,'InternshipUploads/',length,mailAttachments,filePaths);
-    
+    });
 });
 
 
@@ -467,90 +219,22 @@ router.get("/updateInternship/:id",function(req,res){
             console.log(err);
         res.render("placement/addNewInternship",{update:internship});
     });
-    
 });
 
-router.post("/updateInternship/:id",async function(req,res){
-    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
-    var sems = [];
-    var qualification = req.body.qualification;
-    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
-    var department = req.body.department;
-    department = (typeof department === 'string') ? department : department.join(", ");
-    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    var emails,students;
-    await Student.find({ semester: { $in: sems } }).populate('author').exec(function(err,records){
-        if(err) console.log(err);
-        else{
-            records.forEach(function(record){
-                emails = emails + ', '+ record.author.email;
-            })
+router.post("/updateInternship/:id", function(req,res){
+    placementController.updateInternship(req,{_id:req.params.id},function(error,info){
+        if(error){
+            console.log(error);
+            req.flash("error","Couldnt Update Internship");
+            res.redirect("/placementHead/updateInternship/"+req.params.id);
         }
-    })
-    var mailAttachments = [];
-    var length = req.files.docs.length;
-    var filePaths=[],count = 1;
-    uploadData = function f2(){
-        Internship.findOne({_id:req.params.id},function(err,internship){
-            if(err) console.log(err);
-            else{
-                if(mailAttachments.length<1){
-                    internship.doc_links.forEach(function(fpath){
-                        var splitPath = fpath.split("/")
-                        mailAttachments.push({
-                            filename: splitPath[splitPath.length - 1],
-                            path: fpath
-                        })
-                    })
-                }
-                internship.author= req.user._id,
-                internship.cName= req.body.cName,
-            	internship.Package= req.body.package,
-            	internship.internLocation= req.body.internLocation,
-            	internship.duration= req.body.duration,
-            	internship.qualification= qualification,
-            	internship.department= department,
-            	internship.skills= req.body.skills,
-            	internship.designation= req.body.designation,
-            	internship.interviewLocation= req.body.interviewLocation,
-            	internship.lastDate= req.body.lastDate,
-            	internship.eligibility= eligibility,
-            	internship.internDescription= req.body.internDescription, 
-            	internship.doc_links= filePaths,
-            	internship.save(function(){
-            	    var html;
-                    var mailOptions;
-                    ejs.renderFile(internshipTemplate,{internship: internship}, function(err, html){
-                        if (err) console.log(err);
-                        else{
-                            mailOptions = {
-                                from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
-                                to: 'bkm.blore@gmail.com '+emails, // list of receivers
-                                subject: internship.cName+'- Internship Update', // Subject line
-                                html: html, //, // plaintext body
-                                attachments: mailAttachments
-                            };
-                        }
-                    });
-                    
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if(error){
-                            console.log(error);
-                        }
-                        else{
-                            console.log('Message sent: congo!!!!!');
-                            req.flash("success","Updated Internship Info");
-                            res.redirect("/placementHead/placements");
-                            // callback(null,"It works");
-                        };
-                    });
-            	})
-            }
-        })
-    }
-    fileUploader(0,req.files.docs,'InternshipUploads/',length,mailAttachments,filePaths);
+        else{
+            console.log('Message sent: congo!!!!!');
+            req.flash("success","Updated Internship Info");
+            res.redirect("/placementHead/placements");
+        }
+    })   
 });
-
 
 
 router.get("/placements",function(req, res) {
@@ -575,7 +259,6 @@ router.get("/placements",function(req, res) {
                     {company:all.cpny,internships: all.internships, todaysDate: tDate});
     });
 });
-
 
 
 router.delete("/placements/:id",function(req,res){
