@@ -24,6 +24,7 @@ require('dotenv').config();
 
 
 var adminController = require('../lib/controller/admin');
+var authController = require('../lib/controller/auth');
 var studentController = require('../lib/controller/student');
 var placementController = require('../lib/controller/placement');
 var funcs = require('../lib/CustomFunctions/functions');
@@ -85,7 +86,7 @@ router.post("/register", function(req, res){
     });
 });
 router.post("/login", function(req, res, next){
-    adminController.Login(req,res,function(stat){
+    authController.Login(req,res,function(stat){
         // res.send();
         console.log(stat);
     });
@@ -326,7 +327,7 @@ router.get("/forgotPassword",function(req,res){
 });
 
 router.post("/forgotPassword",function(req,res){
-   User.findOne({email:req.body.email},function(err,user){
+    User.findOne({email:req.body.email},function(err,user){
        if(err){
            console.log(err);
        }else{
