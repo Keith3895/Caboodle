@@ -1,0 +1,44 @@
+<div style="background:rgba(0,0,0,0.05); width:100%; max-width:900px;
+        font-family: Tahoma, Geneva, sans-serif;">
+    <div >
+        <img style="width: 100%; height:35%; " 
+        src="https://gradbunker.s3.ap-south-1.amazonaws.com/publicImages/placement_email.jpg">
+    </div>
+    <div>
+        <div style="border-bottom: 1px solid grey; text-align:center;">
+                <h1>Internship at <%= internship.cName %></h1>
+                <h4>Last Date to Apply: <%= internship.lastDate %></h4>
+        </div>
+        <div style="font-size: 1.3em;text-align:left;margin:0 5% 0 5%">
+                <p><strong>CTC/Package: </strong> <%= internship.Package %></p>
+                <p><strong>Job Role: </strong> <%= internship.designation %></p>
+                <p><strong>Skills: </strong> <%= internship.skills %></p>
+                <p><strong>Interview Location: </strong> <%= internship.interviewLocation %></p>
+                <p><strong>Internship Location: </strong> <%= internship.internLocation %></p>
+                <p><strong>Internship Duration: </strong> <%= internship.duration %></p>
+                <p><strong>Qualification/Degree: </strong> <%= internship.qualification %></p>
+                <p><strong>Eligible Departments: </strong> <%= internship.department %></p>
+                <p><strong>Eligibility Criteria: </strong><%= internship.eligibility %></p>
+                <p><strong>Description: </strong></p>
+                <p style="white-space: pre-line"><%= internship.internDescription %></p>
+        </div>
+        <div style=" float:left;font-size: 1.3em;text-align:left;margin:0 5% 0 5%;width:100%;">
+            <p><strong><a href="https://erpdontdelete-mkb95.c9users.io/student/registerPlacement/<%= internship._id %>">
+                Click here to Apply</a></strong></p>
+        </div>
+        <div style="margin-left:5%;text-align:left;">
+            <p style="font-size: 1.3em;">  Regards,</p>
+            <h3>  Shaikh Moonirul Haque</h3>
+            <h3>  Training &amp; Placement Officer</h3>
+            <p>AMC Engineering College<br>
+                18th KM, Bannerghatta Main Road<br>
+                Bangalore - 560083<br>
+                Ph: <a href="">+91 9902044117</a><br>
+                Email: <a href="">director.amcplacement@gmail.com</a>
+            </p>
+        </div>
+        <div style="text-align:center">
+            <h3>Knock 'em dead!</h3>
+        </div>
+    </div>
+</div>
