@@ -111,7 +111,8 @@ router.get("/mails",function(req,res){
     var populate = {
         path:'author',
         model:'User',
-        select:{'email':1}
+        select:{'email':1},
+        match:{college:'amcec'}
     };
     studentController.getEmailIDs(searchCondition,selectArray,populate,function(mails){
         console.log(mails);
@@ -138,12 +139,10 @@ router.post('/updateStudent/:id',middleware.isAdminOrPlacement, function(req, re
 
 
 router.get('/verify', function(req, res) {
-    var user = req.user;
-    User.verifyEmail(req.query.authToken, function(err, existingAuthToken) {
-        if(err) console.log('err:', err);
-        else{
-            req.flash('success', 'New User added and Verified');
-            res.redirect("/");
+    authController.verifyEmail(req.query.authToken,function(stat){
+        if(stat==='success'){
+            req.flash('success','New User Added');
+            res.redirect('/');
         }
     });
 });
