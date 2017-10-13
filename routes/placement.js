@@ -947,9 +947,9 @@ router.get('/placementStats',async function(req, res) {
     
     
     res.send({
-        1: await placementCalc.DeptPlaced(),
-        2: await placementCalc.placedData(),
-        3: await placementCalc.PlacedDeptStd()
+        1: await placementCalc.DeptPlaced(req.user.college),
+        2: await placementCalc.placedData(req.user.college),
+        3: await placementCalc.PlacedDeptStd(req.user.college)
     });   
 });
 
@@ -961,46 +961,3 @@ router.get('/placementStat',async function(req, res) {
 module.exports = router;
 
 
-
-// router.get("/placements",function(req, res) {
-//     var today = new Date();
-//     var dd = today.getDate();
-//     var mm = today.getMonth()+1; //January is 0!
-//     var yyyy = today.getFullYear();
-//     if(dd<10){
-//         dd='0'+dd;
-//     } 
-//     if(mm<10){
-//         mm='0'+mm;
-//     } 
-//     var today = dd+'-'+mm+'-'+yyyy;
-//     var tDate = today.split("-");
-//     Placement.find({})
-//     .populate({
-//         path: 'registeredStudents',
-//         model: 'Student',
-//         populate: {
-//           path: 'author',
-//           model: 'User'
-//         }
-//     }).exec(function(err,cpny){
-//         if(err)console.log("In placement error: ",err);
-//         if(!err){
-//             Internship.find({})
-//             .populate({
-//                 path: 'registeredStudents',
-//                 model:'Student',
-//                 populate: {
-//                   path: 'author',
-//                   model: 'User'
-//                 }
-//             }).exec(function(err2,internships){
-//                 if(err2)console.log("Intern error: ",err2);
-//                 if(!err2){
-//                     res.render('placement/viewPlacements',
-//                     {company:cpny,internships: internships, todaysDate: tDate});
-//                 }
-//             })
-//         }
-//     });
-// });
