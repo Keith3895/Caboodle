@@ -716,12 +716,22 @@ router.get('/getAnalysis',function(req,res){
 router.get('/placementStats',async function(req, res) {
     
     
-    
-    res.send({
-        1: await placementCalc.DeptPlaced(req.user.college),
-        2: await placementCalc.placedData(req.user.college),
-        3: await placementCalc.PlacedDeptStd(req.user.college)
-    });   
+    placementCalc.DeptPlaced(req.user.college,function(data1){
+        placementCalc.placedData(req.user.college,function(data2){
+            placementCalc.PlacedDeptStd(req.user.college,function(data3){
+                res.send({
+                    1:data1,
+                    2:data2,
+                    3:data3,
+                });
+            });
+        });
+    });
+    // res.send({
+    //     1: await placementCalc.DeptPlaced(req.user.college),
+    //     2: await placementCalc.placedData(req.user.college),
+    //     3: await placementCalc.PlacedDeptStd(req.user.college)
+    // });   
 });
 
 router.get('/placementStat',async function(req, res) {

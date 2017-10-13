@@ -277,9 +277,12 @@
         	});
     }
     function Radar(data){
+        console.log(data);
         var placedStdDept=[],unplaced=[],department=[];
-            for(i in data.placed ){
+            for(i in data.count ){
+                if(data.placed)
                 placedStdDept.push(data.placed[i]);
+                if(data.count)
                 unplaced.push(data.count[i]);
                     department.push(''+i);
                 

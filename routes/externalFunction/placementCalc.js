@@ -9,33 +9,32 @@ var placementController = require('../../lib/controller/placement');
 var cfuncs      =       require('../../lib/CustomFunctions/functions');
 var functions={
 
-placedData: async function(college){
+placedData: async function(college,callback){
     var data={};
-    await studentController.listStudents({selectedPlacements: { $eq: [] }},['_id'],{
+    await studentController.listStudents({selectedPlacements: { $eq: [] }},['selectedPlacements'],{
         path:'author',
         model:'User',
         select:'_id',
         match:{college:college}
     },function(list){
         data.UnplacedCount = list.length;
+        studentController.listStudents({selectedPlacements: { $ne: [] }},['selectedPlacements'],{
+            path:'author',
+            model:'User',
+            select:'_id',
+            match:{college:college}
+        },function(list){
+            data.placedCount=list.count;
+            callback(data);
+        });
     });
-    await studentController.listStudents({selectedPlacements: { $ne: [] }},['_id'],{
-        path:'author',
-        model:'User',
-        select:'_id',
-        match:{college:college}
-    },function(list){
-        data.placedCount=list.count;
-    })
-    // await console.log(data);
-    return data;
 },
 
-DeptPlaced: async function (college){
+DeptPlaced: async function (college,callback){
     var OverallDeptRating={},lineData={};
     var departments=[];
     var todaysDate = cfuncs.tdate();
-    
+    console.log("tdate:"+todaysDate);
     await Placement.find({}).populate([{
         path:'selectedStudents',
         model:'Student'
@@ -52,7 +51,7 @@ DeptPlaced: async function (college){
           });
         for(i=0;i<placement.length;i++){
             var deptCount={};
-            var pDate= placement[i].date.split("-");
+            var pDate= placement[i].driveDate.split("-");
             if(!(todaysDate[1]<pDate[1])||((todaysDate[1]===pDate[1])&&(todaysDate[0]<=pDate[0]))){
                 for(j=0;j<placement[i].selectedStudents.length;j++){
                     if(placement[i].selectedStudents.length>0){
@@ -96,12 +95,14 @@ DeptPlaced: async function (college){
                 }
             }
         }
+        callback(lineData);    
     });
-    return lineData;
+    console.log(lineData);
+    
 },
 
 
-PlacedDeptStd: async function(college){
+PlacedDeptStd: async function(college,callback){
     var placedCount={},datasend={},dept={};
     await studentController.listStudents({},['author'],{
         path:'author',
@@ -110,7 +111,7 @@ PlacedDeptStd: async function(college){
         match:{college:college}
     },async function(list){
         list= await list.map(function(std){
-            return std.author;
+            return std.author._id;
         });
         Student.aggregate([
             { $match: {
@@ -125,7 +126,7 @@ PlacedDeptStd: async function(college){
                 }
             }
         ]).exec( function (err, result) {
-            console.log(result);
+            if(result)
             result.forEach(function(res){
                 datasend.placed[res._id]=res.count;
             });
@@ -141,14 +142,17 @@ PlacedDeptStd: async function(college){
 
                 }
             }
-        ]).exec( function (err, result) {
-            console.log(result);
+        ]).exec(async function (err, result) {
+            datasend.count={};
+            // console.log(result);
+            if(result)
             result.forEach(function(res){
                 datasend.count[res._id]=res.count;
             });
+            callback(datasend);
         });
     });
-    return datasend;
+    
 }
 }
 

@@ -64,6 +64,21 @@ var homeurl = process.env.homeUrl;
 // })
 
 
+router.get("/mails",function(req,res){
+    var searchCondition={ semester: { $in: [8] } , department: { $in: 'CSE' }};
+    var selectArray = ['author'];
+    var populate = {
+        path:'author',
+        model:'User',
+        select:{'email':1},
+        match:{college:'amcec'}
+    };
+    studentController.getEmailIDs(searchCondition,selectArray,populate,function(mails){
+        console.log(mails);
+        res.send(mails);    
+    });
+});
+
 
 router.post("/register", function(req, res){    
     adminController.signUp(req.body,function(addedUser){
