@@ -3,14 +3,30 @@ var Internship = require("../../models/internship");
 var LeaderBoard = require("../../models/leaderboard");
 var Student = require("../../models/student");
 
+var studentController = require('../../lib/controller/student');
+var placementController = require('../../lib/controller/placement');
+
+var cfuncs      =       require('../../lib/CustomFunctions/functions');
 var functions={
 
 placedData: async function(college){
     var data={};
-
-    await Student.find({selectedPlacements: { $eq: [] }},function(err,students){
-        console.log(students);
+    await studentController.listStudents({selectedPlacements: { $eq: [] }},['_id'],{
+        path:'author',
+        model:'User',
+        select:'_id',
+        match:{college:college}
+    },function(list){
+        data.UnplacedCount = list.length;
     });
+    await studentController.listStudents({selectedPlacements: { $ne: [] }},['_id'],{
+        path:'author',
+        model:'User',
+        select:'_id',
+        match:{college:college}
+    },function(list){
+        data.placedCount=list.count;
+    })
     // await console.log(data);
     return data;
 },
@@ -100,6 +116,22 @@ PlacedDeptStd: async function(college){
         datasend.placed=placedCount;
         datasend.count=dept;
     });
+
+    Student.aggregate([
+            { $unwind: "$selectedPlacements" },
+            // { $match: {
+            //     'marks.result': {$regex: /fail/i},
+            //     'department': searchObj
+            // }},
+            {
+                $group: {
+                    _id: '$department',  //$region is the column name in collection
+                    count: {$sum: 1}
+                }
+            }
+        ]).exec( function (err, result) {
+            console.log(result);
+        });
     return datasend;
 }
 
