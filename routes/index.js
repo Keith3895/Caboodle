@@ -1,20 +1,12 @@
 var express = require("express");
 var router  = express.Router();
 var ejs = require('ejs');
-var passport = require("passport");
-var User = require("../models/user");
-var Student = require("../models/student");
 var VTUmarks = require("../models/vtuMarks");
-var Placement = require("../models/placement");
-var Internship = require("../models/internship");
 var middleware = require("../middleware");
-var nodemailer = require('nodemailer');
 var cheerio = require('cheerio');
 var request = require('request');
 var Excel = require('exceljs');
 const tempfile = require('tempfile');
-var smtpTransport = require('nodemailer-smtp-transport');
-var ses = require('nodemailer-ses-transport');
 var fs = require('fs');
 var pdf = require('html-pdf');
 var conversion = require("phantom-html-to-pdf")();
@@ -29,15 +21,8 @@ var studentController = require('../lib/controller/student');
 var placementController = require('../lib/controller/placement');
 var funcs = require('../lib/CustomFunctions/functions');
 
-var transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        host: "smtp.gmail.com",
-        auth: {
-                    user: 'bkm.blore.c9@gmail.com', // Your email id
-                    pass: 'cloudnine' // Your password
-        }
-});
 var homeurl = process.env.homeUrl;
+
 // var transporter = nodemailer.createTransport(ses({
 //     accessKeyId: 'process.env.MailerKeyid',
 //     secretAccessKey: 'process.env.MailerPsd'
@@ -106,20 +91,7 @@ router.get("/addStudent", middleware.isAdminOrPlacement, function(req, res) {
     res.render("addStudent",{update:'none'});
 }); 
 
-router.get("/mails",function(req,res){
-    var searchCondition={ semester: { $in: [7,8] } , department: { $in: ['CSE','ISE','ECE'] }};
-    var selectArray = ['author'];
-    var populate = {
-        path:'author',
-        model:'User',
-        select:{'email':1},
-        match:{college:'amcec'}
-    };
-    studentController.getEmailIDs(searchCondition,selectArray,populate,function(mails){
-        console.log(mails);
-        res.send(mails);    
-    });
-});
+
 
 router.get("/updateStudent/:id", middleware.isAdminOrPlacement, function(req,res){
     var populate = {
@@ -147,20 +119,6 @@ router.get('/verify', function(req, res) {
         }
     });
 });
-
-router.get("/letter",function(req,res){   
-    res.render("student/letter");
-});
-
-router.get("/email",function(req,res){  
-    Placement.findOne({},function(err,placement){
-        if(err) console.log(err);
-        else{
-            res.render("placement/email",{placement:placement});
-        }
-    })
-});
-
 router.get("/viewResults",function(req,res){
     var branch = 'Computer Science Engineering',department;
     var sem = 8;
@@ -327,50 +285,12 @@ router.get("/forgotPassword",function(req,res){
 });
 
 router.post("/forgotPassword",function(req,res){
-    User.findOne({email:req.body.email},function(err,user){
-       if(err){
-           console.log(err);
-       }else{
-           if(!user){
-               req.flash("error","User not registered!");
-               res.redirect("/forgotPassword")
-           }else{
-            //   if(!/@gmail.com/.test(user.email))
-                    // user.email="";
-                console.log(user.email);
-               var mailOptions;
-               req.session.verCode=randomstring.generate();
-               var htmlMail = '<div> <p> Hello '+user.firstName+', </p>'+
-                '<p> This is a mail from GradBunker.  </p> <p> Copy the verification code is mentioned below: </p>'+
-                '<p><b> '+req.session.verCode+ '</b></p><p> '+
-                '<p> Or, <a href="'+homeurl+'/resetPassword/'+req.session.verCode+
-                '">click here</a> to reset your password!</p>'+
-                '<p> If you did not forget your password, Please ignore this mail</p><p> Regards, </p>'+
-                '<p> GradBunker</p></div>';
-                mailOptions = {
-                    from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
-                    to: 'bkm.blore@gmail.com ,'+user.email, // list of receivers
-                    subject: 'GradBunker-Verification Code', // Subject line
-                    html: htmlMail
-                };
-                
-                transporter.sendMail(mailOptions, function(error, info){
-                    if(error){
-                        console.log(error);
-                    }
-                    else{
-                        req.session.verMail=user.email;
-                        console.log('Message sent: congo!!!!!');
-                        req.flash("success","Verification Code sent to mail.")
-                        res.render("verifyMail");
-                        // callback(null,"It works");
-                    };
-                });
-               
-               
-           }
-       }
-   })
+    authController.forgotPassword(req.body.email,function(stat,message,verCode){
+        req.session.verCode = verCode;
+        req.session.verMail=email;
+        req.flash(stat,message);
+        res.render("verifyMail");
+    });
 });
 
 router.post("/verifyEmail",function(req,res){
@@ -387,7 +307,7 @@ router.post("/verifyEmail",function(req,res){
 
 router.get('/resetPassword/:token', function(req, res) {
     if(req.params.token===req.session.verCode){
-        res.render('resetPass',{token:req.params.token});
+        res.render('changePass',{token:req.params.token});
     } else {
         req.flash('popup', 'Invalid or Expired Link! Try again! Due to our authentication policy we dont recognize this device'
         +' please use the same device to reset password...');
@@ -395,38 +315,17 @@ router.get('/resetPassword/:token', function(req, res) {
     }
 });
 
-router.post('/resetPassword/:token', function(req, res) {
+router.post('/resetPassword', function(req, res) {
     var newPassword= req.body.pass;
-    var confirmNewPassword= req.body.pass1;
-    User.findOne({email: req.session.verMail}, function(err, user) {
-        if (err) {
-          req.flash('error', 'Password reset token is invalid or has expired.');
-          return res.redirect('/forgotPassword');
-        }
-        else{
-            if(newPassword===confirmNewPassword){
-               user.setPassword(newPassword, function(error){
-                   if(error){
-                        console.log(error);
-                   }
-                   else{
-                       user.save(function(err2){
-                           if(err2){
-                               console.log("Error in saving: "+err2);
-                           }
-                           else{
-                               req.session.verCode=null;
-                               req.session.verMail=null;
-                               req.flash("success","Password reset successfully! Login to Continue");
-                               res.redirect("/login");
-                           }
-                       }); 
-                    }
-                });
-            } else {
-                req.flash("error","Passwords do not match");
-                res.redirect("/resetPass/"+req.session.verCode);
-            }
+    authController.resetPassword(req,function(stat){
+        if(stat=='success'){
+            req.session.verCode=null;
+            req.session.verMail=null;
+            req.flash("success","Password reset successfully! Login to Continue");
+            res.redirect("/login");
+        }else{
+            req.flash('error', 'Password reset token is invalid or has expired.');
+            res.redirect('/forgotPassword');  
         }
     });
 });
@@ -472,49 +371,6 @@ router.get("/login", function(req, res){
    res.render("login");
 });
 
-//handling login logic
-
-
-
-
-router.get("/changePassword",function(req,res){
-    res.render("changePass"); 
-})
-
-router.post("/changePassword",middleware.isLoggedIn,function(req,res){
-   var newPassword= req.body.pass;
-   var confirmNewPassword= req.body.pass1;
-   User.findOne({email: req.user.email},function(error,user){
-       if(error){
-           console.log(Error);
-       }
-       else{
-          if(newPassword===confirmNewPassword){
-               user.setPassword(newPassword, function(error){
-                   if(error){
-                        console.log(error);
-                   }
-                   else{
-                       user.save(function(err){
-                           if(err){
-                               console.log("Error in saving: "+err);
-                           }
-                           else{
-                               req.flash("success","Password changed successfully");
-                               res.redirect("/"+req.user.userType);
-                           }
-                       }); 
-                   }
-                });
-            } else {
-                req.flash("error","Passwords do not match");
-                res.redirect("/changePassword");
-            }
-       }
-   
-});
-});
-
 
 // logout route
 router.get("/logout",middleware.isLoggedIn, function(req, res){
@@ -531,20 +387,26 @@ router.get("/leaderboard",function(req,res){
 
 
 router.get("/listOfdrives/:id",function(req, res) {
-    switch(req.params.id){
-        case 'home':
-            Placement.find({}).sort({'_id':-1}).limit(2).exec(function(err,cpny){
-                res.send(cpny);
-            });
-            break;
-        case 'list':
-            Placement.find({}).exec(function(err,cpny){
-                res.send(cpny);
-            });
-            break;
-    }
-    
-    
+    var populate=[{
+        path: 'registeredStudents',
+        model: 'Student',
+        populate: {
+          path: 'author',
+          model: 'User'
+        }
+    },{
+          path: 'author',
+          model: 'User',
+          // match:{
+          //       'college':req.user.college
+          //   }
+        }
+    ];
+    placementController.listPlacement({},[],populate,function(all){
+        topTwo=[];
+        topTwo.push(all[all.length-1]);topTwo.push(all[all.length-2]);
+        res.send(topTwo);
+    });    
 });
 
 module.exports = router;

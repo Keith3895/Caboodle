@@ -34,23 +34,22 @@ placedData: async function(college){
 DeptPlaced: async function (college){
     var OverallDeptRating={},lineData={};
     var departments=[];
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
-    var yyyy = today.getFullYear();
-    if(dd<10){
-        dd='0'+dd;
-    } 
-    if(mm<10){
-        mm='0'+mm;
-    } 
-    var today = dd+'-'+mm+'-'+yyyy;
-    var todaysDate = today.split("-");
+    var todaysDate = cfuncs.tdate();
     
-    await Placement.find({}).populate({
+    await Placement.find({}).populate([{
         path:'selectedStudents',
         model:'Student'
-    }).exec(async function(err,placement){
+    },
+    {
+        path:'author',
+        model:'User',
+        select:'_id',
+        match:{college:college}
+    }
+    ]).exec(async function(err,placement){
+        placement = await placement.filter(function(placements) {
+              return placements.author;
+          });
         for(i=0;i<placement.length;i++){
             var deptCount={};
             var pDate= placement[i].date.split("-");
@@ -104,38 +103,53 @@ DeptPlaced: async function (college){
 
 PlacedDeptStd: async function(college){
     var placedCount={},datasend={},dept={};
-    await Student.find({college:college},function(err, students) {
-        for(i=0;i<students.length;i++){
-            if(students[i].selectedPlacements.length>0){
-                placedCount[students[i].department]=(placedCount[students[i].department]>=0)?placedCount[students[i].department]+1:1;
-                
-            }
-            else
-                dept[students[i].department]=(dept[students[i].department]>=0)?dept[students[i].department]+1:1;
-        }
-        datasend.placed=placedCount;
-        datasend.count=dept;
-    });
-
-    Student.aggregate([
-            { $unwind: "$selectedPlacements" },
-            // { $match: {
-            //     'marks.result': {$regex: /fail/i},
-            //     'department': searchObj
-            // }},
+    await studentController.listStudents({},['author'],{
+        path:'author',
+        model:'User',
+        select:'_id',
+        match:{college:college}
+    },async function(list){
+        list= await list.map(function(std){
+            return std.author;
+        });
+        Student.aggregate([
+            { $match: {
+                'selectedPlacements': {$ne:[ ]},
+                'author':{$in:list}
+            }},
             {
                 $group: {
-                    _id: '$department',  //$region is the column name in collection
-                    count: {$sum: 1}
+                    _id: '$department',  
+                    count: {$sum: 1},
+
                 }
             }
         ]).exec( function (err, result) {
             console.log(result);
+            result.forEach(function(res){
+                datasend.placed[res._id]=res.count;
+            });
         });
+        Student.aggregate([
+            { $match: {
+                'author':{$in:list}
+            }},
+            {
+                $group: {
+                    _id: '$department',  
+                    count: {$sum: 1},
+
+                }
+            }
+        ]).exec( function (err, result) {
+            console.log(result);
+            result.forEach(function(res){
+                datasend.count[res._id]=res.count;
+            });
+        });
+    });
     return datasend;
 }
-
-
-};
+}
 
 module.exports = functions;
