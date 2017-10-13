@@ -133,8 +133,10 @@ router.get('/students',middleware.isAdminOrPlacement,function(req, res) {
             'college':req.user.college
         }
     };
-    var selectArray =[];
+    selectArray =['author','department','semester'];
+    console.log(populate);
     studentController.listStudents({},selectArray,populate,function(list){
+        console.log(list);
         res.render('placement/student_list',{list:list});        
     }); 
 });
@@ -169,6 +171,94 @@ router.post("/addNewPlacement", function(req,res){
         }
     })
 })
+
+router.post("/addNewPlacement_bkp",async function(req,res){
+    // console.log(req.body);
+    var eligibility = req.body.tenth+'-'+req.body.twelfth+'-'+req.body.engg;
+    var qualification = req.body.qualification;
+    var sems=[],deps=[];
+    qualification = (typeof qualification === 'string') ? qualification : qualification.join(", ");
+    var department =  req.body.department;
+    department = (typeof department === 'string') ? department : department.join(", ");
+    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
+    (typeof req.body.sendTodepartment === 'string') ? deps.push(req.body.sendTodepartment) : deps = req.body.sendTodepartment;
+    var emails='',students;
+    await Student.find({ semester: { $in: sems } , department: { $in: deps }}).populate('author').exec(function(err,records){
+        if(err) console.log(err);
+        else{
+            console.log()
+            records.forEach(function(record){
+                // res.send(records);
+                // if(/@gmail.com/.test(record.author.email))
+                    emails = emails + ', '+ record.author.email;
+            })
+        }
+    })
+    // console.log()(typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
+    var mailAttachments = [];
+    var length = req.files.docs.length;
+    var filePaths=[],count = 1;
+    uploadData = function f2(){
+    var newPlacement = new Placement({
+        author: req.user._id,
+        cName: req.body.cName,
+    	Package: req.body.package,
+    	jobLocation: req.body.jobLocation,
+    	qualification: qualification,
+    	department: department,
+    	skills: req.body.skills,
+    	designation: req.body.designation,
+    	driveLocation: req.body.driveLocation,
+    	date: req.body.driveDate,
+    	time: req.body.lastDate,
+    	eligibility: eligibility,
+    	jobDescription: req.body.jobDescription, 
+    	doc_links: filePaths,
+    });
+    Placement.create(newPlacement,function(error,newDrive){
+        if(error){
+            console.log(error);
+            req.flash("error","Couldnt Update New Drive");
+            res.redirect("/placementHead/addNewPlacement");
+        }
+        else{
+            var html;
+            // console.log("Created: ",newDrive);
+            // req.flash("success","Updated New Drive");
+            // res.redirect("/placementHead");
+            var mailOptions;
+            
+            // console.log("Attachments: ",mailAttachments);
+            ejs.renderFile(template,{placement: newDrive}, function(err, html){
+                if (err) console.log(err);
+                else{
+                    console.log(emails);
+                    mailOptions = {
+                        from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
+                        to: 'bkm.blore@gmail.com '+emails, // list of receivers
+                        subject: newDrive.cName+'- New Placement Update', // Subject line
+                        html: html, //, // plaintext body
+                        attachments: mailAttachments
+                    };
+                }
+            });
+            
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    console.log(error);
+                }
+                else{
+                    console.log('Message sent: congo!!!!!');
+                    req.flash("success","Updated Placement Info");
+                    res.redirect("/placementHead/placements");
+                    // callback(null,"It works");
+                };
+            });
+        }
+    })
+    };
+    fileUploader(0,req.files.docs,'PlacementUploads/',length,mailAttachments,filePaths);
+});
 
 
 router.get("/updatePlacement/:id",function(req,res){
@@ -628,9 +718,9 @@ router.get('/placementStats',async function(req, res) {
     
     
     res.send({
-        1: await placementCalc.DeptPlaced(),
-        2: await placementCalc.placedData(),
-        3: await placementCalc.PlacedDeptStd()
+        1: await placementCalc.DeptPlaced(req.user.college),
+        2: await placementCalc.placedData(req.user.college),
+        3: await placementCalc.PlacedDeptStd(req.user.college)
     });   
 });
 
@@ -642,46 +732,3 @@ router.get('/placementStat',async function(req, res) {
 module.exports = router;
 
 
-
-// router.get("/placements",function(req, res) {
-//     var today = new Date();
-//     var dd = today.getDate();
-//     var mm = today.getMonth()+1; //January is 0!
-//     var yyyy = today.getFullYear();
-//     if(dd<10){
-//         dd='0'+dd;
-//     } 
-//     if(mm<10){
-//         mm='0'+mm;
-//     } 
-//     var today = dd+'-'+mm+'-'+yyyy;
-//     var tDate = today.split("-");
-//     Placement.find({})
-//     .populate({
-//         path: 'registeredStudents',
-//         model: 'Student',
-//         populate: {
-//           path: 'author',
-//           model: 'User'
-//         }
-//     }).exec(function(err,cpny){
-//         if(err)console.log("In placement error: ",err);
-//         if(!err){
-//             Internship.find({})
-//             .populate({
-//                 path: 'registeredStudents',
-//                 model:'Student',
-//                 populate: {
-//                   path: 'author',
-//                   model: 'User'
-//                 }
-//             }).exec(function(err2,internships){
-//                 if(err2)console.log("Intern error: ",err2);
-//                 if(!err2){
-//                     res.render('placement/viewPlacements',
-//                     {company:cpny,internships: internships, todaysDate: tDate});
-//                 }
-//             })
-//         }
-//     });
-// });

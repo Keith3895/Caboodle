@@ -1,5 +1,7 @@
 var express = require("express");
 var router  = express.Router();
+var User = require("../models/user");
+var Student = require("../models/student");
 var VTUmarks = require("../models/vtuMarks");
 var VTUmarks1 = require("../models/marks2");
 var middleware = require("../middleware");
@@ -83,7 +85,7 @@ router.get("/",middleware.isAdmin,function(req,res){
 
 router.get("/upload",function(req,res){
     res.render("admin/upload");
-})
+});
 
 router.post("/upload",function(req,res){
     var url;
@@ -104,7 +106,7 @@ router.post("/upload",function(req,res){
             res.end(JSON.stringify(obj));
         }
     });
-})
+});
 
 
 
@@ -555,120 +557,14 @@ router.post("/addPlacementHead", middleware.isAdmin, function(req, res){
         res.redirect("/verify?authToken="+addedPLacementHead.authToken);
     });
 });
-//handle sign up logic
+router.get('/resetQuestion',function(req,res) {
+    adminController.getColleges(function(clgs){
+        res.render('admin/resetQuestions',{clgs:clgs});
+    });
+});
 
 
 
 module.exports = router;
 
 
-// router.delete('/students',middleware.isAdminOrPlacement, function(req, res, next) {
-//     var usn = req.body.USN || req.query.USN;
-//     var userID = req.body.userID || req.query.userID;
-//     //include leaderboard
-//     User.findOne({_id:userID }, function(err, user) {
-//         if (err) { 
-//             console.log("User delete error: ",err);
-//         } else { 
-//             async.parallel([
-//                 function(callback) {
-//                     Placement.find({},function(err1,placements){
-//                         if(err) console.log("Internship delete error: ",err1)
-//                         else{
-//                             if(placements!==null){
-//                                 placements.forEach(function(placement){
-//                                     if(has(placement.registeredStudents,user._id)){
-//                                         remove(placement.registeredStudents,user._id);
-//                                         placement.save();
-//                                     }
-//                                     if(has(placement.selectedStudents,user._id)){
-//                                         remove(placement.selectedStudents,user._id);
-//                                         placement.save();
-//                                     }
-//                                 })
-//                             }
-//                         }
-//                     })
-//                     callback(null,true)
-//                 },
-//                 function(callback) {
-//                     Internship.find({},function(err1,internships){
-//                         if(err) console.log("Internship delete error: ",err1)
-//                         else{
-//                             if(internships!==null){
-//                                 internships.forEach(function(internship){
-//                                     if(has(internship.registeredStudents,user._id)){
-//                                         remove(internship.registeredStudents,user._id);
-//                                         internship.save();
-//                                     }
-//                                     if(has(internship.selectedStudents,user._id)){
-//                                         remove(internship.selectedStudents,user._id);
-//                                         internship.save();;
-//                                     }
-//                                 })
-//                             }
-//                         }
-//                     })
-//                     callback(null,true)
-//                 }
-//             ], function(err3, results) {
-//                 console.log("Heretop")
-//                 if (!err3){
-//                     user.remove().then(function(err4){
-//                         if(!err4){
-//                             console.log("Here")
-//                             req.flash("success","User deleted");
-//                             // res.redirect("/admin/students")
-//                         }
-//                     })
-//                 }
-//                 // something went wrong
-//              });
-            
-//        }
-//    });
-// });
-
-
-
-
-
-// router.post("/addPlacementHead", middleware.isAdmin, function(req, res){
-//     var newUser = new User({
-//         email: req.body.email,
-//         firstName: req.body.firstName,
-//         lastName: req.body.lastName,
-//         userType: "placementHead",
-//         usn:"placementHead"
-//     });
-//     User.register(newUser, 'amcec', function(err, user){
-//         if(err){
-//             console.log("error: ",err)
-//             req.flash("error", err.message);
-//             return res.render("admin/addPlacementHead");
-//         }
-//         var text = 'Hello Admin,\n'+
-//                     '   This is a mail from GradBunker.\n'+
-//                     '   You added a new Placement Head ' + user.firstName+
-//                     '. If you did not add the Placement Head, click the '+
-//                     'following link to delete the account: '+
-//                     ''+homeurl+'/delete/'+
-//                     user._id+'  \n'+
-//                     '   Else Ignore this mail';
-//         var mailOptions = {
-//             from: 'GradBunker <noreply@keithfranklin.xyz>', // sender address
-//             to: 'bkm.blore@gmail.com', // list of receivers
-//             subject: 'You recently added a Placement Head', // Subject line
-//             text: text //, // plaintext body
-//         };
-//         transporter.sendMail(mailOptions, function(error, info){
-//             if(error){
-//                 console.log(error);
-//             }
-//             else{
-//                 console.log('Message sent: congo!!!!!');
-//                 res.redirect("/verify?authToken="+user.authToken)
-//             };
-//         });
-//     });
-// });

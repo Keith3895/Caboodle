@@ -1,12 +1,9 @@
 var express = require("express");
 var router  = express.Router();
-var passport = require("passport");
 var User = require("../models/user");
-var VTUmarks = require("../models/vtuMarks");
 var Placement = require("../models/placement");
 var Internship = require("../models/internship");
 var Student = require("../models/student");
-var LeaderBoard = require("../models/leaderboard");
 var middleware = require("../middleware");
 var nodemailer = require('nodemailer');
 var mkdirp = require('mkdirp');
@@ -47,95 +44,45 @@ var has = function(container, value) {
 	}
 	return returnValue;
 }
-
+var studentController = require('../lib/controller/student');
+var placementController = require('../lib/controller/placement');
+var userHandler = require('../lib/data_handles/user');
 router.get("/",function(req,res){
-    Student.findOne({'author':req.user._id}).populate('author').exec(function(err,student){
-        if(err) console.log(err);
-        else{
-            res.render("student/viewProfile",{student: student});
-            // res.send(student);
-        }
-    })
+    studentController.findStudent(req.user._id,[],'author',function(student){
+        res.render("student/viewProfile",{student: student});
+    });
 });
-router.get("/mobile/:id",function(req,res){
-    Student.findOne({'author':req.params.id}).populate('author').exec(function(err,student){
-        if(err) console.log(err);
-        else{
-            res.send(student);
-            // res.send(student);
-        }
-    })
-});
-
-
-// 
 router.get("/registerPlacement/:id",middleware.isStudent,function(req,res){
     var currentUser = req.user;
-    Placement.findOne({'_id':req.params.id},function(err,record){
-        if(err) console.log(err);
-        else{
-            if(record!==null){
-                Student.findOne({'author':currentUser._id},function(err1,student) {
-                    if(err1) console.log(err1);
-                    else{
-                        if(!has(record.registeredStudents,student._id)){
-                            record.registeredStudents.push(student._id);
-                            record.save();
-                            student.registeredPlacements.push(record._id);
-                            student.save();
-                            console.log("Successful registration")
-                            req.flash("success","You are successfully registered!");
-                            res.redirect("/student/viewPlacements");
-                        }else{
-                            console.log("Already registered")
-                            req.flash("error","You are already registered!");
-                            res.redirect("/student/viewPlacements");
-                        }
-                    }
-                })
-            }else{
-                console.log("No such placement exists");
-            }
+    studentController.registerPlacement(req.params.id,currentUser,function(status){
+        if(status==='success'){
+            console.log("Successful registration")
+            req.flash("success","You are successfully registered!");
+            res.redirect("/student/viewPlacements");
+        }else{
+            console.log("Already registered")
+            req.flash("error","You are already registered!");
+            res.redirect("/student/viewPlacements");
         }
-    })
-    Internship.findOne({'_id':req.params.id},function(err,record){
-        if(err) console.log(err);
-        else{
-            if(record!==null){
-                Student.findOne({'author':currentUser._id},function(err1,student) {
-                    if(err1) console.log(err1);
-                    else{
-                        if(!record.registeredStudents.includes(student._id)){
-                            record.registeredStudents.push(student._id);
-                            record.save();
-                            student.registeredInternships.push(record._id);
-                            student.save();
-                            console.log("Successful registration")
-                            req.flash("success","You successfully applied!");
-                            res.redirect("/student");
-                        }else{
-                            console.log("Already registered")
-                            req.flash("error","You are already registered!");
-                            res.redirect("/student");
-                        }
-                    }
-                })
-            }else{
-                console.log("No such internship exists");
-            }
+    });
+    studentController.registerInternship(req.params.id,currentUser,function(status){
+        if(status==='success'){
+            console.log("Successful registration")
+            req.flash("success","You successfully applied!");
+            res.redirect("/student");
+        }else{
+            console.log("Already registered")
+            req.flash("error","You are already registered!");
+            res.redirect("/student");
         }
-    })
+    });
 });
 
 
 router.get("/updateProfile",function(req,res){
-    var currentUser = req.user;
-    Student.findOne({'author':currentUser._id}).populate('author').exec(function(err,student){
-        if(err) console.log(err);
-        else{
-            res.render("student/updateProfile",{student: student});
-        }
-    })
+    tudentController.findStudent(req.user._id,[],'author',function(student){
+        res.render("student/updateProfile",{student: student});
+    });
 });
 
 router.post("/updateProfile",function(req,res){
@@ -286,24 +233,15 @@ router.post("/updateProfile",function(req,res){
 
 router.get("/viewProfile",middleware.isLoggedIn, function(req,res){
     req.session.redirectTo = '/student/viewProfile';
-    Student.findOne({'author':req.user._id}).populate('author').exec(function(err,student){
-        if(err) console.log(err);
-        else{
-            res.render("student/viewProfile",{student: student});
-            // res.send(student);
-        }
-    })
+    studentController.findStudent(req.user._id,[],'author',function(student){
+        res.render("student/viewProfile",{student: student});
+    });
 });
 
 router.post("/updateDP",function(req,res){
     var profilePic = req.body.dp;
-    User.update({'email':req.user.email},{$set:{"dp":profilePic}},function(err,doc){
-        if(err){
-            console.log("Update err");
-        }
-        else{
-            res.redirect("/student")
-        }
+    userHandler.editUser({'email':req.user.email},{"dp":profilePic},function(){
+        res.redirect("/student");
     });
 })
 
@@ -330,33 +268,24 @@ router.get('/viewFile', function(req, res) {
     res.render("student/viewFile",{link:req.query.link});
 });
 router.get('/viewPlacements', function(req, res) {
-    
-    Student.findOne({'author':req.user._id}).populate({
+    populate={
         path: 'registeredPlacements',
         model:'placement'
-    }).exec(function(err1, student) {
-        // res.send(student);
+    };
+    studentController.findStudent(req.user._id,['registeredPlacements'],populate,function(student){
         res.render("student/viewPlacement",{student:student});
-    });
-    
-    
+    });    
 });
 
 
 router.get('/testAnalysis',middleware.isLoggedIn,function(req, res) {
-    Student.findOne({'author':req.user._id},function(err, student) {
-        if(err)
-            console.log(err);
-            // res.send(student.PlacementTestResults);
+    studentController.findStudent(req.user._id,['PlacementTestResults'],'',function(student){
         res.render('student/PlacementAnalysis',{testResult:student.PlacementTestResults});    
     });
 });
 
 router.get('/getAnalysis',function(req,res){
-    Student.findOne({'author':req.user._id},function(err, student) {
-        if(err)
-            console.log(err);
-            // console.log(student.PlacementTestResults[student.PlacementTestResults.length - 1][0]);
+    studentController.findStudent(req.user._id,['PlacementTestResults'],'',function(student){
         if(student.PlacementTestResults.length>0)
             resultAnalysis(req,student.PlacementTestResults[student.PlacementTestResults.length-1][0],res);
     });
@@ -375,114 +304,3 @@ module.exports = router;
 
 
 
-
-
-// router.get("/applyLeave",function(req,res){
-//     res.render("student/applyLeave");
-// });
-
-// router.post("/applyLeave",function(req,res){
-//     var usn1,department,sem;
-//     Student.findOne({'author':req.user._id},function(err,student){
-//         if(err) console.log(err);
-//         else{
-//             usn1= student.USN;
-//             department = student.department;
-//             sem = student.semester;
-//         }
-//     });
-//     const template = './views/student/letter.ejs';
-//     var today = new Date();
-//     var dd = today.getDate();
-//     var mm = today.getMonth()+1; //January is 0!
-//     var yyyy = today.getFullYear();
-//     if(dd<10){
-//         dd='0'+dd;
-//     } 
-//     if(mm<10){
-//         mm='0'+mm;
-//     } 
-//     var today = dd+'-'+mm+'-'+yyyy;
-//     var mailAttachments = [];
-//     var length = req.files.images.length;
-//     var count = 1;
-//     function f1(){
-//         if(length>0){
-//             function uploader(i){
-//                 var imageFile = req.files.images[i],
-//                     fileExtension1 = imageFile.name.split(".");
-//                 var fileExtension = fileExtension1[fileExtension1.length - 1]
-//                 var filename = Date.now()+'image'+i+'.'+fileExtension;
-//                 var stream = fs.createReadStream(imageFile.path);
-//                 var params = {ACL: "public-read", Bucket: 'gradbunker', Key: 'LetterUploads/'+filename,
-//                     Body: stream
-//                 };
-//                 s3.upload(params, function(err, data) {
-//                     if(err) console.log(err);
-//                     else{
-//                         var newAttachment = {
-//                             filename: filename,
-//                             path: data.Location
-//                         }
-//                         mailAttachments.push(newAttachment);
-//                         if(count===length) f2();
-//                         else{
-//                             count = count + 1;
-//                             i = i + 1;
-//                             uploader(i);
-//                         }
-//                   }
-//                 });
-//             }
-//             uploader(0);
-//         }else{
-//             f2();
-//         }
-//     }
-//     function f2(){
-//         var newLetter = {
-//             name: req.user.firstName+' '+req.user.lastName,
-//             date: today,
-//             usn: usn1,
-//             sem: sem,
-//             department: department,
-//             subject: req.body.subject,
-//             body: req.body.letterBody,
-//         };
-//         var mailOptions;
-//         var transporter = nodemailer.createTransport({
-//             service: 'Gmail',
-//             host: "smtp.gmail.com",
-//             auth: {
-//                 user: 'bkm.blore.c9@gmail.com', // Your email id
-//                 pass: 'cloudnine' // Your password
-//             }
-//         });
-//         // console.log("Attachments: ",mailAttachments);
-//         ejs.renderFile(template,{student: newLetter}, function(err, html){
-//             if (err) console.log(err);
-//             else{
-//                 mailOptions = {
-//                     from: 'GradBunker <bkm.blore.c9@gmail.com>', // sender address
-//                     to: 'bkm.blore@gmail.com, '+req.user.email, // list of receivers
-//                     subject: 'Applied for Leave', // Subject line
-//                     html: html, //, // plaintext body
-//                     attachments: mailAttachments
-//                 };
-//             }
-//         });
-        
-//         transporter.sendMail(mailOptions, function(error, info){
-//             if(error){
-//                 console.log(error);
-//             }
-//             else{
-//                 console.log('Message sent: congo!!!!!');
-//                 req.flash("success","Leave Letter sent! Check email!");
-//                 res.redirect("/student");
-//             };
-//         });
-           
-//     }
-//     f1();
-// });

@@ -1,72 +1,20 @@
 var express = require("express"),
     router  = express();
-var http = require('https');
 var ejs = require('ejs');
 var pdf = require('html-pdf');
 var conversion = require("phantom-html-to-pdf")();
 const template = './views/tests/solutionsTemplate.ejs';
 var middleware = require("../middleware");
-var Student = require("../models/student");
 var LeaderBoard = require("../models/leaderboard");
-var GlobalLeaderBoard = require("../models/globalLeaderBoard");
-var Questions = require("../models/question");
-var Context = require("../models/context");
 var resultAnalysis = require("./externalFunction/placementTestAnalysis");
 var testExternalFuncs = require("./externalFunction/testExternalFuncs");
 // var page=require('webpage').create();
 var phantom = require('phantom');
-
+var testController = require('../lib/controller/test');
+var studentController = require('../lib/controller/student');
+var LeaderBoardController = require('../lib/controller/LeaderBoard');
     var dataRecieved,questionset=0,timestamp;
-function refreshQuestions(){
-    http.get("https://external-api-keithfranklin.c9users.io/random/25", function(resp) {
-    	var body = ''; 
-    	resp.on('data', function(data){
-    		body += data;
-    	});
-    	resp.on('end', function() {
-    		var parsed = JSON.parse(body);
-    // 		console.log(parsed);
-    		dataRecieved= parsed;
-    		timestamp = (new Date().getTime() / 1000 | 0).toString(16)+'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
-                                return (Math.random() * 16 | 0).toString(16);
-                            }).toLowerCase();
-            questionset++;
-            LeaderBoard.create({testId:timestamp},function(err, entry) {
-                console.log("lederboard created");
-            });
-            for(i=0;i<dataRecieved.length;i++){
-                dataRecieved[i].timestamp= timestamp;
-                Questions.create(dataRecieved[i],function(err, questionEnter) {
-                   if(err)
-                    console.log(err);
-                });
-            }
-    	});
-    })
-    .on('error', function(e) {
-    	console.log("Got error: " + e.message);
-    });
-    
-    http.get("https://external-api-keithfranklin.c9users.io/comp/get", function(resp) {
-    	var body = ''; 
-    	resp.on('data', function(data){
-    		body += data;
-    	});
-    	resp.on('end', function() {
-    		var parsed = JSON.parse(body);
-    		var dataRecievedC= parsed;
-            for(i=0;i<dataRecievedC.length;i++){
-                Context.create(dataRecievedC[i],function(err, questionEnter) {
-                   if(err)
-                    console.log(err);
-                });
-            }
-    	});
-    })
-    .on('error', function(e) {
-    	console.log("Got error: " + e.message);
-    });
-}
+
     
 router.get('/',middleware.isLoggedIn,function(req,res){
     req.session.cookie.maxAge = (50*60*1000);
@@ -78,34 +26,28 @@ router.get('/testEnv',middleware.isLoggedIn,function(req, res) {
         req.session.cookie.maxAge = (50*60*1000);
         res.render('tests/tests',{questionset:questionset});
     }
-    else
+    else 
         res.send('no access');
 });
 
 router.get('/questions',middleware.isLoggedIn,function(req,res){
-    req.session.timestamp = timestamp;
-    Questions.find({},function(err, questionsSend) {
-        req.session.timestamp = questionsSend[0].timestamp;    
-        timestamp = questionsSend[0].timestamp;
-        Context.find({},function(err, context) {
-            res.send({
-                questions: questionsSend,
-                context:context
-            });    
-        });
-        
-    });
-    
+    console.log(req.user.college);
+    req.user.college=(req.user.college)?req.user.college:req.session.college;
+    testController.getQuestions(req.user.college,function(questionset){
+        console.log(questionset.questions[0].timestamp);
+        if(questionset.questions[0].timestamp){
+            req.session.timestamp = questionset.questions[0].timestamp;
+            timestamp = req.session.timestamp;
+        }
+        res.send(questionset);
+    });    
 });
 
-router.get('/refreshQuestions',middleware.isAdmin,function(req,res){
-    Questions.remove({},function(err,stat) {
-        console.log('removed');
-        // console.log(stat);
+router.post('/refreshQuestions',middleware.isAdmin,function(req,res){
+    testController.requestQuestions(req.body.college,function(stats){
+        req.session.college=req.body.college;
+        res.redirect('/test');    
     });
-    refreshQuestions();
-    req.session.timestamp=timestamp;
-    res.redirect('/test');
 });
 router.get('/negSkip',middleware.isAdmin,function(req, res) {
     testExternalFuncs.studentSkiped();
@@ -120,49 +62,32 @@ router.post('/getAnalysis',middleware.isLoggedIn,function(req,res){
         typeCorrect:req.body.typeCorrect,
         type : req.body.types
     };
-    Student.findOne({'author':req.user._id},function(err,foundStudent){
-        if(err)
-            console.log(err);
-        for(i=0;i<foundStudent.PlacementTestResults.length;i++){
-            console.log("here as"+req.session.timestamp);
-            if(foundStudent.PlacementTestResults[i][0].id== req.session.timestamp)
-                return res.send('rendered');
-        }
-            
-        foundStudent.PlacementTestResults.push(PlacementTestResults);
-        foundStudent.save();
-        testExternalFuncs.addToLeaderBoard(PlacementTestResults,req);
-        resultAnalysis(req,PlacementTestResults,res);
+    console.log(PlacementTestResults);
+    studentController.findStudent(req.user._id,['PlacementTestResults'],'',function(foundStudent){
+        if(foundStudent){
+            for(i=0;i<foundStudent.PlacementTestResults.length;i++){
+                console.log("here as"+req.session.timestamp);
+                if(foundStudent.PlacementTestResults[i][0].id== req.session.timestamp)
+                    return res.send('rendered');
+            }    
+            foundStudent.PlacementTestResults.push(PlacementTestResults);
+            foundStudent.save();
+            testExternalFuncs.addToLeaderBoard(PlacementTestResults,req);
+            resultAnalysis(req,PlacementTestResults,res);
+        }else
+            res.send('rendered');
     });
 });
 
 router.get('/status',function(req, res) {
     
-        LeaderBoard.find({}).sort({'_id':-1}).exec(function(err, entry) {
-            questionset = entry.length;
-            entry=entry[0];
-            var Submit = entry.entry.length;
-            Student.find({},function(err, std) {
-                var total = std.length;
-                res.send({Submit:Submit,total:total,questionset:questionset});
-            });            
-        });
+    LeaderBoardController.getStats(req.user.college,function(data){
+        res.send(data);
+    });
     
 });
-router.get('/removeResults',middleware.isAdmin,function(req, res) {
-    Student.find({},function(err,std){
-        for(i in std){
-            std[i].PlacementTestResults=[];
-            std[i].save();
-        }
-        LeaderBoard.remove({},function(err, List) {
-            GlobalLeaderBoard.remove({},function(err, List) {
-                res.send(std);        
-            });    
-        });
-        
-        
-    });
+router.get('/removeResults/:college',middleware.isAdmin,function(req, res) {
+    LeaderBoardController.clearAll(req.params.college);
 });
 router.get('/solutionPDF',function(req,res){
     // var usn = req.params.id.toUpperCase();
