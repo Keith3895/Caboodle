@@ -7,15 +7,9 @@ var functions={
 
 placedData: async function(college){
     var data={};
-    await Student.find({college:college},function(err,students){
-        var placedCount=0;
-        for(i=0;i<students.length;i++){
-            if(students[i].selectedPlacements.length >0){
-                placedCount++;
-            }
-        }
-        data.placedCount=placedCount;
-        data.numberOfStudents = students.length;
+
+    await Student.find({selectedPlacements: { $eq: [] }},function(err,students){
+        console.log(students);
     });
     // await console.log(data);
     return data;
