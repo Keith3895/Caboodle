@@ -103,11 +103,11 @@
             </div>
             </a>
             <div class="card-action">
-                <a href="/placementHead/registeredStudents/<%= comp._id %>" ><i class="fa fa-eye" aria-hidden="true"></i>View Registrations</a>
+                <a href="/placementHead/registeredStudents/placement/<%= comp._id %>" ><i class="fa fa-eye" aria-hidden="true"></i>View Registrations</a>
                 <a href="<%= myhref %>" ><i class="fa fa-info-circle" aria-hidden="true"></i>More Info</a><br>
                 <a href="/placementHead/updatePlacement/<%= comp._id %>" >
                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Info</a>
-                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" onclick="f1('<%= comp._id %>')">
+                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" onclick="f1('placement','<%= comp._id %>')">
                         <i class="material-icons delete">delete</i></a>
             </div>
         </div>
@@ -195,7 +195,7 @@
                 <span style="width:20px;"></span>
                 <a href="/placementHead/updatePlacement/<%= comp._id %>" >
                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Info</a>
-                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" onclick="f1('<%= comp._id %>')">
+                <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" onclick="f1('placement','<%= comp._id %>')">
                         <i class="material-icons delete">delete</i></a>
             </div>
         </div>
@@ -314,12 +314,12 @@
             </div>
             </a>
             <div class="card-action">
-                <a href="/placementHead/registeredStudents/<%= internship._id %>" ><i class="fa fa-eye" aria-hidden="true"></i>View Registrations</a>
+                <a href="/placementHead/registeredStudents/internship/<%= internship._id %>" ><i class="fa fa-eye" aria-hidden="true"></i>View Registrations</a>
                 <a href=<%= myhref %> ><i class="fa fa-info-circle" aria-hidden="true"></i>More Info</a><br>
                 <a href="/placementHead/updateInternship/<%= internship._id %>" >
                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i></i>Edit Info</a>
                 <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" 
-                    onclick="f1('<%= internship._id %>')"><i class="material-icons delete">delete</i></a>
+                    onclick="f1('internship','<%= internship._id %>')"><i class="material-icons delete">delete</i></a>
             </div>
         </div>
     </div>
@@ -405,7 +405,7 @@
                 <a href="/placementHead/updateInternship/<%= internship._id %>" >
                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Info</a>
                 <a href="#modalDelete" class="right red-text text-darken-4 dontDisplay del" 
-                    onclick="f1('<%= internship._id %>')"><i class="material-icons delete">delete</i></a>
+                    onclick="f1('internship','<%= internship._id %>')"><i class="material-icons delete">delete</i></a>
             </div>
         </div>
     </div>
@@ -484,15 +484,16 @@
       $(href_id).modal();
   }
  
-    function f1(compId){
+    function f1(type,compId){
         company_id=compId;
+        companytype = type;
     }
     function f2(approval){
         console.log("f2");
         if(approval==='yes'){
             console.log("Delete")
             $.ajax({
-                url: "/placementHead/placements/"+company_id,
+                url: "/placementHead/placements/"+companytype+"/"+company_id,
                 method: "DELETE",
                 success: function() {
                     location.href = "https://erpdontdelete-mkb95.c9users.io/placementHead/placements";

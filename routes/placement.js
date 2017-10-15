@@ -7,11 +7,9 @@ var Placement = require("../models/placement");
 var Internship = require("../models/internship");
 var LeaderBoard = require("../models/leaderboard");
 var Student = require("../models/student");
-var Excel = require('exceljs');
 var middleware = require("../middleware");
 var nodemailer = require('nodemailer');
 var ejs = require('ejs');
-const tempfile = require('tempfile');
 var smtpTransport = require('nodemailer-smtp-transport');
 var ses = require('nodemailer-ses-transport');
 var mkdirp = require('mkdirp');
@@ -69,46 +67,11 @@ var adminController = require('../lib/controller/admin');
 var studentController = require('../lib/controller/student');
 var placementHeadController = require('../lib/controller/placementHead');
 var placementController    = require('../lib/controller/placement');
-var funcs = require('../lib/CustomFunctions/functions');
+var cfuncs = require('../lib/CustomFunctions/functions');
 var emailController = require('../lib/controller/email');
 
 var fileUploadComponent = require('../lib/components/fileUploader');
 var smsComponent = require('../lib/components/sms');
-
-
-var uploadData;
-function fileUploader(i,file,uploadPath,noOfFiles,mailAttachments,filePaths){
-    if(file[i].originalFilename!==''){
-        var fileExtension=file[i].originalFilename.split(".");
-        fileExtension = fileExtension[fileExtension.length - 1];
-        var filename = Date.now()+file[i]['name']+'.'+fileExtension;
-        var stream = fs.createReadStream(file[i].path);
-        var params = {ACL: "public-read", Bucket: 'gradbunker', Key: uploadPath+'/'+filename,
-            Body: stream
-        };
-        s3.upload(params, function(err, data) {
-            if(err) console.log(err);
-            else{
-                filePaths.push(data.Location);
-                mailAttachments.push({
-                    filename: file[i].originalFilename,
-                    path: data.Location
-                })
-                if(i<noOfFiles-1)
-                    fileUploader(i+1,file,uploadPath,noOfFiles,mailAttachments,filePaths);
-                else{
-                    uploadData();
-                }
-            }
-        });
-    }else{
-        if(i<noOfFiles-1)
-            fileUploader(i+1,file,uploadPath,noOfFiles,mailAttachments,filePaths);
-        else{
-            uploadData();
-        }
-    }
-}
 
 
 router.get("/sms",function(req,res){
@@ -240,240 +203,165 @@ router.post("/updateInternship/:id", function(req,res){
 
 
 router.get("/placements",function(req, res) {
-    var tDate = funcs.tdate();
-    var populate=[{
+    var tDate = cfuncs.tdate();
+    var populate={
         path: 'registeredStudents',
         model: 'Student',
         populate: {
-          path: 'author',
-          model: 'User'
-        }
-    },{
-          path: 'author',
-          model: 'User',
-          match:{
+            path: 'author',
+            model: 'User',
+            match:{
                 'college':req.user.college
             }
         }
-    ];
+    };
     placementController.listPlacementsInternships({},[],populate,function(all){
         res.render('placement/viewPlacements',
                     {company:all.cpny,internships: all.internships, todaysDate: tDate});
     });
 });
 
-
-router.delete("/placements/:id",function(req,res){
-    function deletePlacement(record,registered,selected){
-        if(record!==null){
-            var registeredStudents=record.registeredStudents;
-            Student.find({_id:{ $in: registeredStudents }},function(err2,students){
-                if(err2) console.log(err2);
-                else{
-                    record.remove();
-                    students.forEach(function(student,i){
-                        remove(student[registered],record._id);
-                        remove(student[selected],record._id);
-                        student.save(function(err4){
-                            if(err4) console.log(err4);
-                            else{
-                                if(i==students.length-1)
-                                    req.flash("success","Record successfully deleted");
-                            }
-                        });
-                    })
-                }
-            })
-        }
+router.delete("/placements/:companytype/:id",function(req,res){
+    if(req.params.companytype==='placement'){
+        placementController.deletePlacement({_id:req.params.id},function(err,status){
+            if(err){
+                console.log(err);
+                req.flash("error","Could not delete placement! Please contact Admin!");
+                res.redirect("/placementHead/placements");
+            }else{
+                console.log("Placement deleted");
+                req.flash("success","Deleted Placement successfully");
+                res.redirect("/placementHead/placements");
+            }
+        })
+    }else if(req.params.companytype==='internship'){
+        placementController.deleteInternship({_id:req.params.id},function(err,status){
+            if(err){
+                console.log(err);
+                req.flash("error","Could not delete internship! Please contact Admin!");
+                res.redirect("/placementHead/placements");
+            }else{
+                console.log("Internship deleted");
+                req.flash("success","Deleted Internship successfully");
+                res.redirect("/placementHead/placements");
+            }
+        })
     }
-    Placement.findOne({_id:req.params.id},function(err,record){
-        if(err) console.log(err);
-        else{
-            deletePlacement(record,'registeredPlacements','selectedPlacements') /*Last 2 parameters are different for 
-              placements/internships registered or selected. Refer student model.*/
-        }
-    })
-    Internship.findOne({_id:req.params.id},function(err,record){
-        if(err) console.log(err);
-        else{
-            deletePlacement(record,'registeredInternships','selectedInternships') /*Last 2 parameters are different for 
-              placements/internships registered or selected. Refer student model.*/
-        }
-    })
-})
+});
 
-router.get("/registeredStudents/:id",function(req,res){
-    Placement.findOne({'_id':req.params.id})
-    .populate({
+
+router.get("/registeredStudents/:companytype/:id",function(req,res){
+    var searchParameter = {'_id':req.params.id};
+    var selectQuery = [];
+    var populate = {
         path: 'registeredStudents',
         model: 'Student',
         populate: {
           path: 'author',
           model: 'User'
         }
-    }).exec(function(err,record){
-        if(err) console.log(err);
-        else{
-            if(record!==null){
-                res.render("placement/viewRegisteredStudents",{company:record})    
+    };
+    if(req.params.companytype==='placement'){
+        placementController.findPlacement(searchParameter,selectQuery,populate,function(error,placement){
+            if(error) console.log(error);
+            else{
+                if(placement!==null){
+                    res.render("placement/viewRegisteredStudents",{company:placement})    
+                }
             }
-        }
-    })
-    Internship.findOne({'_id':req.params.id})
-    .populate({
-        path: 'registeredStudents',
-        model: 'Student',
-        populate: {
-          path: 'author',
-          model: 'User'
-        }
-    }).exec(function(err,record){
-        if(err) console.log(err);
-        else{
-            if(record!==null){
-                res.render("placement/viewRegisteredStudents",{company:record})    
+        })
+    }else if(req.params.companytype==='internship'){
+        placementController.findInternship(searchParameter,selectQuery,populate,function(error,internship){
+            if(error) console.log(error);
+            else{
+                if(internship!==null){
+                    res.render("placement/viewRegisteredStudents",{company:internship})    
+                }
             }
-        }
-    })
+        })
+    }
 })
 
 router.delete("/registeredStudents",function(req,res){
-    function deleteRecord(record){
-        if(record!==null){
-            remove(record.registeredStudents,student_id);
-            record.save(function(err2){
-                if(err2) console.log(err2);
-                else{
-                    Student.findOne({_id:student_id},function(err3,student){
-                        if(err3) console.log(err3);
-                        else{
-                            if(student!==null){
-                                remove(student.registeredPlacements,record._id);
-                                student.save(function(err4){
-                                    if(err4) console.log(err4);
-                                    else{
-                                        req.flash("success","Student successfully deleted from list");
-                                    }
-                                });
-                            }
-                        }
-                    })
-                }
-            });
-        }
-    }
     var company_id = req.body.cid || req.query.cid;
     var student_id = req.body.sid || req.query.sid;
-    Placement.findOne({'_id':company_id}).exec(function(err,record){
-        if(err) console.log(err);
-        else{
-            deleteRecord(record)
+    placementController.deleteRegisteredPlacementStudents({'_id':company_id},student_id,function(error,info){
+        if(error){
+            console.log(error);
+            req.flash("error","Student could not be deleted from list");
+            res.render("/placementHead/registeredStudents/placement/"+company_id);
+        }else{
+            console.log("Registered student removed successfully");
+            req.flash("success","Student successfully deleted from list");
+            res.render("/placementHead/registeredStudents/placement/"+company_id);
         }
     })
-    Internship.findOne({'_id':company_id}).exec(function(err,record){
-        if(err) console.log(err);
-        else{
-            deleteRecord(record)
+    placementController.deleteRegisteredInternshipStudents({'_id':company_id},student_id,function(error,info){
+        if(error){
+            console.log(error);
+            req.flash("error","Student could not be deleted from list");
+            res.render("/placementHead/registeredStudents/internship/"+company_id);
+        }else{
+            console.log("Registered student removed successfully");
+            req.flash("success","Student successfully deleted from list");
+            res.render("/placementHead/registeredStudents/internship/"+company_id);
         }
     })
 });
 
 router.get("/exportRegisteredStudents/:id",function(req,res){
-    function exportList(company){
-        var workbook = new Excel.Workbook();
-        var worksheet,row,i=7;
-        workbook.xlsx.readFile('RegisteredStudents.xlsx')
-        .then(function() {
-            worksheet = workbook.getWorksheet(1);
-            row = worksheet.getRow(1);
-            row.getCell(3).value=company.cName;
-            row = worksheet.getRow(3);
-            row.getCell(3).value="Drive Date: "+company.date;
-            row.getCell(4).value="Drive Location:";
-            row.getCell(5).value=company.driveLocation;
-            company.registeredStudents.forEach(function(student){
-                row = worksheet.getRow(i);
-                row.getCell(1).value = i - 6;
-                row.getCell(2).value = student.USN;
-                row.getCell(3).value = student.author.firstName+' '+student.author.lastName;
-                row.getCell(4).value = student.author.email;
-                row.getCell(5).value = student.mobile1;
-                row.getCell(6).value = student.tenthResult.Percentage;
-                row.getCell(7).value = student.twelfthResult.Percentage;
-                row.getCell(8).value = student.semAggregate
-                row.getCell(9).value = student.department;
-                row.commit();
-                i= i + 1;
-            })
-            var tempFilePath = tempfile(company.cName+'.xlsx');
-            console.log('file is to be written'+tempFilePath);
-            workbook.xlsx.writeFile(tempFilePath).then(function() {
-                console.log('file is written'+tempFilePath);
-                res.sendFile(tempFilePath, function(err){
-                    if(err)
-                        console.log('---------- error downloading file: ' + err);
-                    else{
-                        console.log("File Downloaded");
-                    }
-                });
-            });
-        })
-    }
-    Placement.findOne({'_id':req.params.id})
-    .populate({
+    var searchParameter = {'_id':req.params.id};
+    var selectQuery = [];
+    var populate = {
         path: 'registeredStudents',
         model: 'Student',
         populate: {
           path: 'author',
           model: 'User'
         }
-    }).exec(function(err,company){
-        if(err) console.log(err);
+    };
+    placementController.findPlacement(searchParameter,selectQuery,populate,function(error,placement){
+        if(error) console.log(error);
         else{
-            if(company!==null){
-                exportList(company)
+            if(placement!==null){
+                cfuncs.exportList(placement,res,function(error1,info){
+                    if(error1) console.log(error1);
+                    else console.log(info);
+                })
             }
         }
     })
-    Internship.findOne({'_id':req.params.id})
-    .populate({
-        path: 'registeredStudents',
-        model: 'Student',
-        populate: {
-          path: 'author',
-          model: 'User'
-        }
-    }).exec(function(err,company){
-        if(err) console.log(err);
+    placementController.findInternship(searchParameter,selectQuery,populate,function(error,internship){
+        if(error) console.log(error);
         else{
-            if(company!==null){
-                exportList(company)
+            if(internship!==null){
+                cfuncs.exportList(internship,res,function(error1,info){
+                    if(error1) console.log(error1);
+                    else console.log(info);
+                })
             }
         }
     })
-})
+});
+
 
 router.get("/updatePlacementStats/:id",function(req,res){
-    populate=[{
+    var populate={
         path: 'registeredStudents',
         model: 'Student',
         populate: {
-          path: 'author',
-          model: 'User'
+            path: 'author',
+            model: 'User',
+            match:{
+                'college':req.user.college
+            }
         }
-    },{
-          path: 'author',
-          model: 'User',
-          match:{
-            'college':req.user.college
-        }
-    }];
+    };
     placementController.findPlacement({_id:req.params.id},[],populate,function(record){
         req.flash("error","Updated Info");
         res.render("placement/updatePlacedStudents",{company:record});
     });
-})
-
+});
 
 router.post("/updatePlacementStats/:id",function(req,res){
     var placed = null,listOfPlacedStudents=[];

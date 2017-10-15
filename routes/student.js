@@ -268,11 +268,12 @@ router.get('/viewFile', function(req, res) {
     res.render("student/viewFile",{link:req.query.link});
 });
 router.get('/viewPlacements', function(req, res) {
-    populate={
+    var populate={
         path: 'registeredPlacements',
         model:'placement'
     };
-    studentController.findStudent(req.user._id,['registeredPlacements'],populate,function(student){
+    var selectQuery = ['registeredPlacements','selectedPlacements'];
+    studentController.findStudent(req.user._id,selectQuery,populate,function(student){
         res.render("student/viewPlacement",{student:student});
     });    
 });
