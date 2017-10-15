@@ -69,7 +69,7 @@
         <thead>
           <tr>
               <th>Name</th>
-              <th>User Type</th>
+              <th>USN</th>
               <th>Email</th>
               <th>Semester</th>
               <th>Department</th>
@@ -78,10 +78,11 @@
         </thead>
 
         <tbody>
-            <% list.forEach(function(el, index){ %>
+            <% list.forEach(function(el, index){ 
+            console.log(el) %>
           <tr>
             <td><%= el.author.firstName %> <%= el.author.lastName %></td>
-            <td><%= el.USN %></td>
+            <td><%= el.author.usn %></td>
             <td><%= el.author.email %></td>
             <td><%= el.semester %></td>
             <td><%= el.department %></td>
