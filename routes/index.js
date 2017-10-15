@@ -78,7 +78,10 @@ var homeurl = process.env.homeUrl;
 //     });
 // })
 
-
+router.get("/",function(req,res){          // the index page
+    req.session.redirectTo=null;
+    res.render("homePage2");
+});
 
 router.post("/register", function(req, res){    
     adminController.signUp(req.body,function(addedUser){
@@ -91,16 +94,13 @@ router.post("/login", function(req, res, next){
         console.log(stat);
     });
 });
+
 router.post("/addStudent", middleware.isAdminOrPlacement, function(req, res){
     studentController.addStudent(req.body,function(addedStudent){
         res.redirect("/verify?authToken="+addedStudent.authToken);    
     });
 });
 
-router.get("/",function(req,res){          // the index page
-    req.session.redirectTo=null;
-    res.render("homePage2");
-});
 
 router.get("/addStudent", middleware.isAdminOrPlacement, function(req, res) {
     res.render("addStudent",{update:'none'});

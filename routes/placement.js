@@ -133,7 +133,7 @@ router.get('/students',middleware.isAdminOrPlacement,function(req, res) {
         //     'college':req.user.college
         // }
     };
-    selectArray =['author','department','semester'];
+    var selectArray =['author','department','semester'];
     console.log(populate);
     studentController.listStudents({},selectArray,populate,function(list){
         // console.log(list);
