@@ -1,0 +1,75 @@
+<% include ../partials/header.ejs %>
+<% include ../partials/navbar.ejs %>
+<link href="/stylesheets/admin_home.css" rel="stylesheet">
+<% include ./sidenav.ejs %>
+<style>
+  body{
+    background:#e5ebea;
+  }
+  h5{
+    font-size:1.4rem;
+    margin:25px 0px;
+  }
+  h5 i{
+    border:2px solid;
+    padding:3px;
+  }
+  
+  .charts{
+		float: left;
+		margin: 5px 30px;
+	}
+	
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box; }
+@media (min-width: 250px) {
+  .container {
+    width: 85%;
+    padding: 0; }
+}
+
+/* For devices larger than 550px */
+@media (min-width: 550px) {
+  .container {
+    width: 80%; }
+}
+@media (min-width: 993px) {
+  #lg1{
+	  margin-left:40px !important;
+	}
+}
+
+</style>
+    <div class="row ">
+    	<div id="lg1" class=" col  s12 l2 m4 hvr-float-shadow card-placement" onclick="window.location='/HOD/addNewPlacement'">
+    				<h5>
+    				  <i class="material-icons">add</i>
+    				  Add Student
+    				</h5>
+    	</div>	
+    	<div class="col  s12 m4 l2 hvr-float-shadow card-placement" onclick="window.location='HOD/viewStats'">
+        <h5 >
+				  <i class="fa fa-bar-chart" aria-hidden="true"></i>
+				  Test Analysis
+				</h5>
+    	</div>	
+    	<div class="col  s12 m4 l2 hvr-float-shadow card-placement" onclick="window.location='/HOD/students'">
+  				<h5>
+  				  <i class="fa fa-graduation-cap fa-5" aria-hidden="true"></i>
+  				  List Students
+  				</h5>
+    	</div>	
+    	<div class="col  s12 m4 l2 hvr-float-shadow card-placement" onclick="window.location='/HOD/placements'">
+				<h5 >
+				  <i class="material-icons">work</i>
+				  Student Report
+				</h5>
+        </div>
+    </div>
+    
+<% include ../partials/footer.ejs %>

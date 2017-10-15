@@ -35,7 +35,8 @@ var indexRoutes      = require("./routes/index"),
     testsRoutes     = require("./routes/tests"),
     leaderRoutes    = require("./routes/leaderBoard"),
     mobileRoutes    = require("./routes/mobile"),
-    ResultsRoutes   = require("./routes/resultAnalysis");
+    ResultsRoutes   = require("./routes/resultAnalysis"),
+    HodRoutes       = require("./routes/hod");
 
 // =======================================
 // db connectins and body parsing
@@ -117,6 +118,7 @@ app.use("/mobile",mobileRoutes);
 app.use("/test",testsRoutes);
 app.use("/leader",leaderRoutes);
 app.use("/results",ResultsRoutes);
+app.use("/HOD",HodRoutes);
 app.get("*",function(req, res) {            // default route
     res.render("website_under_construction");
 });

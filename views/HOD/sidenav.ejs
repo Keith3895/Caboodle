@@ -1,0 +1,81 @@
+
+<link rel="stylesheet" type="text/css" href="/font/flaticon.css"> 
+<style>
+    .side-nav{
+        top: 63px;
+        width: 250px;
+        background-color:#2f2f2f;
+            color: white;
+    }
+    .side-nav li>a>i, .side-nav li>a>[class^="mdi-"], .side-nav li>a li>a>[class*="mdi-"], .side-nav li>a>i.material-icons{
+      color: white;
+    }
+    .side-nav li>a{
+        background-color:#2f2f2f;
+            color: white;
+    }
+    .active .fa-chevron-down{
+        display:none;
+    }
+    .fa.fa-chevron-up{
+        display:none;   
+    }
+    .active .fa.fa-chevron-up{
+        display:block;
+        
+    }
+    .collapsible-body li a{
+        padding-left:50px !important;
+    }
+
+</style>
+<!--<div class="row">-->
+<ul id="slide-out1" class="side-nav fixed collapsible" data-collapsible="accordion">
+        <li class="logo">
+      		<a href="/placementHead" >
+      		<i style="font-size:24px;" class="fa fa-home" aria-hidden="true"></i> Home
+            </a>
+        </li>
+        <li>
+        	<div class="collapsible-header waves-effect">
+        	    <i class='flaticon-people'></i>
+        	    <span>Student</span>
+        	    <i class="fa fa-chevron-down" aria-hidden="true" style="float:right;font-size: 12px;"></i>
+        	    <i class="fa fa-chevron-up" aria-hidden="true" style="float:right;font-size: 12px;"></i>
+
+            </div>
+		      <div class="collapsible-body">
+		      	<ul>
+		      		<li><a href="/placementHead/students" ><i class="material-icons">list</i>List</a></li>
+                    <li><a href="/addStudent"><i class="material-icons">person_add</i>Add</a></li>
+		      	</ul>
+		      	
+		      </div>
+        </li>
+        <li><a href="/placementHead/addNewPlacement">
+            <i style='color:white' class="fa fa-plus" aria-hidden="true"></i>
+            Add New Placement</a></li>
+        <li><a href="/placementHead/addNewInternship">
+            <i style='color:white' class="fa fa-plus" aria-hidden="true"></i>
+            Add New Internship</a></li>
+        <li><a href="/placementHead/placements">
+            <i class="material-icons left" style='font-size:1.2em'>work</i> 
+            View Placements</a></li>
+        <li><a href="/placementHead/viewStats">
+            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+            View Test Stats</a></li>
+        <li><a href="/placementHead/sendReminder">
+            <i class='flaticon-mail' style="    width: 47px;margin-left: -21px;"></i>
+            Remind Students</a></li>
+    </ul>
+      <a class="btn-floating btn-large waves-effect waves-light red button-collapse1"  data-activates="slide-out1" ><i class="material-icons">label_outline</i></a>
+
+    <!--<a href="#" data-activates="slide-out1" class="button-collapse1"><i class="material-icons large">label_outline</i></a>-->
+    <script>
+    $('.button-collapse').sideNav({
+        edge: 'right'
+    });
+    $('.button-collapse1').sideNav();
+    if(!window.location.href.split('/')[4]=='')
+		    $("a[href*='/"+window.location.href.split('/')[4]+"']").addClass('active');
+    </script>
