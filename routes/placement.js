@@ -346,6 +346,8 @@ router.get("/exportRegisteredStudents/:id",function(req,res){
 
 
 router.get("/updatePlacementStats/:id",function(req,res){
+    var searchParameter = {_id:req.params.id};
+    var selectQuery = [];
     var populate={
         path: 'registeredStudents',
         model: 'Student',
@@ -357,98 +359,74 @@ router.get("/updatePlacementStats/:id",function(req,res){
             }
         }
     };
-    placementController.findPlacement({_id:req.params.id},[],populate,function(record){
-        req.flash("error","Updated Info");
-        res.render("placement/updatePlacedStudents",{company:record});
+    placementController.findPlacement(searchParameter,selectQuery,populate,function(error,record){
+        if(error){
+            req.flash("error","Could not find Placement");
+            res.redirect("/placementHead/placements");
+        }else{
+            res.render("placement/updatePlacedStudents",{company:record});
+        }
     });
 });
 
 router.post("/updatePlacementStats/:id",function(req,res){
-    var placed = null,listOfPlacedStudents=[];
-    Placement.findOne({'_id':req.params.id},function(err,record){
-        if(err) console.log(err);
-        else{
-            for(var i=0;i<=req.body.noOfStudents;i++){
-                placed = 'placed' + i;
-                if(i<req.body.noOfStudents){
-                    if(req.body[placed]!=='no'){
-                        listOfPlacedStudents.push(req.body[placed]);
-                        console.log(req.body[placed]);
-                    }
-                }else{
-                    record.selectedStudents = listOfPlacedStudents;
-                    record.save();
-                    Student.find({'_id': { $in: record.selectedStudents}})
-                    .exec(function(err1,students){
-                        if(err1) console.log(err1);
-                        else{
-                            students.forEach(function(student){
-                                student.placements++;
-                                if(!has(student.selectedPlacements,record._id)){
-                                    student.selectedPlacements.push(record._id);
-                                    student.save();
-                                }
-                            })
-                            req.flash("success","Placement Stats Updated!");
-                            // res.render("placement/viewPlacedStudents",{students: docs,company:record})
-                            res.redirect("/placementHead/updatePlacementStats/"+req.params.id); 
-                        }
-                    })
-                }
-            }
+    var searchParameter = {'_id':req.params.id};
+    var selectQuery = [];
+    var populate = {};
+    placementController.updatePlacementStats(searchParameter,selectQuery,populate,function(error,updatedStudentRecords){
+        if(error){
+            console.log("Couldnt update stats");
+            req.flash("error","Could not update stats");
+            res.redirect("/updatePlacementStats/"+req.params.id);
+        }else{
+            console.log("Updated Stats");
+            req.flash("success","Successfully Updated Placement Stats");
+            res.redirect("/updatePlacementStats/"+req.params.id);
         }
     })
 })
 
 router.get("/updateInternshipStats/:id",function(req,res){
-    Internship.findOne({'_id':req.params.id}).populate({
+    var searchParameter = {_id:req.params.id};
+    var selectQuery = [];
+    var populate={
         path: 'registeredStudents',
         model: 'Student',
         populate: {
-          path: 'author',
-          model: 'User'
+            path: 'author',
+            model: 'User',
+            match:{
+                'college':req.user.college
+            }
         }
-    }).exec(function(err,record){
-        if(err) console.log(err);
-        else{
-            res.render("placement/updateInterns",{company:record})    
+    };
+    placementController.findInternship(searchParameter,selectQuery,populate,function(error,record){
+        if(error){
+            req.flash("error","Could not find Internship");
+            res.redirect("/placementHead/placements");
+        }else{
+            res.render("placement/updateInterns",{company:record});
+        }
+    });
+})
+
+router.post("/updateInternshipStats/:id",function(req,res){
+    var searchParameter = {'_id':req.params.id};
+    var selectQuery = [];
+    var populate = {};
+    placementController.updateInternshipStats(searchParameter,selectQuery,populate,function(error,updatedStudentRecords){
+        if(error){
+            console.log("Couldnt update stats");
+            req.flash("error","Could not update stats");
+            res.redirect("/updateInternshipStats/"+req.params.id);
+        }else{
+            console.log("Updated Stats");
+            req.flash("success","Successfully Updated Internship Stats");
+            res.redirect("/updateInternshipStats/"+req.params.id);
         }
     })
 })
 
-router.post("/updateInternshipStats/:id",function(req,res){
-    var placed = null,listOfPlacedStudents=[];
-    Internship.findOne({'_id':req.params.id},function(err,record){
-        if(err) console.log(err);
-        else{
-            for(var i=0;i<=req.body.noOfStudents;i++){
-                placed = 'placed' + i;
-                if(i<req.body.noOfStudents){
-                    if(req.body[placed]!=='no'){
-                        listOfPlacedStudents.push(req.body[placed]);
-                    }
-                }else{
-                    record.selectedStudents = listOfPlacedStudents;
-                    record.save();
-                    Student.find({'_id': { $in: record.selectedStudents}})
-                    .exec(function(err1,students){
-                        if(err1) console.log(err1);
-                        else{
-                            students.forEach(function(student){
-                                if(!student.selectedInternships.includes(record._id)){
-                                    student.selectedInternships.push(record._id);
-                                    student.save();
-                                }
-                            })
-                            req.flash("success","Internship Stats Updated!");
-                            res.redirect("/updateInternshipStats/"+req.params.id);    
-                        }
-                    })
-                }
-            }
-        }
-    })
-})
 
 router.get("/sendReminder",function(req,res){
     res.render("placement/sendReminder");
