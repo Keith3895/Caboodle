@@ -26,6 +26,7 @@ var urls1 = [];
 var resultAnalysis = require("./externalFunction/resultAnalysis");
 require('dotenv').config();
 var homeurl = process.env.homeUrl;
+var random_user_agent = require('random-ua');
 
 var adminController = require('../lib/controller/admin');
 var studentController = require('../lib/controller/student');
@@ -158,6 +159,10 @@ router.get("/scrapeResults",middleware.isAdmin, function(req,res){
 
 router.post("/scrapeResults",middleware.isAdmin,function(req,res){
     var checkCBCS=false;
+    var headers = {
+        'User-Agent':       random_user_agent.generate(),
+        'Content-Type':     'application/x-www-form-urlencoded'
+    }
     function createlinks(){
         console.log("Creating Links");
         if(req.body.sublink.substring(0,4)=='cbcs') checkCBCS=true;
@@ -165,12 +170,16 @@ router.post("/scrapeResults",middleware.isAdmin,function(req,res){
         var toUSN=parseInt(req.body.toUSN.substring(7,10));
         var department = [];
         (typeof req.body.department === 'string') ? department.push(req.body.department) : department = req.body.department;
-        var link = "http://results.vtu.ac.in/"+req.body.sublink+"?usn="+(req.body.fromUSN.substring(0,5));
-        var mainurls=[],i,linktopush;
+        var usn = req.body.fromUSN.substring(0,5);
+        var mainurls=[],i,usntopush;
         department.forEach(function(dep){
             for(i=fromUSN;i<=toUSN;i++){
-                linktopush=link+dep+("00" + i).slice(-3);
-                mainurls.push(linktopush)
+                mainurls.push({
+                    url: 'http://results.vtu.ac.in/'+req.body.sublink,
+                    method: 'POST',
+                    headers: headers,
+                    form: {'usn': usn+dep+("00" + i).slice(-3)}
+                });
             }
         })
         console.log("Links created");
@@ -215,13 +224,13 @@ router.post("/scrapeResults",middleware.isAdmin,function(req,res){
     }    //Function to get result status based on marks(Ex: FCD,FC,etc)
     var counter = 0;
     function f1(urls,len){
-        console.log("Scraping Initiated.....")
+        console.log("Scraping Initiated.....");
         counter = 0;
         var compareLength=urls.length;
         scrape.concurrent(urls,3000, function(url, callback) {
         if(url){
         request(url,async function(error, response, html){
-            var usn1 = url.split('usn=')[1];
+            var usn1 = url.form['usn'].split('usn=')[1];
             if(!error){
                 var $ = cheerio.load(html);
                 var usn = $('table tr').first().children().eq(1).text().split(': ')[1]; 
@@ -566,5 +575,3 @@ router.get('/resetQuestion',function(req,res) {
 
 
 module.exports = router;
-
-
