@@ -17,39 +17,9 @@ var aSync = require('async');
 require('dotenv').config();
 
 
-var has = function(container, value) {
-	var returnValue = false;
-	var pos = container.indexOf(value);
-	if (pos >= 0) {
-		returnValue = true;
-	}
-	return returnValue;
-}
-function remove(array, element) {
-    const index = array.indexOf(element);
-    if (index !== -1) {
-        array.splice(index, 1);
-    }
-}
-
-var transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    host: "smtp.gmail.com",
-    auth: {
-        user: 'bkm.blore.c9@gmail.com', // Your email id
-        pass: 'cloudnine' // Your password
-    }
-});
-
 // =================== external functoins ==============
 var testAnalysisHead = require("./externalFunction/testAnalysisHead");
 var placementCalc = require("./externalFunction/placementCalc");
-
-// ===================================================
-// var transporter = nodemailer.createTransport(ses({
-    // accessKeyId: 'process.env.MailerKeyid',
-//     secretAccessKey: 'process.env.MailerPsd'
-// }));
 
 var aws = require('aws-sdk');
 aws.config.loadFromPath('awscredentials.json');
@@ -60,8 +30,6 @@ var S3FS = require('s3fs'),
     multiparty = require('connect-multiparty'),
     multipartyMiddleware = multiparty();
 router.use(multipartyMiddleware);
-const template = './views/placement/email.ejs';
-const internshipTemplate = './views/placement/internEmail.ejs';
 
 var adminController = require('../lib/controller/admin');
 var studentController = require('../lib/controller/student');
@@ -433,67 +401,43 @@ router.get("/sendReminder",function(req,res){
 });
 
 router.post("/sendReminder",function(req,res){
-    var sems=[];
-    (typeof req.body.semesters === 'string') ? sems.push(req.body.semesters) : sems = req.body.semesters;
-    var StudentIDs ='bkm.blore@gmail.com';
-    // StudentIDs +=',keith30895@gmail.com,mkb.viru4@gmail.com';
-    var update=req.body.reminder;
-        
-    Student.find({ semester: { $in: sems }})
-    .populate('author').exec(function (err, students) {
-        if(err){
-             req.flash('error',"No matching Records found to send mail!")
-        } 
-        else{
-            students.forEach(function(student){
-                StudentIDs = StudentIDs+', '+student.author.email;
-                console.log("Mails: ",StudentIDs);
-            });
-            var mailOptions = {
-                from: 'AMC Engineering College <keith@keithfranklin.xyz>', // sender address
-                to: StudentIDs, // list of receivers
-                subject: "Hey you've got some news from the Placement Officer!", // Subject line
-                text: update //, // plaintext body
-                // html: ejs.render(template,{pl: placementInfo})
-            };
-            transporter.sendMail(mailOptions, function(error, info){
-                if(error){
-                    console.log(error);
-                }
-                else{
-            
-                       console.log('email sent: congo!!!!!');
-                    req.flash("success","Update sent");
-                    res.redirect("/placementHead");
-                }
-            });
+    placementController.sendReminder(req,function(error,info){
+        if(error){
+            req.flash('error',"No matching Records found to send mail!");
+            res.redirect("/sendReminder");
+        }else{
+            console.log('email sent: congo!!!!!');
+            req.flash("success","Update sent to students");
+            res.redirect("/placementHead");
         }
     });
 });
 
+
 router.get('/view',function(req, res) {
-    Placement.find({},function(err,cpny){
-        res.send(cpny);
-    });
+    var searchCondition = {};
+    var selectQuery = [];
+    var populate = '';
+    placementController.listPlacement(searchCondition,selectQuery,populate,function(placements){
+        res.send(placements);
+    })
 });
+
 router.get('/viewStats',function(req,res){
     res.render('placement/viewStats');
 });
+
 router.get('/getAnalysis',function(req,res){
     LeaderBoard.find({}).sort({'_id':-1}).limit(1).exec(function(err,br){
         if(br[0].entry.length!=0){
             Student.findOne({'author': br[0].entry[0].author},function(err,student){
-            testAnalysisHead(req,student.PlacementTestResults[student.PlacementTestResults.length - 1][0],res);
-        });
+                testAnalysisHead(req,student.PlacementTestResults[student.PlacementTestResults.length - 1][0],res);
+            });
         }
-        
     });
 });
 
-
 router.get('/placementStats',async function(req, res) {
-    
-    
     placementCalc.DeptPlaced(req.user.college,function(data1){
         placementCalc.placedData(req.user.college,function(data2){
             placementCalc.PlacedDeptStd(req.user.college,function(data3){
@@ -514,7 +458,6 @@ router.get('/placementStats',async function(req, res) {
 
 router.get('/placementStat',async function(req, res) {
     res.render('placement/graphs');
-    
 });
 
 module.exports = router;

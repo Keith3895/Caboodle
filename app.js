@@ -17,9 +17,8 @@ var express             = require("express"),
     sassMiddleware      = require('node-sass-middleware'),
     upload              = require('express-fileupload'),
     MongoStore          = require("connect-mongo")(session);
-    
     var logime          = require('log-timestamp');
-
+require('dotenv').config();
  
 //****************************************************
 // route  variable declaration
